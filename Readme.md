@@ -1,7 +1,7 @@
 # Личный проект «Readme»
 
-* Студент: [Vladimir Maximov](https://up.htmlacademy.ru/nodejs-2/6/user/2342349).
-* Наставник: [](https://up.htmlacademy.ru/)..
+* Студент: [Vladimir Maximov](https://up.htmlacademy.ru/nodejs-2/6/user/2342349)
+* Наставник: [Андрей Осипук](https://htmlacademy.ru/profile/id616431)
 
 ---
 
