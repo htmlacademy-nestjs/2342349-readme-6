@@ -1,0 +1,24 @@
+{
+  "name": "content-management",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/content-management/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "content-management:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "content-management:build:development"
+        },
+        "production": {
+          "buildTarget": "content-management:build:production"
+        }
+      }
+    }
+  }
+}

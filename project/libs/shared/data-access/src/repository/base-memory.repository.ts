@@ -5,13 +5,13 @@ import { Repository } from './repository.interface';
 export abstract class BaseMemoryRepository<T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>> implements Repository<T> {
   protected entities: Map<T['id'], ReturnType<T['toPOJO']>> = new Map();
 
-  constructor(
+  protected constructor(
     protected entityFactory: EntityFactory<T>
   ) {}
 
   public async findById(id: T['id']): Promise<T> {
     const foundEntity = this.entities.get(id) || null;
-    if (! foundEntity) {
+    if (!foundEntity) {
       return null;
     }
 
@@ -19,23 +19,23 @@ export abstract class BaseMemoryRepository<T extends Entity & StorableEntity<Ret
   }
 
   public async save(entity: T): Promise<void> {
-    if (! entity.id) {
+    if (!entity.id) {
       entity.id = crypto.randomUUID();
     }
 
     this.entities.set(entity.id, entity.toPOJO());
   }
 
-  public async update(entity: T): Promise<void> {
-    if (! this.entities.has(entity.id)) {
-      throw new Error('Entity not found');
-    }
-
-    this.entities.set(entity.id, entity.toPOJO());
-  }
+  // public async update(entity: T): Promise<void> {
+  //   if (!this.entities.has(entity.id)) {
+  //     throw new Error('Entity not found');
+  //   }
+  //
+  //   this.entities.set(entity.id, entity.toPOJO());
+  // }
 
   public async deleteById(id: T['id']): Promise<void> {
-    if (! this.entities.has(id)) {
+    if (!this.entities.has(id)) {
       throw new Error('Entity not found');
     }
 

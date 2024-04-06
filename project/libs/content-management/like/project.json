@@ -1,0 +1,9 @@
+{
+  "name": "like",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/content-management/like/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project like --web",
+  "targets": {}
+}
