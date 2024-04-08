@@ -1,4 +1,4 @@
-import { UserNotification, UserType } from '@project/shared-core';
+import { UserNotificationType, UserType } from '@project/shared-core';
 import { Expose } from 'class-transformer';
 
 export class UserRdo {
@@ -9,19 +9,19 @@ export class UserRdo {
   public email: string;
 
   @Expose()
-  public firstname: string;
+  public firstName: string;
 
   @Expose()
-  public lastname: string;
+  public lastName: string;
 
   @Expose()
   public dateOfBirth: Date;
 
   @Expose()
-  public type: UserType;
+  public userType: UserType;
 
   @Expose()
-  public avatarId: string;
+  public avatarUrl: string;
 
   @Expose()
   public registeredAt: Date;
@@ -30,5 +30,5 @@ export class UserRdo {
   public subscriptions: string[];
 
   @Expose()
-  public notification: UserNotification;
+  public notificationType: UserNotificationType;
 }

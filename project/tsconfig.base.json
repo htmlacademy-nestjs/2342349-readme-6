@@ -20,6 +20,9 @@
         "libs/user-management/authentication/src/index.ts"
       ],
       "@project/comment": ["libs/content-management/comment/src/index.ts"],
+      "@project/content-core": [
+        "libs/content-management/content-core/src/index.ts"
+      ],
       "@project/data-access": ["libs/shared/data-access/src/index.ts"],
       "@project/email": ["libs/notification-management/email/src/index.ts"],
       "@project/like": ["libs/content-management/like/src/index.ts"],

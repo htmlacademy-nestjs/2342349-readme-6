@@ -1,1 +1,1 @@
-export * from './lib/like';
+export { LikeModule } from './like-module/like.module';

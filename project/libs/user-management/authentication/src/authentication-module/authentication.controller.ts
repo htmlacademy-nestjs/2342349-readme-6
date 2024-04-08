@@ -1,6 +1,8 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { fillDto } from '@project/shared-helpers';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { LoginDto } from '../dto/login.dto';
+import { LoggedRdo } from '../rdo/logged.rdo';
 import { AuthenticationService } from './authentication.service';
 
 @Controller('auth')
@@ -9,31 +11,22 @@ export class AuthenticationController {
     private readonly authService: AuthenticationService
   ) {}
 
-  // @Post('register')
-  // public async create(@Body() dto: CreateUserDto) {
-  //   const newUser = await this.authService.register(dto);
-  //   return fillDto(UserRdo, newUser.toPOJO());
-  // }
-
-  // @Get(':id')
-  // public async show(@Param('id') id: string) {
-  //   // const existUser = await this.authService.getUser(id);
-  //   // return fillDto(UserRdo, existUser.toPOJO());
-  // }
-
   @Post('login')
   public async login(
     @Body() dto: LoginDto
-  ): Promise<void> {
-    // const verifiedUser = await this.authService.verifyUser(dto);
-    // return fillDto(LoggedRdo, verifiedUser.toPOJO());
+  ): Promise<LoggedRdo> {
+    const verifiedUser = await this.authService.verifyUser(dto);
+    return fillDto(LoggedRdo, verifiedUser.toPOJO());
   }
 
-  @Patch('change-password')
+  @Patch('change-password/:userId')
   public async changePassword(
+    @Param('userId') userId: string,
     @Body() dto: ChangePasswordDto
-  ): Promise<void> {
-
+  ): Promise<LoggedRdo> {
+    //todo userId from token
+    const updatedUser = await this.authService.changePassword(userId, dto);
+    return fillDto(LoggedRdo, updatedUser.toPOJO());
   }
 }
 

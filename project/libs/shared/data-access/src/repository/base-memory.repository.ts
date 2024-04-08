@@ -1,5 +1,5 @@
 import { Entity, EntityFactory, StorableEntity } from '@project/shared-core';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 import { Repository } from './repository.interface';
 
 export abstract class BaseMemoryRepository<T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>> implements Repository<T> {
@@ -18,27 +18,43 @@ export abstract class BaseMemoryRepository<T extends Entity & StorableEntity<Ret
     return this.entityFactory.create(foundEntity);
   }
 
-  public async save(entity: T): Promise<void> {
+  public async save(entity: T): Promise<T> {
     if (!entity.id) {
       entity.id = crypto.randomUUID();
     }
 
-    this.entities.set(entity.id, entity.toPOJO());
+    const entityPOJO = entity.toPOJO();
+    this.entities.set(entity.id, entityPOJO);
+
+    return this.entityFactory.create(entityPOJO);
   }
 
-  // public async update(entity: T): Promise<void> {
-  //   if (!this.entities.has(entity.id)) {
-  //     throw new Error('Entity not found');
-  //   }
-  //
-  //   this.entities.set(entity.id, entity.toPOJO());
-  // }
+  public async update(id: T['id'], entity: T): Promise<T> {
+    const entityToUpdate = this.entities.get(id) || null;
+    if (!entityToUpdate) {
+      throw new Error('Entity not found');
+    }
 
-  public async deleteById(id: T['id']): Promise<void> {
-    if (!this.entities.has(id)) {
+    Object.entries(entity).forEach(([key, value]) => {
+      (entityToUpdate)[key] = value;
+    });
+
+    this.entities.set(id, entityToUpdate);
+
+    return this.entityFactory.create(entityToUpdate);
+  }
+
+  public async deleteById(id: T['id']): Promise<T> {
+    const foundEntity = this.entities.get(id) || null;
+    if (!foundEntity) {
       throw new Error('Entity not found');
     }
 
     this.entities.delete(id);
+    return this.entityFactory.create(foundEntity);
+  }
+
+  public async exists(id: T["id"]): Promise<boolean> {
+    return this.entities.has(id);
   }
 }

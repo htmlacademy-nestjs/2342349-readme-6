@@ -1,16 +1,16 @@
-import { AuthUser, Entity, StorableEntity, UserNotification, UserType } from '@project/shared-core';
+import { AuthUser, Entity, StorableEntity, UserNotificationType, UserType } from '@project/shared-core';
 
 export class UserEntity extends Entity implements StorableEntity<AuthUser> {
   public email: string;
-  public firstname: string;
-  public lastname: string;
+  public firstName: string;
+  public lastName: string;
   public dateOfBirth: Date;
-  public type: UserType;
-  private passwordHash: string;
+  public userType: UserType;
+  public passwordHash: string;
   public avatarId: string;
   public registeredAt: Date;
-  public subscriptions: UserEntity[];
-  public notification: UserNotification;
+  public subscriptionIds: string[];
+  public notificationType: UserNotificationType;
 
   constructor(user?: AuthUser) {
     super();
@@ -22,39 +22,32 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
       return;
     }
 
-    this.id = this.id ?? '';
+    this.id = user.id ?? '';
     this.email = user.email;
-    this.firstname = user.firstname;
-    this.lastname = user.lastname;
+    this.firstName = user.firstName;
+    this.lastName = user.lastName;
     this.dateOfBirth = user.dateOfBirth ?? new Date(0);
-    this.type = user.type ?? UserType.USER;
+    this.userType = user.userType ?? UserType.USER;
     this.passwordHash = user.passwordHash;
-    this.avatarId = user.avatarId ?? '';
+    this.avatarId = user.avatarUrl ?? '';
     this.registeredAt = user.registeredAt ?? new Date();
-    this.notification = user.notification ?? UserNotification.EMAIL;
+    this.subscriptionIds = user.subscriptions ?? [];
+    this.notificationType = user.notificationType ?? UserNotificationType.EMAIL;
   }
 
   public toPOJO() {
     return {
       id: this.id,
       email: this.email,
-      firstname: this.firstname,
-      lastname: this.lastname,
+      firstName: this.firstName,
+      lastName: this.lastName,
       dateOfBirth: this.dateOfBirth,
-      type: this.type,
-      passwordHash: '',
-      avatarId: this.avatarId,
+      userType: this.userType,
+      passwordHash: this.passwordHash,
+      avatarUrl: this.avatarId,
       registeredAt: this.registeredAt,
-      notification: this.notification,
-      subscriptions: [],
+      notificationType: this.notificationType,
+      subscriptions: this.subscriptionIds,
     };
-  }
-
-  public setPassword(passwordHash: string): void {
-    this.passwordHash = passwordHash;
-  }
-
-  public emptyPasswordHash(): void {
-    this.passwordHash = '';
   }
 }

@@ -1,7 +1,14 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CryptoProtocol } from '@project/shared-helpers';
-import { UserRepository } from '@project/user-core';
-import { AUTHENTICATION_PASSWORD_EMPTY } from './authentication.constant';
+import { UserEntity, UserRepository } from '@project/user-core';
+import { ChangePasswordDto } from '../dto/change-password.dto';
+import { LoginDto } from '../dto/login.dto';
+import {
+  AUTHENTICATION_NEW_PASSWORD_SAME,
+  AUTHENTICATION_PASSWORD_EMPTY,
+  AUTHENTICATION_USER_NOT_FOUND,
+  AUTHENTICATION_USER_PASSWORD_WRONG
+} from './authentication.constant';
 
 @Injectable()
 export class AuthenticationService {
@@ -10,34 +17,7 @@ export class AuthenticationService {
     @Inject('CryptoProtocol') private readonly cryptoProtocol: CryptoProtocol
   ) {}
 
-  // public async register(dto: CreateUserDto): Promise<UserEntity> {
-  //   const {email, firstname, lastname, password, dateBirth} = dto;
-  //
-  //   const blogUser = {
-  //     email: email,
-  //     firstname: firstname,
-  //     lastname: lastname,
-  //     role: UserType.USER,
-  //     avatar: '',
-  //     dateOfBirth: dayjs(dateBirth).toDate(),
-  //     passwordHash: ''
-  //   };
-  //
-  //   const existUser = await this.userRepository.findByEmail(email);
-  //   if (existUser) {
-  //     throw new ConflictException(AUTH_USER_EXISTS);
-  //   }
-  //
-  //   const userEntity = new UserEntity(blogUser);
-  //   const passwordHash = await this.hashPassword(password);
-  //   userEntity.setPassword(passwordHash);
-  //
-  //   await this.userRepository.save(userEntity);
-  //   existUser.passwordHash = '';
-  //   return userEntity;
-  // }
-
-  public async hashPassword(password: string) {
+  public async hashPassword(password: string): Promise<string> {
     if (!password) {
       throw new BadRequestException(AUTHENTICATION_PASSWORD_EMPTY);
     }
@@ -45,23 +25,37 @@ export class AuthenticationService {
     return await this.cryptoProtocol.hashPassword(password);
   }
 
-  // public async verifyUser(dto: LoginDto): Promise<UserEntity> {
-  //   const {email, password} = dto;
-  //
-  //   const existUser = await this.userRepository.findByEmail(email);
-  //   if (!existUser) {
-  //     throw new NotFoundException(AUTH_USER_NOT_FOUND);
-  //   }
-  //
-  //   if (!await this.cryptoProtocol.verifyPassword(existUser.passwordHash, password)) {
-  //     throw new UnauthorizedException(AUTH_USER_PASSWORD_WRONG);
-  //   }
-  //
-  //   existUser.passwordHash = '';
-  //   return existUser;
-  // }
-  //
-  // public async getUser(id: string): Promise<UserEntity> {
-  //   return this.userRepository.findById(id);
-  // }
+  public async verifyUser(dto: LoginDto): Promise<UserEntity> {
+    const {email, password} = dto;
+
+    const existUser = await this.userRepository.findByEmail(email);
+    if (!existUser) {
+      throw new NotFoundException(AUTHENTICATION_USER_NOT_FOUND);
+    }
+
+    const isPasswordCorrect = await this.cryptoProtocol.verifyPassword(password, existUser.passwordHash);
+    if (!isPasswordCorrect) {
+      throw new UnauthorizedException(AUTHENTICATION_USER_PASSWORD_WRONG);
+    }
+
+    return existUser;
+  }
+
+
+  public async changePassword(userId: string, dto: ChangePasswordDto): Promise<UserEntity> {
+    const {oldPassword, newPassword} = dto;
+
+    if (oldPassword === newPassword) {
+      throw new NotFoundException(AUTHENTICATION_NEW_PASSWORD_SAME);
+    }
+
+    const updatedUser = await this.userRepository.findById(userId);
+    if (!updatedUser) {
+      throw new NotFoundException(AUTHENTICATION_USER_NOT_FOUND);
+    }
+
+    updatedUser.passwordHash = await this.hashPassword(newPassword);
+
+    return await this.userRepository.update(userId, updatedUser);
+  }
 }

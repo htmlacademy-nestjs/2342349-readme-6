@@ -1,6 +1,6 @@
 export class UpdateUserDto {
-  public firstname?: string;
-  public lastname?: string;
+  public firstName?: string;
+  public lastName?: string;
   public dateOfBirth?: Date;
-  public avatarId?: string;
+  public avatarUrl?: string;
 }

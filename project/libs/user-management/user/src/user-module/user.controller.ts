@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/commo
 import { fillDto } from '@project/shared-helpers';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SubscriptionRdo } from './rdo/subscription.rdo';
 import { UserRdo } from './rdo/user.rdo';
 import { UserService } from './user.service';
 
@@ -9,15 +10,22 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-  ) {
-  }
+  ) {}
 
   @Post('')
   public async createUser(
     @Body() dto: CreateUserDto
   ): Promise<UserRdo> {
-    const createdUser = await this.userService.create(dto);
+    const createdUser = await this.userService.createUser(dto);
     return fillDto(UserRdo, createdUser.toPOJO());
+  }
+
+  @Get(':userId')
+  public async getUser(
+    @Param('userId') userId: string
+  ): Promise<UserRdo> {
+    const foundUser = await this.userService.findUserById(userId);
+    return fillDto(UserRdo, foundUser.toPOJO());
   }
 
   @Patch(':userId')
@@ -26,31 +34,25 @@ export class UserController {
     @Body() dto: UpdateUserDto
   ): Promise<UserRdo> {
     //todo userId from token
-    const updatedUser = await this.userService.update(userId, dto);
+    const updatedUser = await this.userService.updateUserById(userId, dto);
     return fillDto(UserRdo, updatedUser.toPOJO());
-  }
-
-  @Get(':userId')
-  public async getUserById(
-    @Param('userId') userId: string
-  ): Promise<void> {
-
   }
 
   @Post('subscription/:userId')
   public async subscribeUser(
     @Param('userId') subscribeUserId: string
-  ): Promise<void> {
+  ): Promise<SubscriptionRdo> {
+    //todo userId from token
+    const updatedUser = await this.userService.subscribeUserById(subscribeUserId, subscribeUserId);
+    return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
-
 
   @Delete('subscription/:userId')
   public async unsubscribeUser(
     @Param('userId') unsubscribeUserId: string
-  ): Promise<void> {
+  ): Promise<SubscriptionRdo> {
+    //todo userId from token
+    const updatedUser = await this.userService.unsubscribeUserById(unsubscribeUserId, unsubscribeUserId);
+    return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
-
-
-
-
 }

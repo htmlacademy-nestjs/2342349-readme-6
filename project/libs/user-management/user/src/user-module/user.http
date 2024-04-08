@@ -1,5 +1,9 @@
+@host = http://localhost:3000
+@userId = 9c8becbd-7d1e-4826-b930-ddbd12490c86
+@token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
+
 # Create a new user
-POST http://localhost:3000/api/user HTTP/1.1
+POST {{host}}/api/user HTTP/1.1
 Content-Type: application/json
 
 {
@@ -12,17 +16,26 @@ Content-Type: application/json
 ###
 
 # Get user by ID
-GET http://localhost:3000/api/auth/7aef6925-4fe5-4057-b5cc-cc7cf214df05 HTTP/1.1
+GET {{host}}/api/user/{{userId}} HTTP/1.1
 
 ###
 
-# Login user by email and password
-POST http://localhost:3000/api/auth/login HTTP/1.1
+# Update user by ID
+PATCH {{host}}/api/user/{{userId}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "user@notfound.local",
-  "password": "1234561 "
+  "lastname": "AAA"
 }
+
+###
+
+# Subscribe User
+POST {{host}}/api/user/subscription/{{userId}} HTTP/1.1
+
+###
+
+# Unsubscribe User
+DELETE {{host}}/api/user/subscription/{{userId}} HTTP/1.1
 
 ###
