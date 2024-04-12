@@ -330,7 +330,7 @@ var Dropzone = function (_Emitter) {
         /**
          * The default implementation of `accept` checks the file's mime type or
          * extension against this list. This is a comma separated list of mime
-         * types or file extensions.
+         * type or file extensions.
          *
          * Eg.: `image/*,application/pdf,.psd`
          *
@@ -526,7 +526,7 @@ var Dropzone = function (_Emitter) {
          * If the done function is invoked without arguments, the file is "accepted" and will
          * be processed. If you pass an error message, the file is rejected, and the error
          * message will be displayed.
-         * This function will not be called if the file is too big or doesn't match the mime types.
+         * This function will not be called if the file is too big or doesn't match the mime type.
          */
         accept: function accept(file, done) {
           return done();
@@ -3157,7 +3157,7 @@ Dropzone.confirm = function (question, accepted, rejected) {
 Dropzone.isValidFile = function (file, acceptedFiles) {
   if (!acceptedFiles) {
     return true;
-  } // If there are no accepted mime types, it's OK
+  } // If there are no accepted mime type, it's OK
   acceptedFiles = acceptedFiles.split(",");
 
   var mimeType = file.type;

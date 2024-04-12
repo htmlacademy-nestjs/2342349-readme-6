@@ -14,7 +14,26 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "esModuleInterop": true,
+    "paths": {
+      "@project/authentication": [
+        "libs/user-management/authentication/src/index.ts"
+      ],
+      "@project/comment": ["libs/content-management/comment/src/index.ts"],
+      "@project/content-core": [
+        "libs/content-management/content-core/src/index.ts"
+      ],
+      "@project/data-access": ["libs/shared/data-access/src/index.ts"],
+      "@project/email": ["libs/notification-management/email/src/index.ts"],
+      "@project/like": ["libs/content-management/like/src/index.ts"],
+      "@project/post": ["libs/content-management/post/src/index.ts"],
+      "@project/search": ["libs/content-management/search/src/index.ts"],
+      "@project/shared-core": ["libs/shared/core/src/index.ts"],
+      "@project/shared-helpers": ["libs/shared/helpers/src/index.ts"],
+      "@project/upload": ["libs/file-management/upload/src/index.ts"],
+      "@project/user": ["libs/user-management/user/src/index.ts"],
+      "@project/user-core": ["libs/user-management/user-core/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
