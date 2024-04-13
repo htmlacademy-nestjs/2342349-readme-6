@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
+import { FileConfigModule } from '@project/file-config';
 
 @Module({
-  imports: [],
+  imports: [
+    FileConfigModule
+  ],
   controllers: [],
   providers: [],
 })

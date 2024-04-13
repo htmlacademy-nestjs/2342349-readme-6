@@ -1,5 +1,7 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { AuthenticationService } from '@project/authentication';
+import { dbConfig } from '@project/user-config';
 import { UserEntity, UserRepository } from '@project/user-core';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,7 +12,12 @@ export class UserService {
   constructor(
     @Inject('UserRepository') private readonly userRepository: UserRepository,
     private readonly authenticationService: AuthenticationService,
-  ) {}
+    @Inject(dbConfig.KEY)
+    private readonly databaseConfig: ConfigType<typeof dbConfig>,
+  ) {
+    console.log(databaseConfig.host);
+    console.log(databaseConfig.user);
+  }
 
   public async createUser(dto: CreateUserDto): Promise<UserEntity> {
     const existUser = await this.userRepository.findByEmail(dto.email);

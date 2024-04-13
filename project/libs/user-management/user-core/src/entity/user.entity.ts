@@ -1,4 +1,5 @@
 import { AuthUser, Entity, StorableEntity, UserNotificationType, UserType } from '@project/shared-core';
+import { Document } from 'mongoose';
 
 export class UserEntity extends Entity implements StorableEntity<AuthUser> {
   public email: string;
