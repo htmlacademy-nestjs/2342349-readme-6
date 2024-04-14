@@ -15,5 +15,5 @@ export class QuotePostRdo extends PostRdo {
     description: 'The author of the quote.',
     example: 'John Lennon'
   })
-  public quoteAuthor: string;
+  public quoteAuthorId: string;
 }

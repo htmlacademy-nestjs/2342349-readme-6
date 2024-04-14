@@ -7,5 +7,5 @@ export class SubscriptionRdo {
     description: 'A list of subscription IDs the user is currently subscribed to.',
     type: [String],
   })
-  public subscriptions: string[];
+  public subscriptionIds: string[];
 }

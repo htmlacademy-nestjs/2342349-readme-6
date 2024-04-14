@@ -8,8 +8,8 @@ export interface User {
   lastName: string;
   dateOfBirth?: Date;
   userType?: UserType;
-  avatarUrl?: string;
+  avatarId?: string;
   registeredAt?: Date;
+  subscriptionIds?: string[];
   notificationType?: UserNotificationType;
-  subscriptions?: string[];
 }

@@ -16,14 +16,14 @@ export class QuotePostEntity extends PostEntity  {
     }
 
     this.text = quotePost.text;
-    this.quoteAuthorId = quotePost.quoteAuthor;
+    this.quoteAuthorId = quotePost.quoteAuthorId;
   }
 
   public toPOJO() {
     return {
       ...super.toPOJO(),
       text: this.text,
-      quoteAuthor: this.quoteAuthorId,
+      quoteAuthorId: this.quoteAuthorId,
     };
   }
 }

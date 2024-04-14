@@ -4,13 +4,13 @@ import { PostType } from './post-type.enum';
 export interface Post {
   id?: string;
   tags?: string[];
-  author?: string;
+  authorId?: string;
   postedAt?: Date;
   createdAt?: Date;
   postStatus?: PostStatus;
-  originalPost?: string;
+  originalPostId?: string;
   postType: PostType;
-  userLikes?: string[];
+  userLikeIds?: string[];
   likeCount?: number;
   commentCount?: number;
   repostCount?: number;

@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "esModuleInterop": true,
+    "noEmitOnError": false,
     "paths": {
       "@project/authentication": [
         "libs/user-management/authentication/src/index.ts"

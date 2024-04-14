@@ -25,13 +25,13 @@ export abstract class PostEntity extends Entity implements StorableEntity<Post> 
 
     this.id = post.id ?? '';
     this.tags = post.tags ?? [];
-    this.authorId = post.author;
+    this.authorId = post.authorId;
     this.postedAt = post.postedAt ?? new Date();
     this.createdAt = post.createdAt ?? new Date();
     this.postStatus = post.postStatus ?? PostStatus.PUBLISHED;
-    this.originalPostId = post.originalPost ?? '';
+    this.originalPostId = post.originalPostId ?? '';
     this.postType = post.postType;
-    this.userLikeIds = post.userLikes ?? [];
+    this.userLikeIds = post.userLikeIds ?? [];
     this.likeCount = post.likeCount ?? 0;
     this.commentCount = post.commentCount ?? 0;
     this.repostCount = post.repostCount ?? 0;
@@ -41,13 +41,13 @@ export abstract class PostEntity extends Entity implements StorableEntity<Post> 
     return {
       id: this.id,
       tags: this.tags,
-      author: this.authorId,
+      authorId: this.authorId,
       postedAt: this.postedAt,
       createdAt: this.createdAt,
       postStatus: this.postStatus,
-      originalPost: this.originalPostId,
+      originalPostId: this.originalPostId,
       postType: this.postType,
-      userLikes: this.userLikeIds,
+      userLikeIds: this.userLikeIds,
       likeCount: this.likeCount,
       commentCount: this.commentCount,
       repostCount: this.repostCount,

@@ -1,4 +1,4 @@
-@host = http://localhost:3000
+@host = http://localhost:3010
 @userId = 9c8becbd-7d1e-4826-b930-ddbd12490c86
 @postId = 44fd6539-6d8b-47c9-b00f-211d123690d9
 @commentId = d56ba2f7-39d3-4432-9e4b-c071019e1386

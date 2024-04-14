@@ -15,7 +15,15 @@ export class ApplicationConfiguration implements AppConfig {
   @Max(USER_APP_MAX_PORT)
   port: number;
 
+  @IsNumber()
+  passwordSaltRounds: number;
+
+  @IsString()
+  userDefaultAvatar: string;
+
   public async validate(): Promise<void> {
     await validateOrReject(this);
   }
+
+
 }

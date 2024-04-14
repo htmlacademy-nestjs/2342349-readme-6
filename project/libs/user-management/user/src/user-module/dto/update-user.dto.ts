@@ -28,5 +28,5 @@ export class UpdateUserDto {
     example: 'https://example.com/avatar.jpg',
     required: false,
   })
-  public avatarUrl?: string;
+  public avatarId?: string;
 }

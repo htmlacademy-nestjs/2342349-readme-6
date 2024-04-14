@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { BcryptCrypto } from '@project/shared-helpers';
+import { ApplicationConfig } from '@project/user-config';
 import { UserCoreModule } from '@project/user-core';
 import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
-
-const SALT_ROUNDS = 10;
 
 @Module({
   imports: [UserCoreModule],
@@ -13,7 +13,8 @@ const SALT_ROUNDS = 10;
     AuthenticationService,
     {
       provide: 'CryptoProtocol',
-      useFactory: () => new BcryptCrypto(SALT_ROUNDS),
+      useFactory: (applicationConfig: ConfigType<typeof ApplicationConfig>) => new BcryptCrypto(applicationConfig.passwordSaltRounds),
+      inject: [ApplicationConfig.KEY]
     },
   ],
   exports: [AuthenticationService]

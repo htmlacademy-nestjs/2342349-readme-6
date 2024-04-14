@@ -26,5 +26,5 @@ export class UpdateQuotePostDto {
     example: 'John Lennon',
     required: false
   })
-  public quoteAuthor?: string;
+  public quoteAuthorId?: string;
 }

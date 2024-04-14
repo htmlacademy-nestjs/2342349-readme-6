@@ -50,7 +50,7 @@ export class UserRdo {
     description: 'The URL to the user\'s avatar image.',
     example: 'https://example.com/avatar.jpg'
   })
-  public avatarUrl: string;
+  public avatarId: string;
 
   @Expose()
   @ApiProperty({
@@ -65,7 +65,7 @@ export class UserRdo {
     description: 'A list of subscription IDs the user is currently subscribed to.',
     type: [String]
   })
-  public subscriptions: string[];
+  public subscriptionIds: string[];
 
   @Expose()
   @ApiProperty({

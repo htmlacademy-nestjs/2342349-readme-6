@@ -11,7 +11,7 @@ export class CreateQuotePostDto {
     description: 'The author of the quote.',
     example: 'John Lennon'
   })
-  public quoteAuthor: string;
+  public quoteAuthorId: string;
 
   @ApiProperty({
     description: 'Tags associated with the quote post.',

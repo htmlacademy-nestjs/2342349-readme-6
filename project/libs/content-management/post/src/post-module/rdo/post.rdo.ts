@@ -22,7 +22,7 @@ export class PostRdo {
     description: 'The author of the post.',
     example: 'authorId123'
   })
-  public author: string;
+  public authorId: string;
 
   @Expose()
   @ApiProperty({
@@ -55,7 +55,7 @@ export class PostRdo {
     example: 'originalPostId456',
     required: false
   })
-  public originalPost: string;
+  public originalPostId: string;
 
   @Expose()
   @ApiProperty({
@@ -70,7 +70,7 @@ export class PostRdo {
     type: [String],
     example: ['user1', 'user2']
   })
-  public userLikes: string[];
+  public userLikeIds: string[];
 
   @Expose()
   @ApiProperty({

@@ -63,6 +63,9 @@ export class UserController {
   ): Promise<SubscriptionRdo> {
     //todo userId from token
     const updatedUser = await this.userService.subscribeUserById(subscribeUserId, subscribeUserId);
+
+    console.log('updatedUser');
+    console.log(updatedUser);
     return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
 
