@@ -1,4 +1,4 @@
-import { AuthUser, Entity, StorableEntity, User, UserNotificationType, UserType } from '@project/shared-core';
+import { AuthUser, Entity, StorableEntity, UserNotificationType, UserType } from '@project/shared-core';
 
 export class UserEntity extends Entity implements StorableEntity<AuthUser> {
   public email: string;
@@ -47,7 +47,7 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
       avatarId: this.avatarId,
       registeredAt: this.registeredAt,
       notificationType: this.notificationType,
-      subscriptionIds: this.subscriptionIds,
+      subscriptionIds: this.subscriptionIds.map(id => id.toString())
     };
   }
 }

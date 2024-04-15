@@ -1,7 +1,7 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { AuthenticationService } from '@project/authentication';
-import { ApplicationConfig, DbConfig } from '@project/user-config';
+import { ApplicationConfig } from '@project/user-config';
 import { UserEntity, UserRepository } from '@project/user-core';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,9 +18,9 @@ export class UserService {
   constructor(
     @Inject('UserRepository') private readonly userRepository: UserRepository,
     private readonly authenticationService: AuthenticationService,
-    @Inject(DbConfig.KEY) private readonly databaseConfig: ConfigType<typeof DbConfig>,
-    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>,
-  ) {}
+    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>
+  ) {
+  }
 
   public async createUser(dto: CreateUserDto): Promise<UserEntity> {
     const existUser = await this.userRepository.findByEmail(dto.email);
@@ -34,7 +34,7 @@ export class UserService {
       firstName: dto.firstName,
       lastName: dto.lastName,
       avatarId: dto.avatarId ?? this.applicationConfig.userDefaultAvatar,
-      passwordHash: hashedPassword,
+      passwordHash: hashedPassword
     };
 
     const userEntity = new UserEntity(userData);
@@ -77,7 +77,7 @@ export class UserService {
     return await this.userRepository.addSubscription(userId, subscribeUserId);
   }
 
-  public async unsubscribeUserById(userId: string, unsubscribeUserId: string): Promise<UserEntity>  {
+  public async unsubscribeUserById(userId: string, unsubscribeUserId: string): Promise<UserEntity> {
     if (!await this.exists(userId)) {
       throw new NotFoundException(SUBSCRIBE_USER_NOT_FOUND);
     }

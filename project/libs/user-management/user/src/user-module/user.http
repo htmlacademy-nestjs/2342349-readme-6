@@ -7,7 +7,7 @@ POST {{host}}/api/user HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "user1234@notfound.local",
+  "email": "user12345@notfound.local",
   "firstName": "Keks",
   "lastName": "Smith",
   "password": "123456"
@@ -25,7 +25,7 @@ PATCH {{host}}/api/user/{{userId}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "lastName": "AAA"
+  "lastName": "AAA2"
 }
 
 ###
