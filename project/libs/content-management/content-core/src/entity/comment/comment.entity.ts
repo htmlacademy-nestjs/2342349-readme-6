@@ -18,8 +18,8 @@ export class CommentEntity extends Entity implements StorableEntity<Comment> {
 
     this.id = comment.id ?? '';
     this.text = comment.text;
-    this.postId = comment.post;
-    this.authorId = comment.author;
+    this.postId = comment.postId;
+    this.authorId = comment.authorId;
     this.createdAt = comment.createdAt ?? new Date();
   }
 
@@ -27,8 +27,8 @@ export class CommentEntity extends Entity implements StorableEntity<Comment> {
     return {
       id: this.id,
       text: this.text,
-      post: this.postId,
-      author: this.authorId,
+      postId: this.postId,
+      authorId: this.authorId,
       createdAt: this.createdAt
     };
   }

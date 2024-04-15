@@ -16,8 +16,8 @@ export class CommentService {
 
   public async createComment(userId: string, postId: string, dto: UpdateCommentDto): Promise<CommentEntity> {
     const commentData = {
-      author: userId,
-      post: postId,
+      authorId: userId,
+      postId: postId,
       text: dto.text
     };
 

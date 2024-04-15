@@ -23,7 +23,7 @@ export class QuotePostService {
       authorId: userId,
       postType: PostType.LINK,
       text: dto.text,
-      quoteAuthor: dto.quoteAuthor,
+      quoteAuthorId: dto.quoteAuthorId,
       tags: dto.tags ?? [],
       originalPost: originalPostId ?? '',
     };
@@ -56,7 +56,7 @@ export class QuotePostService {
     if (dto.tags !== undefined) updatedQuotePost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedQuotePost.postStatus = dto.postStatus;
     if (dto.text !== undefined) updatedQuotePost.text = dto.text;
-    if (dto.quoteAuthor !== undefined) updatedQuotePost.quoteAuthorId = dto.quoteAuthor;
+    if (dto.quoteAuthorId !== undefined) updatedQuotePost.quoteAuthorId = dto.quoteAuthorId;
 
     return await this.quotePostRepository.update(postId, updatedQuotePost);
   }
@@ -85,7 +85,7 @@ export class QuotePostService {
 
     const createQuotePostDto: CreateQuotePostDto = {
       tags: repostQuotePost.tags,
-      quoteAuthor: repostQuotePost.quoteAuthorId,
+      quoteAuthorId: repostQuotePost.quoteAuthorId,
       text: repostQuotePost.text,
     }
 

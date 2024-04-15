@@ -14,10 +14,10 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
 
   constructor(user?: AuthUser) {
     super();
-    this.populate(user);
+    this.fillUserData(user);
   }
 
-  public populate(user?: AuthUser): void {
+  public fillUserData(user?: AuthUser): void {
     if (!user) {
       return;
     }
@@ -29,9 +29,9 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
     this.dateOfBirth = user.dateOfBirth ?? new Date(0);
     this.userType = user.userType ?? UserType.USER;
     this.passwordHash = user.passwordHash;
-    this.avatarId = user.avatarUrl ?? '';
+    this.avatarId = user.avatarId;
     this.registeredAt = user.registeredAt ?? new Date();
-    this.subscriptionIds = user.subscriptions ?? [];
+    this.subscriptionIds = user.subscriptionIds ?? [];
     this.notificationType = user.notificationType ?? UserNotificationType.EMAIL;
   }
 
@@ -44,10 +44,10 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
       dateOfBirth: this.dateOfBirth,
       userType: this.userType,
       passwordHash: this.passwordHash,
-      avatarUrl: this.avatarId,
+      avatarId: this.avatarId,
       registeredAt: this.registeredAt,
       notificationType: this.notificationType,
-      subscriptions: this.subscriptionIds,
+      subscriptionIds: this.subscriptionIds.map(id => id.toString())
     };
   }
 }

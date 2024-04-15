@@ -1,16 +1,26 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { AuthenticationService } from '@project/authentication';
+import { ApplicationConfig } from '@project/user-config';
 import { UserEntity, UserRepository } from '@project/user-core';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { SUBSCRIBE_USER_NOT_FOUND, USER_EXISTS, USER_NOT_FOUND } from './user.constant';
+import {
+  SUBSCRIBE_USER_ALREADY_ADDED,
+  SUBSCRIBE_USER_ALREADY_REMOVED,
+  SUBSCRIBE_USER_NOT_FOUND,
+  USER_EXISTS,
+  USER_NOT_FOUND
+} from './user.constant';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject('UserRepository') private readonly userRepository: UserRepository,
     private readonly authenticationService: AuthenticationService,
-  ) {}
+    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>
+  ) {
+  }
 
   public async createUser(dto: CreateUserDto): Promise<UserEntity> {
     const existUser = await this.userRepository.findByEmail(dto.email);
@@ -23,14 +33,12 @@ export class UserService {
       email: dto.email,
       firstName: dto.firstName,
       lastName: dto.lastName,
-      avatarId: dto?.avatarUrl,
-      passwordHash: hashedPassword,
+      avatarId: dto.avatarId ?? this.applicationConfig.userDefaultAvatar,
+      passwordHash: hashedPassword
     };
 
     const userEntity = new UserEntity(userData);
-    await this.userRepository.save(userEntity);
-
-    return userEntity;
+    return this.userRepository.save(userEntity);
   }
 
   public async findUserById(userId: string): Promise<UserEntity> {
@@ -52,41 +60,32 @@ export class UserService {
     if (dto.firstName !== undefined) updatedUser.firstName = dto.firstName;
     if (dto.dateOfBirth !== undefined) updatedUser.dateOfBirth = dto.dateOfBirth;
     if (dto.lastName !== undefined) updatedUser.lastName = dto.lastName;
-    if (dto.avatarUrl !== undefined) updatedUser.avatarId = dto.avatarUrl;
+    if (dto.avatarId !== undefined) updatedUser.avatarId = dto.avatarId;
 
     return await this.userRepository.update(userId, updatedUser);
   }
 
   public async subscribeUserById(userId: string, subscribeUserId: string): Promise<UserEntity> {
-    const currentUser = await this.findUserById(userId);
-
-    const subscribeUser = await this.userRepository.findById(subscribeUserId);
-    if (!subscribeUser) {
+    if (!await this.exists(userId)) {
       throw new NotFoundException(SUBSCRIBE_USER_NOT_FOUND);
     }
 
-    if (currentUser.subscriptionIds.includes(subscribeUser.id)) {
-      return currentUser;
+    if (await this.userRepository.containsSubscription(userId, subscribeUserId)) {
+      throw new ConflictException(SUBSCRIBE_USER_ALREADY_ADDED);
     }
 
-    currentUser.subscriptionIds.push(subscribeUser.id);
-    return await this.userRepository.update(userId, currentUser);
+    return await this.userRepository.addSubscription(userId, subscribeUserId);
   }
 
-  public async unsubscribeUserById(userId: string, unsubscribeUserId: string): Promise<UserEntity>  {
-    const currentUser = await this.findUserById(userId);
-
-    const subscribeUser = await this.userRepository.findById(unsubscribeUserId);
-    if (!subscribeUser) {
+  public async unsubscribeUserById(userId: string, unsubscribeUserId: string): Promise<UserEntity> {
+    if (!await this.exists(userId)) {
       throw new NotFoundException(SUBSCRIBE_USER_NOT_FOUND);
     }
 
-    if (!currentUser.subscriptionIds.includes(subscribeUser.id)) {
-      return currentUser;
+    if (!await this.userRepository.containsSubscription(userId, unsubscribeUserId)) {
+      throw new ConflictException(SUBSCRIBE_USER_ALREADY_REMOVED);
     }
 
-    currentUser.subscriptionIds = currentUser.subscriptionIds.filter(subscriptionId => subscriptionId !== unsubscribeUserId);
-
-    return await this.userRepository.update(userId, currentUser);
+    return await this.userRepository.removeSubscription(userId, unsubscribeUserId);
   }
 }

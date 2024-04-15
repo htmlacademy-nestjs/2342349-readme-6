@@ -16,42 +16,49 @@ import { VideoPostMemoryRepository } from './repository/video/video-post-memory.
   providers: [
     {
       provide: 'CommentRepository',
-      useFactory: () => new CommentMemoryRepository(new CommentFactory()),
+      useFactory: (commentFactory: CommentFactory) => new CommentMemoryRepository(commentFactory),
+      inject: [CommentFactory]
     },
     CommentFactory,
     {
       provide: 'LinkPostRepository',
-      useFactory: () => new LinkPostMemoryRepository(new LinkPostFactory()),
+      useFactory: (linkPostFactory: LinkPostFactory) => new LinkPostMemoryRepository(linkPostFactory),
+      inject: [LinkPostFactory]
     },
     LinkPostFactory,
     {
       provide: 'PhotoPostRepository',
-      useFactory: () => new PhotoPostMemoryRepository(new PhotoPostFactory()),
+      useFactory: (photoPostFactory: PhotoPostFactory) => new PhotoPostMemoryRepository(photoPostFactory),
+      inject: [PhotoPostFactory]
     },
     PhotoPostFactory,
     {
       provide: 'QuotePostRepository',
-      useFactory: () => new QuotePostMemoryRepository(new QuotePostFactory()),
+      useFactory: (quotePostFactory: QuotePostFactory) => new QuotePostMemoryRepository(quotePostFactory),
+      inject: [QuotePostFactory]
     },
     QuotePostFactory,
     {
       provide: 'TextPostRepository',
-      useFactory: () => new TextPostMemoryRepository(new TextPostFactory()),
+      useFactory: (textPostFactory: TextPostFactory) => new TextPostMemoryRepository(textPostFactory),
+      inject: [TextPostFactory]
     },
     TextPostFactory,
     {
       provide: 'VideoPostRepository',
-      useFactory: () => new VideoPostMemoryRepository(new VideoPostFactory()),
+      useFactory: (videoPostFactory: VideoPostFactory) => new VideoPostMemoryRepository(videoPostFactory),
+      inject: [VideoPostFactory]
     },
-    VideoPostFactory,
+    VideoPostFactory
   ],
   exports: [
-    'CommentRepository', CommentFactory,
-    'LinkPostRepository', LinkPostFactory,
-    'PhotoPostRepository', PhotoPostFactory,
-    'QuotePostRepository', QuotePostFactory,
-    'TextPostRepository', TextPostFactory,
-    'VideoPostRepository', VideoPostFactory,
-  ],
+    'CommentRepository',
+    'LinkPostRepository',
+    'PhotoPostRepository',
+    'QuotePostRepository',
+    'TextPostRepository',
+    'VideoPostRepository'
+  ]
 })
-export class ContentCoreModule {}
+export class ContentCoreModule {
+}

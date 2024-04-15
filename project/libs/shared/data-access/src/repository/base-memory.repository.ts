@@ -2,7 +2,10 @@ import { Entity, EntityFactory, StorableEntity } from '@project/shared-core';
 import * as crypto from 'node:crypto';
 import { Repository } from './repository.interface';
 
-export abstract class BaseMemoryRepository<T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>> implements Repository<T> {
+export abstract class BaseMemoryRepository<
+  T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>
+> implements Repository<T> {
+
   protected entities: Map<T['id'], ReturnType<T['toPOJO']>> = new Map();
 
   protected constructor(

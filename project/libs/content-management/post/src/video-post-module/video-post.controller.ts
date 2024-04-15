@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
-import { VideoPostRdo } from '../text-post-module/rdo/video-post.rdo';
+import { VideoPostRdo } from './rdo/video-post.rdo';
 import { CreateVideoPostDto } from './dto/create-video-post.dto';
 import { UpdateVideoPostDto } from './dto/update-video-post.dto';
 import { VideoPostService } from './video-post.service';
 
+@ApiTags('Video-Posts')
 @Controller('post/video')
 export class VideoPostController {
   constructor(
@@ -12,6 +14,10 @@ export class VideoPostController {
   ) {}
 
   @Post(':userId')
+  @ApiOperation({ summary: 'Create a Video-Post' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Video-Post successfully created', type: VideoPostRdo })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
+  @ApiBearerAuth()
   public async createVideoPost(
     @Param('userId') userId: string,
     @Body() dto: CreateVideoPostDto
@@ -22,6 +28,9 @@ export class VideoPostController {
   }
 
   @Get(':postId')
+  @ApiOperation({ summary: 'Retrieve a Video-Post by ID' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Video-Post retrieved successfully', type: VideoPostRdo })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Video-Post not found' })
   public async getVideoPost(
     @Param('postId') postId: string
   ): Promise<VideoPostRdo> {
@@ -30,6 +39,11 @@ export class VideoPostController {
   }
 
   @Patch(':postId/:userId')
+  @ApiOperation({ summary: 'Update a Video-Post' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Video-Post updated successfully', type: VideoPostRdo })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Video-Post not found' })
+  @ApiBearerAuth()
   public async updateVideoPost(
     @Param('userId') userId: string,
     @Param('postId') postId: string,
@@ -41,6 +55,11 @@ export class VideoPostController {
   }
 
   @Delete(':postId/:userId')
+  @ApiOperation({ summary: 'Delete a Video-Post' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Video-Post successfully deleted', type: VideoPostRdo })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Video-Post not found' })
+  @ApiBearerAuth()
   public async deleteVideoPost(
     @Param('userId') userId: string,
     @Param('postId') postId: string,
@@ -51,6 +70,12 @@ export class VideoPostController {
   }
 
   @Post(':postId/repost/:userId')
+  @ApiOperation({ summary: 'Repost a Video-Post' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Video-Post successfully reposted', type: VideoPostRdo })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Video-Post not found' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Video-Post has already been reposted' })
+  @ApiBearerAuth()
   public async repostVideoPost(
     @Param('userId') userId: string,
     @Param('postId') postId: string,

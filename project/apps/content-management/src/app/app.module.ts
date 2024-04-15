@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CommentModule } from '@project/comment';
+import { ContentConfigModule } from '@project/content-config';
 import { LikeModule } from '@project/like';
 import {
   LinkPostModule,
@@ -21,7 +22,8 @@ import { SearchModule } from '@project/search';
     VideoPostModule,
     CommentModule,
     SearchModule,
-    LikeModule
+    LikeModule,
+    ContentConfigModule
   ],
   controllers: [],
   providers: [],
