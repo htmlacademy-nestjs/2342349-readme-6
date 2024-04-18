@@ -1,7 +1,7 @@
 @host = http://localhost:3010
-@userId = 9c8becbd-7d1e-4826-b930-ddbd12490c86
-@postId = 44fd6539-6d8b-47c9-b00f-211d123690d9
-@commentId = d56ba2f7-39d3-4432-9e4b-c071019e1386
+@userId = author-uuid-002
+@postId = post-uuid-T1
+@commentId = comment-uuid-1
 @token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 # Create a new Comment for Post
@@ -16,6 +16,11 @@ Content-Type: application/json
 
 # Get Comment by ID
 GET {{host}}/api/comment/{{commentId}} HTTP/1.1
+
+###
+
+# Get All Comments by Post ID
+GET {{host}}/api/comment/post/{{postId}} HTTP/1.1
 
 ###
 

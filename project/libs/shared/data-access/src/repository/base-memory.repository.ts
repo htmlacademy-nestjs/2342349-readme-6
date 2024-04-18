@@ -9,7 +9,7 @@ export abstract class BaseMemoryRepository<
   protected entities: Map<T['id'], ReturnType<T['toPOJO']>> = new Map();
 
   protected constructor(
-    protected entityFactory: EntityFactory<T>
+    protected readonly entityFactory: EntityFactory<T>
   ) {}
 
   public async findById(id: T['id']): Promise<T> {

@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { TextPostEntity, TextPostRepository } from '@project/content-core';
+import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
 import { CreateTextPostDto } from './dto/create-text-post.dto';
 import { UpdateTextPostDto } from './dto/update-text-post.dto';
@@ -16,23 +17,23 @@ import {
 export class TextPostService {
   constructor(
     @Inject('TextPostRepository') private readonly textPostRepository: TextPostRepository,
+    private readonly postService: PostService,
   ) {}
 
   public async createPost(userId: string, dto: CreateTextPostDto, originalPostId?: string): Promise<TextPostEntity> {
     const textPostData = {
       authorId: userId,
       postType: PostType.LINK,
+      tags: dto.tags ?? [],
+      originalPostId: originalPostId ?? '',
       title: dto.title,
       announcement: dto.announcement,
       text: dto.text,
-      tags: dto.tags ?? [],
-      originalPost: originalPostId ?? '',
     };
 
     const textPostEntity = new TextPostEntity(textPostData);
-    await this.textPostRepository.save(textPostEntity);
 
-    return textPostEntity;
+    return this.textPostRepository.save(textPostEntity);
   }
 
   public async findPostById(postId: string): Promise<TextPostEntity> {
@@ -69,9 +70,7 @@ export class TextPostService {
       throw new UnauthorizedException(TEXT_POST_DELETE_PERMISSION);
     }
 
-    await this.textPostRepository.deleteById(postId);
-
-    return deletedTextPost;
+    return this.textPostRepository.deleteById(postId);
   }
 
   public async repostPostById(userId: string, postId: string): Promise<TextPostEntity> {
@@ -80,8 +79,7 @@ export class TextPostService {
       throw new UnauthorizedException(TEXT_POST_REPOST_AUTHOR);
     }
 
-    //todo проверка что был уже репост
-    if (false) {
+    if (await this.postService.existsRepostByUser(postId, userId)) {
       throw new ConflictException(TEXT_POST_REPOST_EXISTS);
     }
 

@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { QuotePostEntity, QuotePostRepository } from '@project/content-core';
+import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
 import { CreateQuotePostDto } from './dto/create-quote-post.dto';
 import { UpdateQuotePostDto } from './dto/update-quote-post.dto';
@@ -16,22 +17,22 @@ import {
 export class QuotePostService {
   constructor(
     @Inject('QuotePostRepository') private readonly quotePostRepository: QuotePostRepository,
+    private readonly postService: PostService,
   ) {}
 
   public async createPost(userId: string, dto: CreateQuotePostDto, originalPostId?: string): Promise<QuotePostEntity> {
     const quotePostData = {
       authorId: userId,
       postType: PostType.LINK,
+      tags: dto.tags ?? [],
+      originalPostId: originalPostId ?? '',
       text: dto.text,
       quoteAuthorId: dto.quoteAuthorId,
-      tags: dto.tags ?? [],
-      originalPost: originalPostId ?? '',
     };
 
     const quotePostEntity = new QuotePostEntity(quotePostData);
-    await this.quotePostRepository.save(quotePostEntity);
 
-    return quotePostEntity;
+    return this.quotePostRepository.save(quotePostEntity);
   }
 
   public async findPostById(postId: string): Promise<QuotePostEntity> {
@@ -67,9 +68,7 @@ export class QuotePostService {
       throw new UnauthorizedException(QUOTE_POST_DELETE_PERMISSION);
     }
 
-    await this.quotePostRepository.deleteById(postId);
-
-    return deletedQuotePost;
+    return this.quotePostRepository.deleteById(postId);
   }
 
   public async repostPostById(userId: string, postId: string): Promise<QuotePostEntity> {
@@ -78,8 +77,7 @@ export class QuotePostService {
       throw new UnauthorizedException(QUOTE_POST_REPOST_AUTHOR);
     }
 
-    //todo проверка что был уже репост
-    if (false) {
+    if (await this.postService.existsRepostByUser(postId, userId)) {
       throw new ConflictException(QUOTE_POST_REPOST_EXISTS);
     }
 

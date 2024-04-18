@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CommentEntity, CommentRepository } from '@project/content-core';
+import { PostService } from '@project/post';
 import {
   COMMENT_DELETE_PERMISSION,
   COMMENT_MODIFY_PERMISSION,
@@ -11,7 +12,8 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 @Injectable()
 export class CommentService {
   constructor(
-    @Inject('CommentRepository') private readonly commentRepository: CommentRepository
+    @Inject('CommentRepository') private readonly commentRepository: CommentRepository,
+    private readonly postService: PostService
   ) {}
 
   public async createComment(userId: string, postId: string, dto: UpdateCommentDto): Promise<CommentEntity> {
@@ -21,8 +23,7 @@ export class CommentService {
       text: dto.text
     };
 
-    //todo проверка существования поста
-    if (false) {
+    if (!await this.postService.exists(postId)) {
       throw new NotFoundException(COMMENT_POST_NOT_FOUND);
     }
 
@@ -32,6 +33,19 @@ export class CommentService {
 
   public async findCommentById(commentId: string): Promise<CommentEntity> {
     const foundComment = await this.commentRepository.findById(commentId);
+    if (!foundComment) {
+      throw new NotFoundException(COMMENT_NOT_FOUND);
+    }
+
+    return foundComment;
+  }
+
+  public async findAllCommentsByPostId(postId: string): Promise<CommentEntity[]> {
+    if (!await this.postService.exists(postId)) {
+      throw new NotFoundException(COMMENT_POST_NOT_FOUND);
+    }
+
+    const foundComment = await this.commentRepository.findAllByPostId(postId);
     if (!foundComment) {
       throw new NotFoundException(COMMENT_NOT_FOUND);
     }
@@ -61,8 +75,6 @@ export class CommentService {
       throw new UnauthorizedException(COMMENT_DELETE_PERMISSION);
     }
 
-    await this.commentRepository.deleteById(commentId);
-
-    return deletedComment;
+    return this.commentRepository.deleteById(commentId);
   }
 }

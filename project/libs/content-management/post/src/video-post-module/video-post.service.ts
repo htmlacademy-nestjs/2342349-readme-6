@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { VideoPostEntity, VideoPostRepository } from '@project/content-core';
+import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
 import { CreateVideoPostDto } from './dto/create-video-post.dto';
 import { UpdateVideoPostDto } from './dto/update-video-post.dto';
@@ -15,22 +16,22 @@ import {
 export class VideoPostService {
   constructor(
     @Inject('VideoPostRepository') private readonly videoPostRepository: VideoPostRepository,
+    private readonly postService: PostService,
   ) {}
 
   public async createPost(userId: string, dto: CreateVideoPostDto, originalPostId?: string): Promise<VideoPostEntity> {
     const videoPostData = {
       authorId: userId,
-      postType: PostType.VIDEO,
+      postType: PostType.LINK,
+      tags: dto.tags ?? [],
+      originalPostId: originalPostId ?? '',
       title: dto.title,
       url: dto.url,
-      tags: dto.tags ?? [],
-      originalPost: originalPostId ?? '',
     };
 
     const videoPostEntity = new VideoPostEntity(videoPostData);
-    await this.videoPostRepository.save(videoPostEntity);
 
-    return videoPostEntity;
+    return this.videoPostRepository.save(videoPostEntity);
   }
 
   public async findPostById(postId: string): Promise<VideoPostEntity> {
@@ -66,9 +67,7 @@ export class VideoPostService {
       throw new UnauthorizedException(VIDEO_POST_DELETE_PERMISSION);
     }
 
-    await this.videoPostRepository.deleteById(postId);
-
-    return deletedVideoPost;
+    return this.videoPostRepository.deleteById(postId);
   }
 
   public async repostPostById(userId: string, postId: string): Promise<VideoPostEntity> {
@@ -77,8 +76,7 @@ export class VideoPostService {
       throw new UnauthorizedException(VIDEO_POST_REPOST_AUTHOR);
     }
 
-    //todo проверка что был уже репост
-    if (false) {
+    if (await this.postService.existsRepostByUser(postId, userId)) {
       throw new ConflictException(VIDEO_POST_REPOST_EXISTS);
     }
 

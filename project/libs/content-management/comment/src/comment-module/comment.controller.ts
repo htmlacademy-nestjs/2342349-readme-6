@@ -51,9 +51,9 @@ export class CommentController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post for comment not found' })
   public async getPostComments(
     @Param('postId') postId: string
-  ): Promise<CommentRdo> {
-    //todo
-    return null;
+  ): Promise<CommentRdo[]> {
+    const postComments = await this.commentService.findAllCommentsByPostId(postId);
+    return fillDto(CommentRdo, postComments.map(comment => comment.toPOJO()));
   }
 
   @Get(':commentId')
@@ -69,6 +69,7 @@ export class CommentController {
 
   @Delete(':commentId/:userId')
   @ApiOperation({ summary: 'Delete a comment' })
+  @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment deleted', type: CommentRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post for comment not found' })

@@ -12,6 +12,8 @@ export class TextPostEntity extends PostEntity  {
   }
 
   public populate(textPost?: TextPost): void {
+    super.populate(textPost);
+
     if (!textPost) {
       return;
     }
