@@ -83,7 +83,7 @@ model PhotoPost {
 }
 
 model QuotePost {
-  id            String @id @default(uuid())
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   text          String
   quoteAuthorId String @map("quote_author_id")
   postId        String @unique @map("post_id") @db.Uuid

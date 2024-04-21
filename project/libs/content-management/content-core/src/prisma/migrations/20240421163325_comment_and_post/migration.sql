@@ -54,7 +54,7 @@ CREATE TABLE "photo_posts" (
 
 -- CreateTable
 CREATE TABLE "quote_posts" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "text" TEXT NOT NULL,
     "quote_author_id" TEXT NOT NULL,
     "post_id" UUID NOT NULL,
