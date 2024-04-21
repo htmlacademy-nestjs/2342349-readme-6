@@ -24,7 +24,7 @@ async function seed() {
         data: postData
       });
 
-      const postId = createdPost.id; // Использование автогенерированного ID
+      const postId = createdPost.id;
 
       if (type === DatabasePostType.TEXT) {
         await prisma.textPost.create({
