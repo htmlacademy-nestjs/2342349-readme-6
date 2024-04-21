@@ -15,9 +15,9 @@ datasource db {
 }
 
 model Comment {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   text      String
-  postId    String   @map("post_id")
+  postId    String   @map("post_id") @db.Uuid
   authorId  String   @map("author_id")
   createdAt DateTime @map("created_at")
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -39,7 +39,7 @@ enum DatabasePostType {
 }
 
 model Post {
-  id             String             @id @default(uuid())
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tags           String[]
   authorId       String             @map("author_id")
   postedAt       DateTime           @map("posted_at")
@@ -64,19 +64,19 @@ model Post {
 }
 
 model LinkPost {
-  id          String  @id @default(uuid())
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   url         String
   description String?
-  postId      String  @unique
+  postId      String  @unique @map("post_id") @db.Uuid
   post        Post    @relation("LinkDetails", fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("link_posts")
 }
 
 model PhotoPost {
-  id     String @id @default(uuid())
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   url    String
-  postId String @unique
+  postId String @unique @map("post_id") @db.Uuid
   post   Post   @relation("PhotoDetails", fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("photo_posts")
@@ -86,28 +86,28 @@ model QuotePost {
   id            String @id @default(uuid())
   text          String
   quoteAuthorId String @map("quote_author_id")
-  postId        String @unique
+  postId        String @unique @map("post_id") @db.Uuid
   post          Post   @relation("QuoteDetails", fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("quote_posts")
 }
 
 model TextPost {
-  id           String  @id @default(uuid())
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title        String
   announcement String? @map("announcement")
   text         String
-  postId       String  @unique
+  postId       String  @unique @map("post_id") @db.Uuid
   post         Post    @relation("TextDetails", fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("text_posts")
 }
 
 model VideoPost {
-  id     String @id @default(uuid())
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title  String
   url    String
-  postId String @unique
+  postId String @unique @map("post_id") @db.Uuid
   post   Post   @relation("VideoDetails", fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("video_posts")
