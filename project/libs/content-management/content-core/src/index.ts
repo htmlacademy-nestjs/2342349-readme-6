@@ -4,6 +4,10 @@ export { CommentEntity } from './entity/comment/comment.entity';
 export { CommentFactory } from './entity/comment/comment.factory';
 export { CommentRepository } from './repository/comment/comment.repository.inteface';
 
+export { PostEntity } from './entity/post/post.entity';
+export { PostFactory } from './entity/post/post.factory';
+export { PostRepository } from './repository/post/post.repository.inteface';
+
 export { LinkPostEntity } from './entity/link/link-post.entity';
 export { LinkPostFactory } from './entity/link/link-post.factory';
 export { LinkPostRepository } from './repository/link/link-post.repository.inteface';

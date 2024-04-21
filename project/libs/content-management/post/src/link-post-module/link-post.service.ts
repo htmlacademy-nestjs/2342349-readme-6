@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LinkPostEntity, LinkPostRepository } from '@project/content-core';
+import { PostService } from '../post-module/post.service';
 import { PostType } from '@project/shared-core';
 import { CreateLinkPostDto } from './dto/create-link-post.dto';
 import { UpdateLinkPostDto } from './dto/update-link-post.dto';
@@ -11,27 +12,26 @@ import {
   LINK_POST_REPOST_EXISTS
 } from './link-post.constant';
 
-
 @Injectable()
 export class LinkPostService {
   constructor(
     @Inject('LinkPostRepository') private readonly linkPostRepository: LinkPostRepository,
+    private readonly postService: PostService,
   ) {}
 
   public async createPost(userId: string, dto: CreateLinkPostDto, originalPostId?: string): Promise<LinkPostEntity> {
     const linkPostData = {
-      author: userId,
+      authorId: userId,
       postType: PostType.LINK,
+      tags: dto.tags ?? [],
+      originalPostId: originalPostId ?? '',
       url: dto.url,
       description: dto.description,
-      tags: dto.tags ?? [],
-      originalPost: originalPostId ?? '',
     };
 
     const linkPostEntity = new LinkPostEntity(linkPostData);
-    await this.linkPostRepository.save(linkPostEntity);
 
-    return linkPostEntity;
+    return this.linkPostRepository.save(linkPostEntity);
   }
 
   public async findPostById(postId: string): Promise<LinkPostEntity> {
@@ -67,9 +67,7 @@ export class LinkPostService {
       throw new UnauthorizedException(LINK_POST_DELETE_PERMISSION);
     }
 
-    await this.linkPostRepository.deleteById(postId);
-
-    return deletedLinkPost;
+    return this.linkPostRepository.deleteById(postId);
   }
 
   public async repostPostById(userId: string, postId: string): Promise<LinkPostEntity> {
@@ -78,8 +76,7 @@ export class LinkPostService {
       throw new UnauthorizedException(LINK_POST_REPOST_AUTHOR);
     }
 
-    //todo проверка что был уже репост
-    if (false) {
+    if (await this.postService.existsRepostByUser(postId, userId)) {
       throw new ConflictException(LINK_POST_REPOST_EXISTS);
     }
 

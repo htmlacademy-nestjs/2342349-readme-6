@@ -10,6 +10,8 @@ export class PhotoPostEntity extends PostEntity  {
   }
 
   public populate(photoPost?: PhotoPost): void {
+    super.populate(photoPost);
+
     if (!photoPost) {
       return;
     }

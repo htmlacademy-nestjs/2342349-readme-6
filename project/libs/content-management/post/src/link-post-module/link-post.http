@@ -1,6 +1,7 @@
 @host = http://localhost:3010
-@userId = 661c2da73755ed24c779f041
-@postId = fe4de4a2-f41e-4326-aae3-9e98b603cb6a
+@userId = 661c2da73755ed24c779f0412
+@postId = 88666f92-3873-44ce-977b-3649b487dc2b
+@repostId = 7d5bda61-7eb0-43a0-9c19-0b1e2fdadcfc
 @token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 # Create a new Link-post
@@ -9,7 +10,7 @@ Content-Type: application/json
 
 {
   "url": "https://google.com/article/1.html",
-  "description": "Google article",
+  "description": "Google article2",
   "tags": [
     "Google",
     "Article",
@@ -29,13 +30,13 @@ PATCH {{host}}/api/post/link/{{postId}}/{{userId}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "description": "AAA"
+  "description": "AAA2"
 }
 
 ###
 
 # Repost Link-post by ID
-POST {{host}}/api/post/link/{{postId}}/repost/{{userId}} HTTP/1.1
+POST {{host}}/api/post/link/{{repostId}}/repost/{{userId}} HTTP/1.1
 
 ###
 

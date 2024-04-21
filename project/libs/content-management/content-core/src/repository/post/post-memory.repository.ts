@@ -9,4 +9,8 @@ export abstract class PostMemoryRepository<T extends PostEntity & StorableEntity
   protected constructor(entityFactory: EntityFactory<T>) {
     super(entityFactory);
   }
+
+  existsRepostByUser(originalPostId: PostEntity["id"], authorId: PostEntity["id"]): Promise<boolean> {
+    throw new Error('Not implemented');
+  }
 }

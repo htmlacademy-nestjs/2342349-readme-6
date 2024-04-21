@@ -1,6 +1,6 @@
 import { Entity, Post, PostStatus, PostType, StorableEntity } from '@project/shared-core';
 
-export abstract class PostEntity extends Entity implements StorableEntity<Post> {
+export class PostEntity extends Entity implements StorableEntity<Post> {
   public tags: string[];
   public authorId: string;
   public postedAt: Date;
@@ -13,7 +13,7 @@ export abstract class PostEntity extends Entity implements StorableEntity<Post> 
   public commentCount: number;
   public repostCount: number;
 
-  protected constructor(post?: Post) {
+  constructor(post?: Post) {
     super();
     this.populate(post);
   }

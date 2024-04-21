@@ -11,6 +11,8 @@ export class QuotePostEntity extends PostEntity  {
   }
 
   public populate(quotePost?: QuotePost): void {
+    super.populate(quotePost);
+
     if (!quotePost) {
       return;
     }

@@ -9,4 +9,8 @@ export class CommentMemoryRepository extends BaseMemoryRepository<CommentEntity>
   constructor(entityFactory: CommentFactory) {
     super(entityFactory);
   }
+
+  public async findAllByPostId(postId: string): Promise<CommentEntity[]> {
+    throw new Error('Not implemented');
+  }
 }

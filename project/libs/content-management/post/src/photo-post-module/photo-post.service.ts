@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PhotoPostEntity, PhotoPostRepository } from '@project/content-core';
+import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
 import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
 import { UpdatePhotoPostDto } from './dto/update-photo-post.dto';
@@ -16,21 +17,21 @@ import {
 export class PhotoPostService {
   constructor(
     @Inject('PhotoPostRepository') private readonly photoPostRepository: PhotoPostRepository,
+    private readonly postService: PostService,
   ) {}
 
   public async createPost(userId: string, dto: CreatePhotoPostDto, originalPostId?: string): Promise<PhotoPostEntity> {
     const photoPostData = {
       authorId: userId,
       postType: PostType.LINK,
-      url: dto.url,
       tags: dto.tags ?? [],
-      originalPost: originalPostId ?? '',
+      originalPostId: originalPostId ?? '',
+      url: dto.url,
     };
 
     const photoPostEntity = new PhotoPostEntity(photoPostData);
-    await this.photoPostRepository.save(photoPostEntity);
 
-    return photoPostEntity;
+    return this.photoPostRepository.save(photoPostEntity);
   }
 
   public async findPostById(postId: string): Promise<PhotoPostEntity> {
@@ -65,9 +66,7 @@ export class PhotoPostService {
       throw new UnauthorizedException(PHOTO_POST_DELETE_PERMISSION);
     }
 
-    await this.photoPostRepository.deleteById(postId);
-
-    return deletedPhotoPost;
+    return this.photoPostRepository.deleteById(postId);
   }
 
   public async repostPostById(userId: string, postId: string): Promise<PhotoPostEntity> {
@@ -76,8 +75,7 @@ export class PhotoPostService {
       throw new UnauthorizedException(PHOTO_POST_REPOST_AUTHOR);
     }
 
-    //todo проверка что был уже репост
-    if (false) {
+    if (await this.postService.existsRepostByUser(postId, userId)) {
       throw new ConflictException(PHOTO_POST_REPOST_EXISTS);
     }
 

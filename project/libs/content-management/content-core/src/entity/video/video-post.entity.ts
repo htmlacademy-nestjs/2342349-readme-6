@@ -11,6 +11,8 @@ export class VideoPostEntity extends PostEntity  {
   }
 
   public populate(videoPost?: VideoPost): void {
+    super.populate(videoPost);
+
     if (!videoPost) {
       return;
     }

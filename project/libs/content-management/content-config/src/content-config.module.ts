@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './configurations/app.config';
 
-const ENV_CONTENT_MANAGEMENT_FILE_PATH = 'apps/content-management/content-management.env';
+const ENV_CONTENT_MANAGEMENT_FILE_PATH = 'apps/content-management/content-app.env';
 
 @Module({
   imports: [
