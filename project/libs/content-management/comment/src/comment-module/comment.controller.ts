@@ -79,7 +79,7 @@ export class CommentController {
   }
 
   @Get(':commentId')
-  @ApiOperation({ summary: 'Get a single comment' })
+  @ApiOperation({ summary: 'Retrieve a comment by ID' })
   @ApiParam({ name: 'commentId', description: 'Unique identifier of the comment', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment retrieved successfully', type: CommentRdo })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post for comment not found' })

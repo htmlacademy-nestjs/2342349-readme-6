@@ -34,7 +34,7 @@ export class AuthenticationService {
       throw new BadRequestException(AUTHENTICATION_PASSWORD_EMPTY);
     }
 
-    return await this.cryptoProtocol.hashPassword(password);
+    return this.cryptoProtocol.hashPassword(password);
   }
 
   public async verifyUser(dto: LoginDto): Promise<{ authenticatedUserToken: Token; existUser: UserEntity }> {

@@ -1,7 +1,7 @@
 @host = http://localhost:3010
 @userId = 661c2da73755ed24c779f0412
-@postId = 8d48d000-2f8f-4de5-b5c7-bccba0738983
-@repostId = 7d5bda61-7eb0-43a0-9c19-0b1e2fdadcfc
+@postId = 6b0e0ca6-cd60-405d-b935-edd179ca4767
+@repostId = 6b0e0ca6-cd60-405d-b935-edd179ca4767
 @token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 # Create a new Link-post

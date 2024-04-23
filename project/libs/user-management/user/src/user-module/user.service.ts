@@ -62,7 +62,7 @@ export class UserService {
     if (dto.lastName !== undefined) updatedUser.lastName = dto.lastName;
     if (dto.avatarId !== undefined) updatedUser.avatarId = dto.avatarId;
 
-    return await this.userRepository.update(userId, updatedUser);
+    return this.userRepository.update(userId, updatedUser);
   }
 
   public async subscribeUserById(userId: string, subscribeUserId: string): Promise<UserEntity> {
@@ -74,7 +74,7 @@ export class UserService {
       throw new ConflictException(SUBSCRIBE_USER_ALREADY_ADDED);
     }
 
-    return await this.userRepository.addSubscription(userId, subscribeUserId);
+    return this.userRepository.addSubscription(userId, subscribeUserId);
   }
 
   public async unsubscribeUserById(userId: string, unsubscribeUserId: string): Promise<UserEntity> {
@@ -86,6 +86,6 @@ export class UserService {
       throw new ConflictException(SUBSCRIBE_USER_ALREADY_REMOVED);
     }
 
-    return await this.userRepository.removeSubscription(userId, unsubscribeUserId);
+    return this.userRepository.removeSubscription(userId, unsubscribeUserId);
   }
 }

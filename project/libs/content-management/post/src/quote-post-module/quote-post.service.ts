@@ -1,4 +1,11 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { QuotePostEntity, QuotePostRepository } from '@project/content-core';
 import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
@@ -6,6 +13,7 @@ import { CreateQuotePostDto } from './dto/create-quote-post.dto';
 import { UpdateQuotePostDto } from './dto/update-quote-post.dto';
 import {
   QUOTE_POST_DELETE_PERMISSION,
+  QUOTE_POST_DIFFERENT_TYPE,
   QUOTE_POST_MODIFY_PERMISSION,
   QUOTE_POST_NOT_FOUND,
   QUOTE_POST_REPOST_AUTHOR,
@@ -40,6 +48,9 @@ export class QuotePostService {
     if (!foundQuotePost) {
       throw new NotFoundException(QUOTE_POST_NOT_FOUND);
     }
+    if (foundQuotePost.postType !== PostType.QUOTE) {
+      throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
+    }
 
     return foundQuotePost;
   }
@@ -50,6 +61,9 @@ export class QuotePostService {
 
   public async updatePostById(userId: string, postId: string, dto: UpdateQuotePostDto): Promise<QuotePostEntity> {
     const updatedQuotePost = await this.findPostById(postId);
+    if (updatedQuotePost.postType !== PostType.QUOTE) {
+      throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
+    }
     if (updatedQuotePost.authorId !== userId) {
       throw new UnauthorizedException(QUOTE_POST_MODIFY_PERMISSION);
     }
@@ -59,7 +73,7 @@ export class QuotePostService {
     if (dto.text !== undefined) updatedQuotePost.text = dto.text;
     if (dto.quoteAuthorId !== undefined) updatedQuotePost.quoteAuthorId = dto.quoteAuthorId;
 
-    return await this.quotePostRepository.update(postId, updatedQuotePost);
+    return this.quotePostRepository.update(postId, updatedQuotePost);
   }
 
   public async deletePostById(userId: string, postId: string): Promise<QuotePostEntity> {
@@ -73,6 +87,9 @@ export class QuotePostService {
 
   public async repostPostById(userId: string, postId: string): Promise<QuotePostEntity> {
     const repostQuotePost = await this.findPostById(postId);
+    if (repostQuotePost.postType !== PostType.QUOTE) {
+      throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
+    }
     if (repostQuotePost.authorId === userId) {
       throw new UnauthorizedException(QUOTE_POST_REPOST_AUTHOR);
     }
@@ -87,6 +104,9 @@ export class QuotePostService {
       text: repostQuotePost.text,
     }
 
-    return await this.createPost(userId, createQuotePostDto, repostQuotePost.id);
+    const repostedQuotePost = await this.createPost(userId, createQuotePostDto, repostQuotePost.id);
+    await this.postService.incrementRepostCount(postId);
+
+    return repostedQuotePost;
   }
 }

@@ -36,7 +36,10 @@ export class CommentService {
     }
 
     const commentEntity = new CommentEntity(commentData);
-    return this.commentRepository.save(commentEntity);
+    const createdComment = await this.commentRepository.save(commentEntity);
+    await this.postService.incrementCommentCount(createdComment.postId);
+
+    return createdComment;
   }
 
   public async findCommentById(commentId: string): Promise<CommentEntity> {
@@ -78,16 +81,19 @@ export class CommentService {
 
     if (dto.text !== undefined) updatedComment.text = dto.text;
 
-    return await this.commentRepository.update(commentId, updatedComment);
+    return this.commentRepository.update(commentId, updatedComment);
   }
 
   public async deleteCommentById(userId: string, commentId: string): Promise<CommentEntity> {
-    const deletedComment = await this.commentRepository.findById(commentId);
+    const foundComment = await this.commentRepository.findById(commentId);
 
-    if (deletedComment.authorId !== userId) {
+    if (foundComment.authorId !== userId) {
       throw new UnauthorizedException(COMMENT_DELETE_PERMISSION);
     }
 
-    return this.commentRepository.deleteById(commentId);
+    const deletedComment = await this.commentRepository.deleteById(commentId);
+    await this.postService.decrementCommentCount(deletedComment.postId);
+
+    return deletedComment;
   }
 }

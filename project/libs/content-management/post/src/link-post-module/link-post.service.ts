@@ -1,11 +1,18 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { LinkPostEntity, LinkPostRepository } from '@project/content-core';
 import { PostType } from '@project/shared-core';
 import { PostService } from '../post-module/post.service';
 import { CreateLinkPostDto } from './dto/create-link-post.dto';
 import { UpdateLinkPostDto } from './dto/update-link-post.dto';
 import {
-  LINK_POST_DELETE_PERMISSION,
+  LINK_POST_DELETE_PERMISSION, LINK_POST_DIFFERENT_TYPE,
   LINK_POST_MODIFY_PERMISSION,
   LINK_POST_NOT_FOUND,
   LINK_POST_REPOST_AUTHOR,
@@ -39,6 +46,9 @@ export class LinkPostService {
     if (!foundLinkPost) {
       throw new NotFoundException(LINK_POST_NOT_FOUND);
     }
+    if (foundLinkPost.postType !== PostType.LINK) {
+      throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
+    }
 
     return foundLinkPost;
   }
@@ -49,6 +59,9 @@ export class LinkPostService {
 
   public async updatePostById(userId: string, postId: string, dto: UpdateLinkPostDto): Promise<LinkPostEntity> {
     const updatedLinkPost = await this.findPostById(postId);
+    if (updatedLinkPost.postType !== PostType.LINK) {
+      throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
+    }
     if (updatedLinkPost.authorId !== userId) {
       throw new UnauthorizedException(LINK_POST_MODIFY_PERMISSION);
     }
@@ -58,7 +71,7 @@ export class LinkPostService {
     if (dto.url !== undefined) updatedLinkPost.url = dto.url;
     if (dto.description !== undefined) updatedLinkPost.description = dto.description;
 
-    return await this.linkPostRepository.update(postId, updatedLinkPost);
+    return this.linkPostRepository.update(postId, updatedLinkPost);
   }
 
   public async deletePostById(userId: string, postId: string): Promise<LinkPostEntity> {
@@ -72,6 +85,9 @@ export class LinkPostService {
 
   public async repostPostById(userId: string, postId: string): Promise<LinkPostEntity> {
     const repostLinkPost = await this.findPostById(postId);
+    if (repostLinkPost.postType !== PostType.LINK) {
+      throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
+    }
     if (repostLinkPost.authorId === userId) {
       throw new UnauthorizedException(LINK_POST_REPOST_AUTHOR);
     }
@@ -86,6 +102,9 @@ export class LinkPostService {
       description: repostLinkPost.description,
     }
 
-    return await this.createPost(userId, createLinkPostDto, repostLinkPost.id);
+    const repostedLinkPost = await this.createPost(userId, createLinkPostDto, repostLinkPost.id);
+    await this.postService.incrementRepostCount(postId);
+
+    return repostedLinkPost;
   }
 }

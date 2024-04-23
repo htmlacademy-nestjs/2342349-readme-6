@@ -1,4 +1,11 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { VideoPostEntity, VideoPostRepository } from '@project/content-core';
 import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
@@ -6,6 +13,7 @@ import { CreateVideoPostDto } from './dto/create-video-post.dto';
 import { UpdateVideoPostDto } from './dto/update-video-post.dto';
 import {
   VIDEO_POST_DELETE_PERMISSION,
+  VIDEO_POST_DIFFERENT_TYPE,
   VIDEO_POST_MODIFY_PERMISSION,
   VIDEO_POST_NOT_FOUND,
   VIDEO_POST_REPOST_AUTHOR,
@@ -39,6 +47,9 @@ export class VideoPostService {
     if (!foundVidePost) {
       throw new NotFoundException(VIDEO_POST_NOT_FOUND);
     }
+    if (foundVidePost.postType !== PostType.VIDEO) {
+      throw new BadRequestException(VIDEO_POST_DIFFERENT_TYPE);
+    }
 
     return foundVidePost;
   }
@@ -49,6 +60,9 @@ export class VideoPostService {
 
   public async updatePostById(userId: string, postId: string, dto: UpdateVideoPostDto): Promise<VideoPostEntity> {
     const updatedVideoPost = await this.findPostById(postId);
+    if (updatedVideoPost.postType !== PostType.VIDEO) {
+      throw new BadRequestException(VIDEO_POST_DIFFERENT_TYPE);
+    }
     if (updatedVideoPost.authorId !== userId) {
       throw new UnauthorizedException(VIDEO_POST_MODIFY_PERMISSION);
     }
@@ -58,7 +72,7 @@ export class VideoPostService {
     if (dto.title !== undefined) updatedVideoPost.title = dto.title;
     if (dto.url !== undefined) updatedVideoPost.url = dto.url;
 
-    return await this.videoPostRepository.update(postId, updatedVideoPost);
+    return this.videoPostRepository.update(postId, updatedVideoPost);
   }
 
   public async deletePostById(userId: string, postId: string): Promise<VideoPostEntity> {
@@ -71,8 +85,11 @@ export class VideoPostService {
   }
 
   public async repostPostById(userId: string, postId: string): Promise<VideoPostEntity> {
-    const repostTextPost = await this.findPostById(postId);
-    if (repostTextPost.authorId === userId) {
+    const repostVideoPost = await this.findPostById(postId);
+    if (repostVideoPost.postType !== PostType.VIDEO) {
+      throw new BadRequestException(VIDEO_POST_DIFFERENT_TYPE);
+    }
+    if (repostVideoPost.authorId === userId) {
       throw new UnauthorizedException(VIDEO_POST_REPOST_AUTHOR);
     }
 
@@ -81,11 +98,14 @@ export class VideoPostService {
     }
 
     const createVideoPostDto: CreateVideoPostDto = {
-      tags: repostTextPost.tags,
-      title: repostTextPost.title,
-      url: repostTextPost.url,
+      tags: repostVideoPost.tags,
+      title: repostVideoPost.title,
+      url: repostVideoPost.url,
     }
 
-    return await this.createPost(userId, createVideoPostDto, repostTextPost.id);
+    const repostedVideoPost = await this.createPost(userId, createVideoPostDto, repostVideoPost.id);
+    await this.postService.incrementRepostCount(postId);
+
+    return repostedVideoPost;
   }
 }

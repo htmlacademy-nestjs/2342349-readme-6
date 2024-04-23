@@ -1,7 +1,7 @@
 @host = http://localhost:3010
 @userId = author-uuid-002
 @postId = 2b83e65b-6f04-437b-9b9c-63a59e267546
-@commentId = eea18b7e-be47-43a2-ac61-350dfb9dd6ca
+@commentId = 5b87c1bb-2eaf-45fb-919f-a7f4e35f06d6
 @token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 # Create a new Comment for Post

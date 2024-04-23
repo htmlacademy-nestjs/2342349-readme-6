@@ -1,4 +1,11 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { TextPostEntity, TextPostRepository } from '@project/content-core';
 import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
@@ -6,6 +13,7 @@ import { CreateTextPostDto } from './dto/create-text-post.dto';
 import { UpdateTextPostDto } from './dto/update-text-post.dto';
 import {
   TEXT_POST_DELETE_PERMISSION,
+  TEXT_POST_DIFFERENT_TYPE,
   TEXT_POST_MODIFY_PERMISSION,
   TEXT_POST_NOT_FOUND,
   TEXT_POST_REPOST_AUTHOR,
@@ -41,6 +49,9 @@ export class TextPostService {
     if (!foundTextPost) {
       throw new NotFoundException(TEXT_POST_NOT_FOUND);
     }
+    if (foundTextPost.postType !== PostType.TEXT) {
+      throw new BadRequestException(TEXT_POST_DIFFERENT_TYPE);
+    }
 
     return foundTextPost;
   }
@@ -51,6 +62,9 @@ export class TextPostService {
 
   public async updatePostById(userId: string, postId: string, dto: UpdateTextPostDto): Promise<TextPostEntity> {
     const updatedTextPost = await this.findPostById(postId);
+    if (updatedTextPost.postType !== PostType.TEXT) {
+      throw new BadRequestException(TEXT_POST_DIFFERENT_TYPE);
+    }
     if (updatedTextPost.authorId !== userId) {
       throw new UnauthorizedException(TEXT_POST_MODIFY_PERMISSION);
     }
@@ -61,7 +75,7 @@ export class TextPostService {
     if (dto.announcement !== undefined) updatedTextPost.announcement = dto.announcement;
     if (dto.text !== undefined) updatedTextPost.text = dto.text;
 
-    return await this.textPostRepository.update(postId, updatedTextPost);
+    return this.textPostRepository.update(postId, updatedTextPost);
   }
 
   public async deletePostById(userId: string, postId: string): Promise<TextPostEntity> {
@@ -75,6 +89,9 @@ export class TextPostService {
 
   public async repostPostById(userId: string, postId: string): Promise<TextPostEntity> {
     const repostTextPost = await this.findPostById(postId);
+    if (repostTextPost.postType !== PostType.TEXT) {
+      throw new BadRequestException(TEXT_POST_DIFFERENT_TYPE);
+    }
     if (repostTextPost.authorId === userId) {
       throw new UnauthorizedException(TEXT_POST_REPOST_AUTHOR);
     }
@@ -90,6 +107,9 @@ export class TextPostService {
       text: repostTextPost.text,
     }
 
-    return await this.createPost(userId, createTextPostDto, repostTextPost.id);
+    const repostedTextPost = await this.createPost(userId, createTextPostDto, repostTextPost.id);
+    await this.postService.incrementRepostCount(postId);
+
+    return repostedTextPost;
   }
 }

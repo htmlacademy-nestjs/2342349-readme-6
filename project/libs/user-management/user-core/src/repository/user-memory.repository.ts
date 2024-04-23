@@ -30,13 +30,13 @@ export class UserMemoryRepository extends BaseMemoryRepository<UserEntity> imple
     const currentUser= await this.findById(userId);
 
     currentUser.subscriptionIds.push(subscriptionId);
-    return await this.update(userId, currentUser);
+    return this.update(userId, currentUser);
   }
 
   public async removeSubscription(userId: string, unsubscribeUserId: string): Promise<UserEntity> {
     const currentUser= await this.findById(userId);
 
     currentUser.subscriptionIds = currentUser.subscriptionIds.filter(subscriptionId => subscriptionId !== unsubscribeUserId);
-    return await this.update(userId, currentUser);
+    return this.update(userId, currentUser);
   }
 }
