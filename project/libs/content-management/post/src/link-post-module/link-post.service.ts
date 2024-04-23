@@ -12,7 +12,8 @@ import { PostService } from '../post-module/post.service';
 import { CreateLinkPostDto } from './dto/create-link-post.dto';
 import { UpdateLinkPostDto } from './dto/update-link-post.dto';
 import {
-  LINK_POST_DELETE_PERMISSION, LINK_POST_DIFFERENT_TYPE,
+  LINK_POST_DELETE_PERMISSION,
+  LINK_POST_DIFFERENT_TYPE,
   LINK_POST_MODIFY_PERMISSION,
   LINK_POST_NOT_FOUND,
   LINK_POST_REPOST_AUTHOR,

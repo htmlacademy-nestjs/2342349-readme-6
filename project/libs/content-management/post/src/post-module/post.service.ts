@@ -7,12 +7,7 @@ import {
   UnauthorizedException
 } from '@nestjs/common';
 import { PostEntity, PostRepository } from '@project/content-core';
-import {
-  POST_ALREADY_LIKED,
-  POST_ALREADY_UNLIKED,
-  POST_DELETE_PERMISSION,
-  POST_NOT_FOUND
-} from './post.constant';
+import { POST_ALREADY_LIKED, POST_ALREADY_UNLIKED, POST_DELETE_PERMISSION, POST_NOT_FOUND } from './post.constant';
 
 
 @Injectable()

@@ -2,8 +2,8 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch,
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SortDirection } from '@project/shared-core';
 import { fillDto } from '@project/shared-helpers';
-import { CommentService } from './comment.service';
 import { CommentQuery } from './comment.query';
+import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentPaginationRdo } from './rdo/comment-pagination.rdo';
