@@ -1,5 +1,5 @@
-import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 import { PostRdo } from './post.rdo';
 
 export class AggregatePostRdo extends PostRdo {

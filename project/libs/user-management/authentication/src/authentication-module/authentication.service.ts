@@ -1,4 +1,13 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException, HttpStatus,
+  Inject,
+  Injectable, Logger,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Token, TokenPayload, User } from '@project/shared-core';
 import { CryptoProtocol } from '@project/shared-helpers';
 import { UserEntity, UserRepository } from '@project/user-core';
 import { ChangePasswordDto } from '../dto/change-password.dto';
@@ -12,9 +21,12 @@ import {
 
 @Injectable()
 export class AuthenticationService {
+  private readonly logger = new Logger(AuthenticationService.name);
+
   constructor(
     @Inject('UserRepository') private readonly userRepository: UserRepository,
-    @Inject('CryptoProtocol') private readonly cryptoProtocol: CryptoProtocol
+    @Inject('CryptoProtocol') private readonly cryptoProtocol: CryptoProtocol,
+    private readonly jwtService: JwtService,
   ) {}
 
   public async hashPassword(password: string): Promise<string> {
@@ -25,7 +37,7 @@ export class AuthenticationService {
     return await this.cryptoProtocol.hashPassword(password);
   }
 
-  public async verifyUser(dto: LoginDto): Promise<UserEntity> {
+  public async verifyUser(dto: LoginDto): Promise<{ authenticatedUserToken: Token; existUser: UserEntity }> {
     const {email, password} = dto;
 
     const existUser = await this.userRepository.findByEmail(email);
@@ -38,9 +50,10 @@ export class AuthenticationService {
       throw new UnauthorizedException(AUTHENTICATION_USER_PASSWORD_WRONG);
     }
 
-    return existUser;
-  }
+    const authenticatedUserToken = await this.createUserToken(existUser);
 
+    return {existUser, authenticatedUserToken};
+  }
 
   public async changePassword(userId: string, dto: ChangePasswordDto): Promise<UserEntity> {
     const {oldPassword, newPassword} = dto;
@@ -56,6 +69,24 @@ export class AuthenticationService {
 
     updatedUser.passwordHash = await this.hashPassword(newPassword);
 
-    return await this.userRepository.update(userId, updatedUser);
+    return this.userRepository.update(userId, updatedUser);
+  }
+
+  public async createUserToken(user: User): Promise<Token> {
+    const payload: TokenPayload = {
+      sub: user.id,
+      email: user.email,
+      userType: user.userType,
+      firstName: user.firstName,
+      lastName: user.lastName
+    };
+
+    try {
+      const accessToken = await this.jwtService.signAsync(payload);
+      return { accessToken };
+    } catch (error) {
+      this.logger.error('[Token generation error]: ' + error.message);
+      throw new HttpException('Token generation error.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

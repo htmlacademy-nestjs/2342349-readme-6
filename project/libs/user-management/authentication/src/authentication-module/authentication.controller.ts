@@ -22,8 +22,8 @@ export class AuthenticationController {
   public async login(
     @Body() dto: LoginDto
   ): Promise<LoggedRdo> {
-    const verifiedUser = await this.authService.verifyUser(dto);
-    return fillDto(LoggedRdo, verifiedUser.toPOJO());
+    const { authenticatedUserToken, existUser } = await this.authService.verifyUser(dto);
+    return fillDto(LoggedRdo, { ...authenticatedUserToken, ...existUser.toPOJO() });
   }
 
   @Patch('change-password/:userId')

@@ -1,7 +1,7 @@
 @host = http://localhost:3010
 @userId = author-uuid-002
-@postId = 88666f92-3873-44ce-977b-3649b487dc2b
-@commentId = d777de82-f6b2-4601-802d-917497847452
+@postId = 2b83e65b-6f04-437b-9b9c-63a59e267546
+@commentId = eea18b7e-be47-43a2-ac61-350dfb9dd6ca
 @token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 # Create a new Comment for Post
@@ -19,8 +19,13 @@ GET {{host}}/api/comment/{{commentId}} HTTP/1.1
 
 ###
 
-# Get All Comments by Post ID
+# Get Comments by Post ID
 GET {{host}}/api/comment/post/{{postId}} HTTP/1.1
+
+###
+
+# Get Comments by Post ID with Filter
+GET {{host}}/api/comment/post/{{postId}}?limit=2&sortDirection=asc&page=1 HTTP/1.1
 
 ###
 

@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SubscriptionRdo } from './rdo/subscription.rdo';
 import { UserRdo } from './rdo/user.rdo';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('user')
 @Controller('user')
@@ -32,7 +33,7 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   @ApiBearerAuth()
   public async getUser(
-    @Param('userId') userId: string
+    @Param('userId', MongoIdValidationPipe) userId: string
   ): Promise<UserRdo> {
     const foundUser = await this.userService.findUserById(userId);
     return fillDto(UserRdo, foundUser.toPOJO());
@@ -59,13 +60,10 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Subscribe User not found' })
   @ApiBearerAuth()
   public async subscribeUser(
-    @Param('userId') subscribeUserId: string
+    @Param('userId', MongoIdValidationPipe) subscribeUserId: string
   ): Promise<SubscriptionRdo> {
     //todo userId from token
     const updatedUser = await this.userService.subscribeUserById(subscribeUserId, subscribeUserId);
-
-    console.log('updatedUser');
-    console.log(updatedUser);
     return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
 
@@ -76,7 +74,7 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Subscribe User not found' })
   @ApiBearerAuth()
   public async unsubscribeUser(
-    @Param('userId') unsubscribeUserId: string
+    @Param('userId', MongoIdValidationPipe) unsubscribeUserId: string
   ): Promise<SubscriptionRdo> {
     //todo userId from token
     const updatedUser = await this.userService.unsubscribeUserById(unsubscribeUserId, unsubscribeUserId);

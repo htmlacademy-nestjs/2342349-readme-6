@@ -1,7 +1,7 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LinkPostEntity, LinkPostRepository } from '@project/content-core';
-import { PostService } from '../post-module/post.service';
 import { PostType } from '@project/shared-core';
+import { PostService } from '../post-module/post.service';
 import { CreateLinkPostDto } from './dto/create-link-post.dto';
 import { UpdateLinkPostDto } from './dto/update-link-post.dto';
 import {

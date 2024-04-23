@@ -34,6 +34,7 @@
       "@project/notification-config": [
         "libs/notification-management/notification-config/src/index.ts"
       ],
+      "@project/pipes": ["libs/shared/pipes/src/index.ts"],
       "@project/post": ["libs/content-management/post/src/index.ts"],
       "@project/prisma-client": ["libs/shared/prisma-client/src/index.ts"],
       "@project/search": ["libs/content-management/search/src/index.ts"],

@@ -2,6 +2,10 @@ export { Entity } from './base/entity';
 
 export { StorableEntity } from './interface/storable-entity.interface';
 export { EntityFactory } from './interface/entity-factory.interface';
+export { PaginationResult } from './interface/pagination.interface';
+export { SortDirection } from './interface/sort-direction.interface';
+export { Token } from './interface/token.interface';
+export { TokenPayload } from './interface/token-payload.interface';
 
 export { User } from './type/user/user.interface';
 export { AuthUser } from './type/user/auth-user.interface';

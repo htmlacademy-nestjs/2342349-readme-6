@@ -1,2 +1,2 @@
 export { ContentConfigModule } from './content-config.module';
-export { default as applicationConfig } from './configurations/app.config';
+export { default as ApplicationConfig } from './configurations/app.config';

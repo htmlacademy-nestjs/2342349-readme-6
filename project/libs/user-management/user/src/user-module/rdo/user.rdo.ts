@@ -1,6 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { UserNotificationType, UserType } from '@project/shared-core';
 import { Expose } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class UserRdo {
   @Expose()

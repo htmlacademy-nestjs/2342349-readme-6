@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { BcryptCrypto } from '@project/shared-helpers';
-import { ApplicationConfig } from '@project/user-config';
+import { ApplicationConfig, getJwtOptions } from '@project/user-config';
 import { UserCoreModule } from '@project/user-core';
+import { JwtAccessStrategy } from '../strategy/jwt-access.strategy';
 import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
 
 @Module({
-  imports: [UserCoreModule],
+  imports: [
+    UserCoreModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: getJwtOptions,
+    })
+  ],
   controllers: [AuthenticationController],
   providers: [
     AuthenticationService,
@@ -16,6 +24,7 @@ import { AuthenticationService } from './authentication.service';
       useFactory: (applicationConfig: ConfigType<typeof ApplicationConfig>) => new BcryptCrypto(applicationConfig.passwordSaltRounds),
       inject: [ApplicationConfig.KEY]
     },
+    JwtAccessStrategy
   ],
   exports: [AuthenticationService]
 })

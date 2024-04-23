@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
 import { UpdatePhotoPostDto } from './dto/update-photo-post.dto';
@@ -29,10 +29,11 @@ export class PhotoPostController {
 
   @Get(':postId')
   @ApiOperation({ summary: 'Retrieve a Photo-Post by ID' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Photo-Post retrieved successfully', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Photo-Post not found' })
   public async getPhotoPost(
-    @Param('postId') postId: string
+    @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<PhotoPostRdo> {
     const foundPost = await this.photoPostService.findPostById(postId);
     return fillDto(PhotoPostRdo, foundPost.toPOJO());
@@ -40,13 +41,14 @@ export class PhotoPostController {
 
   @Patch(':postId/:userId')
   @ApiOperation({ summary: 'Update a Photo-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Photo-Post updated successfully', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Photo-Post not found' })
   @ApiBearerAuth()
   public async updatePhotoPost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdatePhotoPostDto
   ): Promise<PhotoPostRdo> {
     //todo userId from token
@@ -56,13 +58,14 @@ export class PhotoPostController {
 
   @Delete(':postId/:userId')
   @ApiOperation({ summary: 'Delete a Photo-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Photo-Post successfully deleted', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Photo-Post not found' })
   @ApiBearerAuth()
   public async deletePhotoPost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PhotoPostRdo> {
     //todo userId from token
     const deletedPost = await this.photoPostService.deletePostById(userId, postId);
@@ -71,6 +74,7 @@ export class PhotoPostController {
 
   @Post(':postId/repost/:userId')
   @ApiOperation({ summary: 'Repost a Photo-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Photo-Post successfully reposted', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Photo-Post not found' })
@@ -78,7 +82,7 @@ export class PhotoPostController {
   @ApiBearerAuth()
   public async repostPhotoPost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PhotoPostRdo> {
     //todo userId from token
     const repostedPost = await this.photoPostService.repostPostById(userId, postId);

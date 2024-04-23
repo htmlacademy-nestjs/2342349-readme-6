@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseMemoryRepository } from '@project/data-access';
+import { PaginationResult, SortDirection } from '@project/shared-core';
 import { CommentEntity } from '../../entity/comment/comment.entity';
 import { CommentFactory } from '../../entity/comment/comment.factory';
 import { CommentRepository } from './comment.repository.inteface';
@@ -10,7 +11,7 @@ export class CommentMemoryRepository extends BaseMemoryRepository<CommentEntity>
     super(entityFactory);
   }
 
-  public async findAllByPostId(postId: string): Promise<CommentEntity[]> {
+  public async findAllByPostId(postId: string, limit: number, sortDirection: SortDirection, page: number): Promise<PaginationResult<CommentEntity>> {
     throw new Error('Not implemented');
   }
 }
