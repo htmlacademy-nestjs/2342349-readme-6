@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   Logger,
@@ -7,7 +7,14 @@ import {
   UnauthorizedException
 } from '@nestjs/common';
 import { PostEntity, PostRepository } from '@project/content-core';
-import { POST_ALREADY_LIKED, POST_ALREADY_UNLIKED, POST_DELETE_PERMISSION, POST_NOT_FOUND } from './post.constant';
+import { PostStatus } from '@project/shared-core';
+import {
+  POST_ALREADY_LIKED,
+  POST_ALREADY_UNLIKED,
+  POST_DELETE_PERMISSION,
+  POST_NOT_FOUND,
+  POST_NOT_PUBLISHED
+} from './post.constant';
 
 
 @Injectable()
@@ -73,9 +80,13 @@ export class PostService {
 
   public async likePostById(userId: string, postId: string): Promise<PostEntity> {
     const foundPost = await this.findPostById(postId);
+    if (foundPost.postStatus !== PostStatus.PUBLISHED) {
+      throw new ConflictException(POST_NOT_PUBLISHED);
+    }
+
     const userLikeIds = foundPost.userLikeIds;
     if (userLikeIds.includes(userId)) {
-      throw new BadRequestException(POST_ALREADY_LIKED);
+      throw new ConflictException(POST_ALREADY_LIKED);
     }
 
     userLikeIds.push(userId);
@@ -87,7 +98,7 @@ export class PostService {
     const foundPost = await this.findPostById(postId);
     const userLikeIds = foundPost.userLikeIds;
     if (!userLikeIds.includes(userId)) {
-      throw new BadRequestException(POST_ALREADY_UNLIKED);
+      throw new ConflictException(POST_ALREADY_UNLIKED);
     }
 
     const updatedUserLikeIds = userLikeIds.filter(uid => uid !== userId);

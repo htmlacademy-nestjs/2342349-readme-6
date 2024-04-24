@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { POST, TEXT_POST } from '@project/content-core';
+import { ArrayMaxSize, IsArray, IsOptional, IsString, Length, Matches, ValidateIf } from 'class-validator';
 
 export class CreateTextPostDto {
   @ApiProperty({
@@ -7,6 +8,7 @@ export class CreateTextPostDto {
     example: 'New Perspectives on Software Development'
   })
   @IsString()
+  @Length(TEXT_POST.TITLE.MIN, TEXT_POST.TITLE.MAX)
   public title: string;
 
   @ApiProperty({
@@ -14,6 +16,7 @@ export class CreateTextPostDto {
     example: 'Exploring innovative approaches to modern software practices.'
   })
   @IsString()
+  @Length(TEXT_POST.ANNOUNCEMENT.MIN, TEXT_POST.ANNOUNCEMENT.MAX)
   public announcement: string;
 
   @ApiProperty({
@@ -21,15 +24,21 @@ export class CreateTextPostDto {
     example: 'In this article, we delve into various methodologies...'
   })
   @IsString()
+  @Length(TEXT_POST.TEXT.MIN, TEXT_POST.TEXT.MAX)
   public text: string;
 
   @ApiProperty({
-    description: 'Tags associated with the text post.',
-    example: ['software', 'development'],
-    required: false
+    description: 'Tags associated with the post. Each tag should start with a letter, be a single word',
+    example: ['tech', 'news'],
+    required: false,
   })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(POST.TAG.ARRAY_MAX)
+  @ValidateIf(post => post.tags && post.tags.length > 0)
   @IsString({ each: true })
+  @Length(POST.TAG.SINGLE_MIN, POST.TAG.SINGLE_MAX, { each: true })
+  @Matches(/^[a-zA-Z][a-zA-Z0-9]*$/, { each: true })
+  @Matches(/^\S*$/, { each: true })
   public tags?: string[];
 }

@@ -53,31 +53,33 @@ export class UserController {
     return fillDto(UserRdo, updatedUser.toPOJO());
   }
 
-  @Post('subscription/:userId')
+  @Post('subscription/:subscribeUserId/:userId')
   @ApiOperation({ summary: 'Subscribe user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User subscribed', type: SubscriptionRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Subscribe User not found' })
   @ApiBearerAuth()
   public async subscribeUser(
-    @Param('userId', MongoIdValidationPipe) subscribeUserId: string
+    @Param('userId', MongoIdValidationPipe) userId: string,
+    @Param('subscribeUserId', MongoIdValidationPipe) subscribeUserId: string
   ): Promise<SubscriptionRdo> {
     //todo userId from token
-    const updatedUser = await this.userService.subscribeUserById(subscribeUserId, subscribeUserId);
+    const updatedUser = await this.userService.subscribeUserById(userId, subscribeUserId);
     return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
 
-  @Delete('subscription/:userId')
+  @Delete('subscription/:unsubscribeUserId/:userId')
   @ApiOperation({ summary: 'Unsubscribe user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User unsubscribed', type: SubscriptionRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Subscribe User not found' })
   @ApiBearerAuth()
   public async unsubscribeUser(
-    @Param('userId', MongoIdValidationPipe) unsubscribeUserId: string
+    @Param('userId', MongoIdValidationPipe) userId: string,
+    @Param('unsubscribeUserId', MongoIdValidationPipe) unsubscribeUserId: string
   ): Promise<SubscriptionRdo> {
     //todo userId from token
-    const updatedUser = await this.userService.unsubscribeUserById(unsubscribeUserId, unsubscribeUserId);
+    const updatedUser = await this.userService.unsubscribeUserById(userId, unsubscribeUserId);
     return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
 }

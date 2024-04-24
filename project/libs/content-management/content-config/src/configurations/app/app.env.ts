@@ -21,6 +21,10 @@ export class ApplicationConfiguration implements AppConfig {
 
   @IsNumber()
   @IsPositive()
+  defaultPostContentLineCountLimit: number;
+
+  @IsNumber()
+  @IsPositive()
   defaultCommentCountLimit: number;
 
   public async validate(): Promise<void> {

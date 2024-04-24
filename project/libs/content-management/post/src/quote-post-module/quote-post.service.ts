@@ -31,11 +31,11 @@ export class QuotePostService {
   public async createPost(userId: string, dto: CreateQuotePostDto, originalPostId?: string): Promise<QuotePostEntity> {
     const quotePostData = {
       authorId: userId,
-      postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      postType: PostType.QUOTE,
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       text: dto.text,
-      quoteAuthorId: dto.quoteAuthorId,
+      author: dto.author,
     };
 
     const quotePostEntity = new QuotePostEntity(quotePostData);
@@ -70,8 +70,9 @@ export class QuotePostService {
 
     if (dto.tags !== undefined) updatedQuotePost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedQuotePost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedQuotePost.postedAt = dto.postedAt;
     if (dto.text !== undefined) updatedQuotePost.text = dto.text;
-    if (dto.quoteAuthorId !== undefined) updatedQuotePost.quoteAuthorId = dto.quoteAuthorId;
+    if (dto.author !== undefined) updatedQuotePost.author = dto.author;
 
     return this.quotePostRepository.update(postId, updatedQuotePost);
   }
@@ -100,7 +101,7 @@ export class QuotePostService {
 
     const createQuotePostDto: CreateQuotePostDto = {
       tags: repostQuotePost.tags,
-      quoteAuthorId: repostQuotePost.quoteAuthorId,
+      author: repostQuotePost.author,
       text: repostQuotePost.text,
     }
 

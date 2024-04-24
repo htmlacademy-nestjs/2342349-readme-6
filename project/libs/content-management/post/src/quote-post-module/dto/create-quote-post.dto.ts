@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { POST, QUOTE_POST } from '@project/content-core';
+import { ArrayMaxSize, IsArray, IsOptional, IsString, Length, Matches, ValidateIf } from 'class-validator';
 
 export class CreateQuotePostDto {
   @ApiProperty({
@@ -7,6 +8,7 @@ export class CreateQuotePostDto {
     example: 'Life is what happens when you’re busy making other plans.'
   })
   @IsString()
+  @Length(QUOTE_POST.TEXT.MIN, QUOTE_POST.TEXT.MAX)
   public text: string;
 
   @ApiProperty({
@@ -14,15 +16,21 @@ export class CreateQuotePostDto {
     example: 'John Lennon'
   })
   @IsString()
-  public quoteAuthorId: string;
+  @Length(QUOTE_POST.AUTHOR.MIN, QUOTE_POST.AUTHOR.MAX)
+  public author: string;
 
   @ApiProperty({
-    description: 'Tags associated with the quote post.',
-    example: ['life', 'plans'],
-    required: false
+    description: 'Tags associated with the post. Each tag should start with a letter, be a single word',
+    example: ['tech', 'news'],
+    required: false,
   })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(POST.TAG.ARRAY_MAX)
+  @ValidateIf(post => post.tags && post.tags.length > 0)
   @IsString({ each: true })
+  @Length(POST.TAG.SINGLE_MIN, POST.TAG.SINGLE_MAX, { each: true })
+  @Matches(/^[a-zA-Z][a-zA-Z0-9]*$/, { each: true })
+  @Matches(/^\S*$/, { each: true })
   public tags?: string[];
 }

@@ -9,4 +9,12 @@ export interface UserRepository extends Repository<UserEntity> {
   addSubscription(userId: string, subscriptionId: string): Promise<UserEntity>;
 
   removeSubscription(userId: string, subscriptionId: string): Promise<UserEntity>;
+
+  incrementFollowerCount(userId: string): Promise<boolean>;
+
+  decrementFollowerCount(userId: string): Promise<boolean>;
+
+  incrementPostCount(userId: string): Promise<boolean>;
+
+  decrementPostCount(userId: string): Promise<boolean>;
 }

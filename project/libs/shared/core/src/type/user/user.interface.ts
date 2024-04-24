@@ -11,5 +11,7 @@ export interface User {
   avatarId?: string;
   registeredAt?: Date;
   subscriptionIds?: string[];
+  followerCount?: number;
+  postCount?: number;
   notificationType?: UserNotificationType;
 }

@@ -31,8 +31,8 @@ export class TextPostService {
   public async createPost(userId: string, dto: CreateTextPostDto, originalPostId?: string): Promise<TextPostEntity> {
     const textPostData = {
       authorId: userId,
-      postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      postType: PostType.TEXT,
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       title: dto.title,
       announcement: dto.announcement,
@@ -71,6 +71,7 @@ export class TextPostService {
 
     if (dto.tags !== undefined) updatedTextPost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedTextPost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedTextPost.postedAt = dto.postedAt;
     if (dto.title !== undefined) updatedTextPost.title = dto.title;
     if (dto.announcement !== undefined) updatedTextPost.announcement = dto.announcement;
     if (dto.text !== undefined) updatedTextPost.text = dto.text;

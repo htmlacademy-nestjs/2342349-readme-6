@@ -25,7 +25,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       _id: undefined,
       id: undefined,
       text: undefined,
-      quoteAuthorId: undefined,
+      author: undefined,
     };
   }
 
@@ -39,7 +39,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       postStatus: createdQuotePost.postStatus as PostStatus,
       postType: createdQuotePost.postType as PostType,
       text: createdQuotePost.quoteDetails?.text,
-      quoteAuthorId: createdQuotePost.quoteDetails?.quoteAuthorId
+      author: createdQuotePost.quoteDetails?.author
     };
 
     return this.createEntityFromDocument(quotePostEntityData);
@@ -54,7 +54,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
         quoteDetails: {
           create: {
             text: quotePostEntity.text,
-            quoteAuthorId: quotePostEntity.quoteAuthorId
+            author: quotePostEntity.author
           }
         }
       },
@@ -74,7 +74,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
         quoteDetails: {
           update: {
             text: quotePostEntity.text,
-            quoteAuthorId: quotePostEntity.quoteAuthorId
+            author: quotePostEntity.author
           }
         }
       },

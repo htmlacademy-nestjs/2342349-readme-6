@@ -31,8 +31,8 @@ export class PhotoPostService {
   public async createPost(userId: string, dto: CreatePhotoPostDto, originalPostId?: string): Promise<PhotoPostEntity> {
     const photoPostData = {
       authorId: userId,
-      postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      postType: PostType.PHOTO,
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       url: dto.url,
     };
@@ -69,6 +69,7 @@ export class PhotoPostService {
 
     if (dto.tags !== undefined) updatedPhotoPost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedPhotoPost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedPhotoPost.postedAt = dto.postedAt;
     if (dto.url !== undefined) updatedPhotoPost.url = dto.url;
 
     return this.photoPostRepository.update(postId, updatedPhotoPost);

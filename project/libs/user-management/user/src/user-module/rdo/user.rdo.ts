@@ -69,6 +69,20 @@ export class UserRdo {
 
   @Expose()
   @ApiProperty({
+    description: 'The total number of followers who follow the user.',
+    example: 7
+  })
+  public followerCount: number
+
+  @Expose()
+  @ApiProperty({
+    description: 'The total number of posts that have been published by the user.',
+    example: 10
+  })
+  public postCount: number
+
+  @Expose()
+  @ApiProperty({
     description: 'The notification type settings for the user.',
     enum: UserNotificationType
   })

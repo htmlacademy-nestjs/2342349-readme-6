@@ -33,7 +33,7 @@ export class AggregatePostRdo extends PostRdo {
     example: 'Famous Author',
     required: false
   })
-  public quoteAuthorId?: string;
+  public author?: string;
 
   @Expose()
   @ApiProperty({

@@ -30,8 +30,8 @@ export class VideoPostService {
   public async createPost(userId: string, dto: CreateVideoPostDto, originalPostId?: string): Promise<VideoPostEntity> {
     const videoPostData = {
       authorId: userId,
-      postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      postType: PostType.VIDEO,
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       title: dto.title,
       url: dto.url,
@@ -69,6 +69,7 @@ export class VideoPostService {
 
     if (dto.tags !== undefined) updatedVideoPost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedVideoPost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedVideoPost.postedAt = dto.postedAt;
     if (dto.title !== undefined) updatedVideoPost.title = dto.title;
     if (dto.url !== undefined) updatedVideoPost.url = dto.url;
 

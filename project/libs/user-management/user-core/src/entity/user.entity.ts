@@ -10,6 +10,8 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
   public avatarId: string;
   public registeredAt: Date;
   public subscriptionIds: string[];
+  public followerCount: number;
+  public postCount: number;
   public notificationType: UserNotificationType;
 
   constructor(user?: AuthUser) {
@@ -32,6 +34,8 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
     this.avatarId = user.avatarId;
     this.registeredAt = user.registeredAt ?? new Date();
     this.subscriptionIds = user.subscriptionIds ?? [];
+    this.followerCount = user.followerCount ?? 0;
+    this.postCount = user.postCount ?? 0;
     this.notificationType = user.notificationType ?? UserNotificationType.EMAIL;
   }
 
@@ -46,8 +50,10 @@ export class UserEntity extends Entity implements StorableEntity<AuthUser> {
       passwordHash: this.passwordHash,
       avatarId: this.avatarId,
       registeredAt: this.registeredAt,
-      notificationType: this.notificationType,
-      subscriptionIds: this.subscriptionIds.map(id => id.toString())
+      subscriptionIds: this.subscriptionIds.map(id => id.toString()),
+      followerCount: this.followerCount,
+      postCount: this.postCount,
+      notificationType: this.notificationType
     };
   }
 }

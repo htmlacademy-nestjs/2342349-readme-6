@@ -1,5 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
+import { LINK_POST, POST } from '@project/content-core';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+  Matches,
+  MaxLength,
+  ValidateIf
+} from 'class-validator';
 
 export class CreateLinkPostDto {
   @ApiProperty({
@@ -14,15 +25,21 @@ export class CreateLinkPostDto {
     example: 'This is an interesting article about technology.'
   })
   @IsString()
+  @MaxLength(LINK_POST.DESCRIPTION.MAX)
   public description: string;
 
   @ApiProperty({
-    description: 'Tags associated with the post.',
+    description: 'Tags associated with the post. Each tag should start with a letter, be a single word',
     example: ['tech', 'news'],
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(POST.TAG.ARRAY_MAX)
+  @ValidateIf(post => post.tags && post.tags.length > 0)
   @IsString({ each: true })
+  @Length(POST.TAG.SINGLE_MIN, POST.TAG.SINGLE_MAX, { each: true })
+  @Matches(/^[a-zA-Z][a-zA-Z0-9]*$/, { each: true })
+  @Matches(/^\S*$/, { each: true })
   public tags?: string[];
 }

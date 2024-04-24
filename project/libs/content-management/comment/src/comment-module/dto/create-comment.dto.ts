@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { COMMENT } from '@project/content-core';
+import { IsString, Length } from 'class-validator';
 
 export class CreateCommentDto {
   @ApiProperty({
@@ -7,5 +8,6 @@ export class CreateCommentDto {
     example: 'This is a comment.',
   })
   @IsString()
+  @Length(COMMENT.TEXT.MIN, COMMENT.TEXT.MAX)
   public text: string;
 }

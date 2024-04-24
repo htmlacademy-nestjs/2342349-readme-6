@@ -31,11 +31,12 @@ export class LinkPostService {
     const linkPostData = {
       authorId: userId,
       postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       url: dto.url,
       description: dto.description,
     };
+    dto.tags.map((tag) => tag.toLowerCase())
 
     const linkPostEntity = new LinkPostEntity(linkPostData);
 
@@ -69,6 +70,7 @@ export class LinkPostService {
 
     if (dto.tags !== undefined) updatedLinkPost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedLinkPost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedLinkPost.postedAt = dto.postedAt;
     if (dto.url !== undefined) updatedLinkPost.url = dto.url;
     if (dto.description !== undefined) updatedLinkPost.description = dto.description;
 
