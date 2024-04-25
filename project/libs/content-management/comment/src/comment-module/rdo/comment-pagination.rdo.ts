@@ -5,7 +5,7 @@ import { CommentRdo } from './comment.rdo';
 export class CommentPaginationRdo {
   @Expose()
   @ApiProperty({
-    description: 'Array of comment entities',
+    description: 'Array of Comment entities',
     type: [CommentRdo],
   })
   public entities: CommentRdo[];

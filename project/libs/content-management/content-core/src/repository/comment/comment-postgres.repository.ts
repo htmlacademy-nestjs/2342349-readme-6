@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { CommentQuery } from '@project/comment';
 import { BasePostgresRepository } from '@project/data-access';
 import { PrismaClientService } from '@project/prisma-client';
-import { EntityFactory, PaginationResult, SortDirection } from '@project/shared-core';
+import { EntityFactory, PaginationResult } from '@project/shared-core';
 import { CommentEntity } from '../../entity/comment/comment.entity';
 import { CommentRepository } from './comment.repository.inteface';
 
@@ -35,9 +36,7 @@ export class CommentPostgresRepository extends BasePostgresRepository<CommentEnt
 
   public async findAllByPostId(
     postId: string,
-    limit: number,
-    sortDirection: SortDirection,
-    page: number
+    { limit, sortDirection, page }: CommentQuery
   ): Promise<PaginationResult<CommentEntity>> {
 
     const [comments, commentCount] = await Promise.all([
@@ -56,7 +55,7 @@ export class CommentPostgresRepository extends BasePostgresRepository<CommentEnt
       currentPage: page,
       totalItems: commentCount,
       itemsPerPage: limit
-    }
+    };
   }
 
   public async deleteById(commentId: CommentEntity['id']): Promise<CommentEntity> {

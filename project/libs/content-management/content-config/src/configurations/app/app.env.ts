@@ -21,7 +21,7 @@ export class ApplicationConfiguration implements AppConfig {
 
   @IsNumber()
   @IsPositive()
-  defaultPostContentLineCountLimit: number;
+  defaultPostPersonalFeedCountLimit: number;
 
   @IsNumber()
   @IsPositive()

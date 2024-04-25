@@ -57,11 +57,12 @@ export class CommentService {
     }
 
     const limit = Math.min(commentQuery?.limit ?? Number.MAX_VALUE, this.applicationConfig.defaultCommentCountLimit);
-    const sortDirection = commentQuery?.sortDirection ?? SortDirection.Desc;
+    const sortDirection = commentQuery?.sortDirection ?? SortDirection.DESC;
     const page = commentQuery?.page ?? this.defaultPage;
 
     const commentsPagination = await this.commentRepository
-      .findAllByPostId(postId, limit, sortDirection, page);
+      .findAllByPostId(postId, { limit, sortDirection, page });
+
     if (!commentsPagination.entities) {
       throw new NotFoundException(COMMENT_NOT_FOUND);
     }

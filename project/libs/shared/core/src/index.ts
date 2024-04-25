@@ -17,6 +17,7 @@ export { Comment } from './type/comment/comment.interface';
 export { Post } from './type/post/post.interface';
 export { PostType } from './type/post/post-type.enum';
 export { PostStatus } from './type/post/post-status.enum';
+export { SortType } from './type/post/sort-type.enum';
 export { LinkPost } from './type/post/link-post.interface';
 export { PhotoPost } from './type/post/photo-post.interface';
 export { QuotePost } from './type/post/quote-post.interface';

@@ -54,21 +54,12 @@ export class CommentController {
   @Get('post/:postId')
   @ApiOperation({ summary: 'Get comments for a post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
-  @ApiQuery({ name: 'limit', required: false, description: 'Limit the number of comments returned', type: Number })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number of the comments pagination', type: Number })
-  @ApiQuery({
-    name: 'sortDirection',
-    required: false,
-    description: 'Direction of comments sorting (ASC or DESC)',
-    enum: SortDirection
-  })
   @ApiResponse({ status: HttpStatus.OK, description: 'Comments retrieved successfully', type: [CommentPaginationRdo] })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post for comment not found' })
   public async getPostComments(
     @Param('postId', ParseUUIDPipe) postId: string,
     @Query() query: CommentQuery
   ): Promise<CommentPaginationRdo> {
-    console.log(query);
     const commentPagination = await this.commentService.findCommentsByPostId(postId, query);
     const transformedCommentPagination = {
       ...commentPagination,

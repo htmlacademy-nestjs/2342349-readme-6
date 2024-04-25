@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { PostRdo } from '@project/post';
+import { AggregatePostRdo } from './aggregate-post.rdo';
 
-export class PostPaginationRdo {
+export class AggregatePostPaginationRdo {
   @Expose()
   @ApiProperty({
-    description: 'Array of comment entities',
-    type: [PostRdo],
+    description: 'Array of Aggregate Post entities',
+    type: [AggregatePostRdo],
   })
-  public entities: PostRdo[];
+  public entities: AggregatePostRdo[];
 
   @Expose()
   @ApiProperty({
