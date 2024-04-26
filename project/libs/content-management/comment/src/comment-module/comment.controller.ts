@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SortDirection } from '@project/shared-core';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CommentQuery } from './comment.query';
 import { CommentService } from './comment.service';

@@ -39,9 +39,11 @@ export class PostSearchQuery {
     description: 'The unique identifier of the author of the posts',
     example: '6629510ff7987067e6076a82'
   })
-  @IsString()
   @IsOptional()
-  public authorId?: string;
+  @IsArray()
+  @ValidateIf(post => post.authorIds && post.authorIds.length > 0)
+  @IsString({ each: true })
+  public authorIds?: string[];
 
   @ApiPropertyOptional({
     description: 'Filter posts by type',

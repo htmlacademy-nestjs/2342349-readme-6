@@ -20,7 +20,6 @@ import {
   TEXT_POST_REPOST_EXISTS
 } from './text-post.constant';
 
-
 @Injectable()
 export class TextPostService {
   constructor(

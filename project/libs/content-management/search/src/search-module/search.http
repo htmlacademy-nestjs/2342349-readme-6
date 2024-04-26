@@ -30,8 +30,20 @@ GET {{host}}/api/search/{{userId}}?sortType={{sortType}}&sortDirection={{sortDir
 
 ###
 
-# Search Post with sortType + sortDirection
+# Search Post with title
 @title = Google
 GET {{host}}/api/search/{{userId}}?title={{title}} HTTP/1.1
+
+###
+
+# Search Post with authorIds
+@authorIds1 = author-uuid-003
+@authorIds2 = author-uuid-004
+GET {{host}}/api/search/{{userId}}?authorIds={{authorIds1}}&authorIds={{authorIds2}} HTTP/1.1
+
+###
+
+# Personal-Feed
+GET {{host}}/api/search/personal-feed/{{userId}} HTTP/1.1
 
 ###

@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { BasePostgresRepository } from '@project/data-access';
 import { PrismaClientService } from '@project/prisma-client';
-import { EntityFactory, SortType, StorableEntity } from '@project/shared-core';
-import { PostSearchQuery } from '@project/search';
+import { EntityFactory, StorableEntity } from '@project/shared-core';
 import { PostEntity } from '../../entity/post/post.entity';
 import { PostRepository } from './post.repository.inteface';
 
@@ -116,86 +114,5 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
     });
 
     return this.createEntityFromDocument(unlikedPost);
-  }
-
-  public async searchPosts(
-    { page, limit, title, authorId, postType, tags, sortDirection, sortType, postStatus }: PostSearchQuery
-  ) {
-
-    const where: Prisma.PostWhereInput = {};
-    if (authorId) {
-      where.authorId = authorId;
-    }
-    if (postStatus) {
-      where.postStatus = postStatus;
-    }
-    if (postType) {
-      where.postType = postType;
-    }
-    if (tags.length) {
-      where.tags = { hasSome: tags };
-    }
-    if (title) {
-      where.OR = [
-        {
-          videoDetails: {
-            title: {
-              contains: title,
-              mode: 'insensitive'
-            }
-          }
-        },
-        {
-          textDetails: {
-            title: {
-              contains: title,
-              mode: 'insensitive'
-            }
-          }
-        }
-      ];
-    }
-
-    const orderBy: Prisma.PostOrderByWithRelationInput = {};
-    switch (sortType) {
-      case SortType.BY_DATE:
-        orderBy.createdAt = sortDirection;
-        break;
-      case SortType.BY_COMMENT:
-        orderBy.commentCount = sortDirection;
-        break;
-      case SortType.BY_LIKE:
-        orderBy.likeCount = sortDirection;
-        break;
-    }
-
-    const [posts, postsCount] = await Promise.all([
-      this.client.post.findMany({
-        where: where,
-        orderBy: orderBy,
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          linkDetails: true,
-          quoteDetails: true,
-          photoDetails: true,
-          textDetails: true,
-          videoDetails: true
-        }
-      }),
-      this.client.post.count({ where: where })
-    ]);
-
-    console.log(where);
-    console.log(orderBy);
-    console.log(posts);
-
-    return {
-      entities: posts.map(post => this.createEntityFromDocument(post)),
-      totalPages: Math.ceil(postsCount / limit),
-      currentPage: page,
-      totalItems: postsCount,
-      itemsPerPage: limit
-    };
   }
 }

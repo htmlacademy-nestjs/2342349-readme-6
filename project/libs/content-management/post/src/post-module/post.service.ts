@@ -16,7 +16,6 @@ import {
   POST_NOT_PUBLISHED
 } from './post.constant';
 
-
 @Injectable()
 export class PostService {
   private readonly logger = new Logger(PostService.name);

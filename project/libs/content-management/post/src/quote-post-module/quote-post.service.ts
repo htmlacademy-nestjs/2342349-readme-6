@@ -20,7 +20,6 @@ import {
   QUOTE_POST_REPOST_EXISTS
 } from './quote-post.constant';
 
-
 @Injectable()
 export class QuotePostService {
   constructor(

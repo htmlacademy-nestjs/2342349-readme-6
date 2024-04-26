@@ -34,3 +34,5 @@ export { VideoPostEntity } from './entity/video/video-post.entity';
 export { VideoPostFactory } from './entity/video/video-post.factory';
 export { VIDEO_POST } from './entity/video/video-post.constant';
 export { VideoPostRepository } from './repository/video/video-post.repository.inteface';
+
+export { SearchRepository } from './repository/search/search.repository.inteface';

@@ -6,7 +6,7 @@ import { QuotePostEntity } from '../../entity/quote/quote-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
 import { QuotePostRepository } from './quote-post.repository.inteface';
 
-type PostWithDetails = Prisma.PostGetPayload<{
+export type QuotePostWithDetails = Prisma.PostGetPayload<{
   include: { quoteDetails: true };
 }>;
 
@@ -29,7 +29,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
     };
   }
 
-  private reformatQuotePostFromPrisma(createdQuotePost: PostWithDetails | null): QuotePostEntity {
+  public convertToQuotePostEntity(createdQuotePost: QuotePostWithDetails | null): QuotePostEntity {
     if (!createdQuotePost) {
       return null;
     }
@@ -61,7 +61,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       include: { quoteDetails: true }
     });
 
-    return this.reformatQuotePostFromPrisma(createdQuotePost);
+    return this.convertToQuotePostEntity(createdQuotePost);
   }
 
   public async update(postId: QuotePostEntity['id'], quotePostEntity: QuotePostEntity): Promise<QuotePostEntity> {
@@ -81,7 +81,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       include: { quoteDetails: true }
     });
 
-    return this.reformatQuotePostFromPrisma(updatedQuotePost);
+    return this.convertToQuotePostEntity(updatedQuotePost);
   }
 
   public async findById(postId: QuotePostEntity['id']): Promise<QuotePostEntity | null> {
@@ -90,7 +90,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       include: { quoteDetails: true }
     });
 
-    return this.reformatQuotePostFromPrisma(quotePostData);
+    return this.convertToQuotePostEntity(quotePostData);
   }
 
   public async deleteById(id: QuotePostEntity['id']): Promise<QuotePostEntity> {
@@ -99,7 +99,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       include: { quoteDetails: true }
     });
 
-    return this.reformatQuotePostFromPrisma(deletedPost);
+    return this.convertToQuotePostEntity(deletedPost);
   }
 
   public async exists(quotePostId: QuotePostEntity['id']): Promise<boolean> {

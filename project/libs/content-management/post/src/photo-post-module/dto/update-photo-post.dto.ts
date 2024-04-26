@@ -3,7 +3,8 @@ import { POST } from '@project/content-core';
 import { PostStatus } from '@project/shared-core';
 import {
   ArrayMaxSize,
-  IsArray, IsDate,
+  IsArray,
+  IsDate,
   IsEnum,
   IsOptional,
   IsString,

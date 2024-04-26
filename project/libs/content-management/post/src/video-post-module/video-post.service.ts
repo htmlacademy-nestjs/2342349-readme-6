@@ -24,8 +24,9 @@ import {
 export class VideoPostService {
   constructor(
     @Inject('VideoPostRepository') private readonly videoPostRepository: VideoPostRepository,
-    private readonly postService: PostService,
-  ) {}
+    private readonly postService: PostService
+  ) {
+  }
 
   public async createPost(userId: string, dto: CreateVideoPostDto, originalPostId?: string): Promise<VideoPostEntity> {
     const videoPostData = {
@@ -34,7 +35,7 @@ export class VideoPostService {
       tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       title: dto.title,
-      url: dto.url,
+      url: dto.url
     };
 
     const videoPostEntity = new VideoPostEntity(videoPostData);
@@ -101,8 +102,8 @@ export class VideoPostService {
     const createVideoPostDto: CreateVideoPostDto = {
       tags: repostVideoPost.tags,
       title: repostVideoPost.title,
-      url: repostVideoPost.url,
-    }
+      url: repostVideoPost.url
+    };
 
     const repostedVideoPost = await this.createPost(userId, createVideoPostDto, repostVideoPost.id);
     await this.postService.incrementRepostCount(postId);

@@ -6,7 +6,7 @@ import { LinkPostEntity } from '../../entity/link/link-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
 import { LinkPostRepository } from './link-post.repository.inteface';
 
-type PostWithDetails = Prisma.PostGetPayload<{
+export type LinkPostWithDetails = Prisma.PostGetPayload<{
   include: { linkDetails: true };
 }>;
 
@@ -29,7 +29,7 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
     };
   }
 
-  private reformatLinkPostFromPrisma(createdLinkPost: PostWithDetails | null): LinkPostEntity {
+  public convertToLinkPostEntity(createdLinkPost: LinkPostWithDetails | null): LinkPostEntity {
     if (!createdLinkPost) {
       return null;
     }
@@ -61,7 +61,7 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       include: { linkDetails: true }
     });
 
-    return this.reformatLinkPostFromPrisma(createdLinkPost);
+    return this.convertToLinkPostEntity(createdLinkPost);
   }
 
   public async update(postId: LinkPostEntity['id'], linkPostEntity: LinkPostEntity): Promise<LinkPostEntity> {
@@ -81,7 +81,7 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       include: { linkDetails: true }
     });
 
-    return this.reformatLinkPostFromPrisma(updatedLinkPost);
+    return this.convertToLinkPostEntity(updatedLinkPost);
   }
 
   public async findById(postId: LinkPostEntity['id']): Promise<LinkPostEntity | null> {
@@ -90,7 +90,7 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       include: { linkDetails: true }
     });
 
-    return this.reformatLinkPostFromPrisma(linkPostData);
+    return this.convertToLinkPostEntity(linkPostData);
   }
 
   public async deleteById(id: LinkPostEntity['id']): Promise<LinkPostEntity> {
@@ -99,7 +99,7 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       include: { linkDetails: true }
     });
 
-    return this.reformatLinkPostFromPrisma(deletedPost);
+    return this.convertToLinkPostEntity(deletedPost);
   }
 
   public async exists(linkPostId: LinkPostEntity['id']): Promise<boolean> {

@@ -6,7 +6,7 @@ import { VideoPostEntity } from '../../entity/video/video-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
 import { VideoPostRepository } from './video-post.repository.inteface';
 
-type PostWithDetails = Prisma.PostGetPayload<{
+export type VideoPostWithDetails = Prisma.PostGetPayload<{
   include: { videoDetails: true };
 }>;
 
@@ -29,7 +29,7 @@ export class VideoPostPostgresRepository extends PostPostgresRepository<VideoPos
     };
   }
 
-  private reformatVideoPostFromPrisma(createdVideoPost: PostWithDetails | null): VideoPostEntity {
+  public convertToVideoPostEntity(createdVideoPost: VideoPostWithDetails | null): VideoPostEntity {
     if (!createdVideoPost) {
       return null;
     }
@@ -61,7 +61,7 @@ export class VideoPostPostgresRepository extends PostPostgresRepository<VideoPos
       include: { videoDetails: true }
     });
 
-    return this.reformatVideoPostFromPrisma(createdVideoPost);
+    return this.convertToVideoPostEntity(createdVideoPost);
   }
 
   public async update(postId: VideoPostEntity['id'], videoPostEntity: VideoPostEntity): Promise<VideoPostEntity> {
@@ -81,7 +81,7 @@ export class VideoPostPostgresRepository extends PostPostgresRepository<VideoPos
       include: { videoDetails: true }
     });
 
-    return this.reformatVideoPostFromPrisma(updatedVideoPost);
+    return this.convertToVideoPostEntity(updatedVideoPost);
   }
 
   public async findById(postId: VideoPostEntity['id']): Promise<VideoPostEntity | null> {
@@ -90,7 +90,7 @@ export class VideoPostPostgresRepository extends PostPostgresRepository<VideoPos
       include: { videoDetails: true }
     });
 
-    return this.reformatVideoPostFromPrisma(videoPostData);
+    return this.convertToVideoPostEntity(videoPostData);
   }
 
   public async deleteById(id: VideoPostEntity['id']): Promise<VideoPostEntity> {
@@ -99,7 +99,7 @@ export class VideoPostPostgresRepository extends PostPostgresRepository<VideoPos
       include: { videoDetails: true }
     });
 
-    return this.reformatVideoPostFromPrisma(deletedPost);
+    return this.convertToVideoPostEntity(deletedPost);
   }
 
   public async exists(videoPostId: VideoPostEntity['id']): Promise<boolean> {

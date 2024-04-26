@@ -20,7 +20,6 @@ import {
   PHOTO_POST_REPOST_EXISTS
 } from './photo-post.constant';
 
-
 @Injectable()
 export class PhotoPostService {
   constructor(

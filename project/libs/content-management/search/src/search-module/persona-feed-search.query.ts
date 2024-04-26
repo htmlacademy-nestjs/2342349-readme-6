@@ -1,18 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { POST, TEXT_POST } from '@project/content-core';
-import { PostType, SortDirection, SortType } from '@project/shared-core';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SortDirection, SortType } from '@project/shared-core';
 import { Type } from 'class-transformer';
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsIn,
-  IsNumber,
-  IsOptional,
-  IsPositive,
-  IsString,
-  Length, Matches,
-  ValidateIf
-} from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsPositive } from 'class-validator';
 
 export class PersonaFeedQuery {
   @ApiPropertyOptional({
@@ -54,4 +43,6 @@ export class PersonaFeedQuery {
   @IsIn(Object.values(SortType))
   @IsOptional()
   public sortType?: SortType;
+
+  public authorIds?: string[];
 }
