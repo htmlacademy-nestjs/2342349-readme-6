@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
+import { LinkPostRdo } from '../link-post-module/rdo/link-post.rdo';
 import { CreateQuotePostDto } from './dto/create-quote-post.dto';
 import { UpdateQuotePostDto } from './dto/update-quote-post.dto';
 import { QuotePostService } from './quote-post.service';
@@ -29,10 +30,11 @@ export class QuotePostController {
 
   @Get(':postId')
   @ApiOperation({ summary: 'Retrieve a Quote-Post by ID' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Quote-Post retrieved successfully', type: QuotePostRdo })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Quote-Post not found' })
   public async getQuotePost(
-    @Param('postId') postId: string
+    @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<QuotePostRdo> {
     const foundPost = await this.quotePostService.findPostById(postId);
     return fillDto(QuotePostRdo, foundPost.toPOJO());
@@ -40,13 +42,14 @@ export class QuotePostController {
 
   @Patch(':postId/:userId')
   @ApiOperation({ summary: 'Delete a Quote-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Quote-Post successfully deleted', type: QuotePostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Quote-Post not found' })
   @ApiBearerAuth()
   public async updateQuotePost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdateQuotePostDto
   ): Promise<QuotePostRdo> {
     //todo userId from token
@@ -56,6 +59,7 @@ export class QuotePostController {
 
   @Delete(':postId/:userId')
   @ApiOperation({ summary: 'Repost a Quote-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Quote-Post successfully reposted', type: QuotePostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Quote-Post not found' })
@@ -63,7 +67,7 @@ export class QuotePostController {
   @ApiBearerAuth()
   public async deleteQuotePost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<QuotePostRdo> {
     //todo userId from token
     const deletedPost = await this.quotePostService.deletePostById(userId, postId);
@@ -71,9 +75,15 @@ export class QuotePostController {
   }
 
   @Post(':postId/repost/:userId')
-  public async repostQuotePost(
+  @ApiOperation({ summary: 'Repost a Quote-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Quote-Post reposted', type: LinkPostRdo })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Quote-Post not found' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Quote-Post has already been reposted' })
+  @ApiBearerAuth()  public async repostQuotePost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<QuotePostRdo> {
     //todo userId from token
     const repostedPost = await this.quotePostService.repostPostById(userId, postId);

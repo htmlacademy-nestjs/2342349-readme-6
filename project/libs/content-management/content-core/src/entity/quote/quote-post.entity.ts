@@ -3,7 +3,7 @@ import { PostEntity } from '../post/post.entity';
 
 export class QuotePostEntity extends PostEntity  {
   public text: string;
-  public quoteAuthorId: string;
+  public author: string;
 
   constructor(quotePost?: QuotePost) {
     super();
@@ -18,14 +18,14 @@ export class QuotePostEntity extends PostEntity  {
     }
 
     this.text = quotePost.text;
-    this.quoteAuthorId = quotePost.quoteAuthorId;
+    this.author = quotePost.author;
   }
 
   public toPOJO() {
     return {
       ...super.toPOJO(),
       text: this.text,
-      quoteAuthorId: this.quoteAuthorId,
+      author: this.author,
     };
   }
 }

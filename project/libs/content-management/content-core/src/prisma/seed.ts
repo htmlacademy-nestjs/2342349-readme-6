@@ -61,7 +61,7 @@ async function seed() {
         await prisma.quotePost.create({
           data: {
             text: 'Inspiring quote for ' + type,
-            quoteAuthorId: usersIds[i % usersIds.length],
+            author: usersIds[i % usersIds.length],
             postId: postId
           }
         });

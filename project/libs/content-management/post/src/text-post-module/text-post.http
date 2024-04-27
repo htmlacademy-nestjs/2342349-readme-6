@@ -10,8 +10,8 @@ Content-Type: application/json
 
 {
   "title": "Title Google article",
-  "announcement": "Announcement for Google article",
-  "text": "Text for Google article",
+  "announcement": "Announcement for Google article Announcement for Google article Announcement for Google article Announcement for Google article",
+  "text": "Text for Google article Text for Google article Text for Google article Text for Google article Text for Google article Text for Google article Text for Google article Text for Google article Text for Google article",
   "tags": [
     "Google",
     "Article",

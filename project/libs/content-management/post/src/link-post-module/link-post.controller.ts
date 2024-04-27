@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreateLinkPostDto } from './dto/create-link-post.dto';
 import { UpdateLinkPostDto } from './dto/update-link-post.dto';
@@ -29,9 +29,10 @@ export class LinkPostController {
 
   @Get(':postId')
   @ApiOperation({ summary: 'Retrieve a Link-Post by ID' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Link-Post not found' })
   public async getLinkPost(
-    @Param('postId') postId: string
+    @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<LinkPostRdo> {
     const foundPost = await this.linkPostService.findPostById(postId);
     return fillDto(LinkPostRdo, foundPost.toPOJO());
@@ -39,13 +40,14 @@ export class LinkPostController {
 
   @Patch(':postId/:userId')
   @ApiOperation({ summary: 'Update a Link-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Link-Post updated', type: UpdateLinkPostDto })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Link-Post not found' })
   @ApiBearerAuth()
   public async updateLinkPost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdateLinkPostDto
   ): Promise<LinkPostRdo> {
     //todo userId from token
@@ -55,13 +57,14 @@ export class LinkPostController {
 
   @Delete(':postId/:userId')
   @ApiOperation({ summary: 'Delete a Link-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Link-Post deleted', type: LinkPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Link-Post not found' })
   @ApiBearerAuth()
   public async deleteLinkPost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<LinkPostRdo> {
     //todo userId from token
     const deletedPost = await this.linkPostService.deletePostById(userId, postId);
@@ -70,6 +73,7 @@ export class LinkPostController {
 
   @Post(':postId/repost/:userId')
   @ApiOperation({ summary: 'Repost a Link-Post' })
+  @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Link-Post reposted', type: LinkPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Link-Post not found' })
@@ -77,7 +81,7 @@ export class LinkPostController {
   @ApiBearerAuth()
   public async repostLinkPost(
     @Param('userId') userId: string,
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<LinkPostRdo> {
     //todo userId from token
     const repostedPost = await this.linkPostService.repostPostById(userId, postId);

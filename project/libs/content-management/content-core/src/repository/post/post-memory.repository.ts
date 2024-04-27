@@ -13,4 +13,24 @@ export abstract class PostMemoryRepository<T extends PostEntity & StorableEntity
   existsRepostByUser(originalPostId: PostEntity["id"], authorId: PostEntity["id"]): Promise<boolean> {
     throw new Error('Not implemented');
   }
+
+  decrementCommentCount(postId: string): Promise<boolean> {
+    throw new Error('Not implemented');
+  }
+
+  incrementCommentCount(postId: string): Promise<boolean> {
+    throw new Error('Not implemented');
+  }
+
+  incrementRepostCount(postId: string): Promise<boolean> {
+    throw new Error('Not implemented');
+  }
+
+  likePost(postId: string, updatedUserLikeIds: string[]): Promise<PostEntity> {
+    throw new Error('Not implemented');
+  }
+
+  unlikePost(postId: string, updatedUserLikeIds: string[]): Promise<PostEntity> {
+    throw new Error('Not implemented');
+  }
 }

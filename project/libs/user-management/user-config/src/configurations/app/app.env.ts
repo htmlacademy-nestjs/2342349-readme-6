@@ -24,6 +24,4 @@ export class ApplicationConfiguration implements AppConfig {
   public async validate(): Promise<void> {
     await validateOrReject(this);
   }
-
-
 }

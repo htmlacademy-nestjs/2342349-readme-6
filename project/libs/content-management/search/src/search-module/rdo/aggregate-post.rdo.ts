@@ -1,8 +1,12 @@
-import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { PostRdo } from './post.rdo';
+import { PostRdo } from '@project/post';
+import { Expose } from 'class-transformer';
 
 export class AggregatePostRdo extends PostRdo {
+  toPOJO(): void {
+    throw new Error('Method not implemented.');
+  }
+
   @Expose()
   @ApiProperty({
     description: 'The URL of the content, if applicable.',
@@ -33,7 +37,7 @@ export class AggregatePostRdo extends PostRdo {
     example: 'Famous Author',
     required: false
   })
-  public quoteAuthorId?: string;
+  public author?: string;
 
   @Expose()
   @ApiProperty({

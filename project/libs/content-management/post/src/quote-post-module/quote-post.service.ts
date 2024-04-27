@@ -1,4 +1,11 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { QuotePostEntity, QuotePostRepository } from '@project/content-core';
 import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
@@ -6,12 +13,12 @@ import { CreateQuotePostDto } from './dto/create-quote-post.dto';
 import { UpdateQuotePostDto } from './dto/update-quote-post.dto';
 import {
   QUOTE_POST_DELETE_PERMISSION,
+  QUOTE_POST_DIFFERENT_TYPE,
   QUOTE_POST_MODIFY_PERMISSION,
   QUOTE_POST_NOT_FOUND,
   QUOTE_POST_REPOST_AUTHOR,
   QUOTE_POST_REPOST_EXISTS
 } from './quote-post.constant';
-
 
 @Injectable()
 export class QuotePostService {
@@ -23,11 +30,11 @@ export class QuotePostService {
   public async createPost(userId: string, dto: CreateQuotePostDto, originalPostId?: string): Promise<QuotePostEntity> {
     const quotePostData = {
       authorId: userId,
-      postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      postType: PostType.QUOTE,
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       text: dto.text,
-      quoteAuthorId: dto.quoteAuthorId,
+      author: dto.author,
     };
 
     const quotePostEntity = new QuotePostEntity(quotePostData);
@@ -40,6 +47,9 @@ export class QuotePostService {
     if (!foundQuotePost) {
       throw new NotFoundException(QUOTE_POST_NOT_FOUND);
     }
+    if (foundQuotePost.postType !== PostType.QUOTE) {
+      throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
+    }
 
     return foundQuotePost;
   }
@@ -50,16 +60,20 @@ export class QuotePostService {
 
   public async updatePostById(userId: string, postId: string, dto: UpdateQuotePostDto): Promise<QuotePostEntity> {
     const updatedQuotePost = await this.findPostById(postId);
+    if (updatedQuotePost.postType !== PostType.QUOTE) {
+      throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
+    }
     if (updatedQuotePost.authorId !== userId) {
       throw new UnauthorizedException(QUOTE_POST_MODIFY_PERMISSION);
     }
 
     if (dto.tags !== undefined) updatedQuotePost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedQuotePost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedQuotePost.postedAt = dto.postedAt;
     if (dto.text !== undefined) updatedQuotePost.text = dto.text;
-    if (dto.quoteAuthorId !== undefined) updatedQuotePost.quoteAuthorId = dto.quoteAuthorId;
+    if (dto.author !== undefined) updatedQuotePost.author = dto.author;
 
-    return await this.quotePostRepository.update(postId, updatedQuotePost);
+    return this.quotePostRepository.update(postId, updatedQuotePost);
   }
 
   public async deletePostById(userId: string, postId: string): Promise<QuotePostEntity> {
@@ -73,6 +87,9 @@ export class QuotePostService {
 
   public async repostPostById(userId: string, postId: string): Promise<QuotePostEntity> {
     const repostQuotePost = await this.findPostById(postId);
+    if (repostQuotePost.postType !== PostType.QUOTE) {
+      throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
+    }
     if (repostQuotePost.authorId === userId) {
       throw new UnauthorizedException(QUOTE_POST_REPOST_AUTHOR);
     }
@@ -83,10 +100,13 @@ export class QuotePostService {
 
     const createQuotePostDto: CreateQuotePostDto = {
       tags: repostQuotePost.tags,
-      quoteAuthorId: repostQuotePost.quoteAuthorId,
+      author: repostQuotePost.author,
       text: repostQuotePost.text,
     }
 
-    return await this.createPost(userId, createQuotePostDto, repostQuotePost.id);
+    const repostedQuotePost = await this.createPost(userId, createQuotePostDto, repostQuotePost.id);
+    await this.postService.incrementRepostCount(postId);
+
+    return repostedQuotePost;
   }
 }

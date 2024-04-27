@@ -1,6 +1,6 @@
 @host = http://localhost:3010
 @userId = 661c2da73755ed24c779f041
-@postId = a821fe6b-f5e1-4095-a278-052e12c16078
+@postId = 51377bc9-afa8-4e05-ba48-9fa8dea9a122
 @repostId = post-uuid-L3
 @token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
   "text": "Text for Google article",
-  "quoteAuthorId": "Author",
+  "author": "Author Keks",
   "tags": [
     "Google",
     "Article",

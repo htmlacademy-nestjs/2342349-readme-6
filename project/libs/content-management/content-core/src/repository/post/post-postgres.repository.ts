@@ -18,7 +18,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
     throw new Error('Not implemented');
   }
 
-  public async findById(postId: PostEntity["id"]): Promise<PostEntity | null> {
+  public async findById(postId: PostEntity['id']): Promise<PostEntity | null> {
     const post = await this.client.post.findFirst({
       where: { id: postId }
     });
@@ -26,7 +26,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
     return this.createEntityFromDocument(post);
   }
 
-  public async deleteById(postId: PostEntity["id"]): Promise<PostEntity> {
+  public async deleteById(postId: PostEntity['id']): Promise<PostEntity> {
     const deletedComment = await this.client.post.delete({
       where: { id: postId }
     });
@@ -34,11 +34,11 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
     return this.createEntityFromDocument(deletedComment);
   }
 
-  public async update(id: PostEntity["id"], entity: PostEntity): Promise<PostEntity> {
+  public async update(id: PostEntity['id'], entity: PostEntity): Promise<PostEntity> {
     throw new Error('Not implemented');
   }
 
-  public async exists(postId: PostEntity["id"]): Promise<boolean> {
+  public async exists(postId: PostEntity['id']): Promise<boolean> {
     const post = await this.client.post.findUnique({
       where: { id: postId },
       select: { id: true }
@@ -47,7 +47,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
     return post !== null;
   }
 
-  public async existsRepostByUser(originalPostId: PostEntity["id"], authorId: PostEntity["id"]): Promise<boolean> {
+  public async existsRepostByUser(originalPostId: PostEntity['id'], authorId: PostEntity['id']): Promise<boolean> {
     const post = await this.client.post.findFirst({
       where: {
         originalPostId: originalPostId,
@@ -57,5 +57,62 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
     });
 
     return post !== null;
+  }
+
+  public async incrementRepostCount(postId: string): Promise<boolean> {
+    const incrementedPost = await this.client.post.update({
+      where: { id: postId },
+      data: {
+        repostCount: { increment: 1 }
+      }
+    });
+
+    return incrementedPost !== null;
+  }
+
+  public async incrementCommentCount(postId: string): Promise<boolean> {
+    const incrementedPost = await this.client.post.update({
+      where: { id: postId },
+      data: {
+        commentCount: { increment: 1 }
+      }
+    });
+
+    return incrementedPost !== null;
+  }
+
+  public async decrementCommentCount(postId: string): Promise<boolean> {
+    const incrementedPost = await this.client.post.update({
+      where: { id: postId },
+      data: {
+        commentCount: { decrement: 1 }
+      }
+    });
+
+    return incrementedPost !== null;
+  }
+
+  public async likePost(postId: string, updatedUserLikeIds: string[]): Promise<PostEntity> {
+    const likedPost = await this.client.post.update({
+      where: { id: postId },
+      data: {
+        likeCount: { increment: 1 },
+        userLikeIds: { set: updatedUserLikeIds }
+      }
+    });
+
+    return this.createEntityFromDocument(likedPost);
+  }
+
+  public async unlikePost(postId: string, updatedUserLikeIds: string[]): Promise<PostEntity> {
+    const unlikedPost = await this.client.post.update({
+      where: { id: postId },
+      data: {
+        likeCount: { decrement: 1 },
+        userLikeIds: { set: updatedUserLikeIds }
+      }
+    });
+
+    return this.createEntityFromDocument(unlikedPost);
   }
 }

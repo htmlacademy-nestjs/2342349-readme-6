@@ -49,4 +49,44 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
 
     return this.createEntityFromDocument(updatedUser);
   }
+
+  public async incrementFollowerCount(userId: string): Promise<boolean> {
+    const updatedUser = await this.model.findByIdAndUpdate(userId,
+      {
+        $inc: { followerCount: 1 }
+      }
+    );
+
+    return updatedUser !== null;
+  }
+
+  public async decrementFollowerCount(userId: string): Promise<boolean> {
+    const updatedUser = await this.model.findByIdAndUpdate(userId,
+      {
+        $inc: { followerCount: -1 }
+      }
+    );
+
+    return updatedUser !== null;
+  }
+
+  public async incrementPostCount(userId: string): Promise<boolean> {
+    const updatedUser = await this.model.findByIdAndUpdate(userId,
+      {
+        $inc: { postCount: 1 }
+      }
+    );
+
+    return updatedUser !== null;
+  }
+
+  public async decrementPostCount(userId: string): Promise<boolean> {
+    const updatedUser = await this.model.findByIdAndUpdate(userId,
+      {
+        $inc: { postCount: -1 }
+      }
+    );
+
+    return updatedUser !== null;
+  }
 }

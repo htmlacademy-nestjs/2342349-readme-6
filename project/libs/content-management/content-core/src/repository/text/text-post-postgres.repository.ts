@@ -6,7 +6,7 @@ import { TextPostEntity } from '../../entity/text/text-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
 import { TextPostRepository } from './text-post.repository.inteface';
 
-type PostWithDetails = Prisma.PostGetPayload<{
+export type TextPostWithDetails = Prisma.PostGetPayload<{
   include: { textDetails: true };
 }>;
 
@@ -30,7 +30,7 @@ export class TextPostPostgresRepository extends PostPostgresRepository<TextPostE
     };
   }
 
-  private reformatTextPostFromPrisma(createdTextPost: PostWithDetails | null): TextPostEntity {
+  public convertToTextPostEntity(createdTextPost: TextPostWithDetails | null): TextPostEntity {
     if (!createdTextPost) {
       return null;
     }
@@ -64,7 +64,7 @@ export class TextPostPostgresRepository extends PostPostgresRepository<TextPostE
       include: { textDetails: true }
     });
 
-    return this.reformatTextPostFromPrisma(createdTextPost);
+    return this.convertToTextPostEntity(createdTextPost);
   }
 
   public async update(postId: TextPostEntity['id'], textPostEntity: TextPostEntity): Promise<TextPostEntity> {
@@ -85,7 +85,7 @@ export class TextPostPostgresRepository extends PostPostgresRepository<TextPostE
       include: { textDetails: true }
     });
 
-    return this.reformatTextPostFromPrisma(updatedTextPost);
+    return this.convertToTextPostEntity(updatedTextPost);
   }
 
   public async findById(postId: TextPostEntity['id']): Promise<TextPostEntity | null> {
@@ -94,7 +94,7 @@ export class TextPostPostgresRepository extends PostPostgresRepository<TextPostE
       include: { textDetails: true }
     });
 
-    return this.reformatTextPostFromPrisma(textPostData);
+    return this.convertToTextPostEntity(textPostData);
   }
 
   public async deleteById(id: TextPostEntity['id']): Promise<TextPostEntity> {
@@ -103,7 +103,7 @@ export class TextPostPostgresRepository extends PostPostgresRepository<TextPostE
       include: { textDetails: true }
     });
 
-    return this.reformatTextPostFromPrisma(deletedPost);
+    return this.convertToTextPostEntity(deletedPost);
   }
 
   public async exists(textPostId: TextPostEntity['id']): Promise<boolean> {

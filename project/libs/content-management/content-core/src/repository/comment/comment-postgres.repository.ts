@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { CommentQuery } from '@project/comment';
 import { BasePostgresRepository } from '@project/data-access';
-import { EntityFactory } from '@project/shared-core';
 import { PrismaClientService } from '@project/prisma-client';
+import { EntityFactory, PaginationResult } from '@project/shared-core';
 import { CommentEntity } from '../../entity/comment/comment.entity';
 import { CommentRepository } from './comment.repository.inteface';
 
@@ -18,7 +19,7 @@ export class CommentPostgresRepository extends BasePostgresRepository<CommentEnt
     const createdComment = await this.client.comment.create({
       data: {
         ...entity.toPOJO(),
-        id: undefined,
+        id: undefined
       }
     });
 
@@ -33,12 +34,28 @@ export class CommentPostgresRepository extends BasePostgresRepository<CommentEnt
     return this.createEntityFromDocument(comment);
   }
 
-  public async findAllByPostId(postId: string): Promise<CommentEntity[]> {
-    const comments = await this.client.comment.findMany({
-      where: { postId: postId }
-    });
+  public async findAllByPostId(
+    postId: string,
+    { limit, sortDirection, page }: CommentQuery
+  ): Promise<PaginationResult<CommentEntity>> {
 
-    return comments.map(comment => this.createEntityFromDocument(comment));
+    const [comments, commentCount] = await Promise.all([
+      this.client.comment.findMany({
+        where: { postId: postId },
+        orderBy: { createdAt: sortDirection },
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      this.client.comment.count({ where: { postId: postId } })
+    ]);
+
+    return {
+      entities: comments.map(comment => this.createEntityFromDocument(comment)),
+      totalPages: Math.ceil(commentCount / limit),
+      currentPage: page,
+      totalItems: commentCount,
+      itemsPerPage: limit
+    };
   }
 
   public async deleteById(commentId: CommentEntity['id']): Promise<CommentEntity> {
@@ -54,7 +71,7 @@ export class CommentPostgresRepository extends BasePostgresRepository<CommentEnt
       where: { id: commentId },
       data: {
         ...entity.toPOJO(),
-        id: undefined,
+        id: undefined
       }
     });
 

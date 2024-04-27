@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { USER } from '@project/user-core';
+import { IsDate, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
 export class UpdateUserDto {
   @ApiProperty({
@@ -6,6 +8,9 @@ export class UpdateUserDto {
     example: 'John',
     required: false,
   })
+  @IsOptional()
+  @IsString()
+  @Length(USER.FIRST_NAME.MIN, USER.FIRST_NAME.MAX)
   public firstName?: string;
 
   @ApiProperty({
@@ -13,6 +18,9 @@ export class UpdateUserDto {
     example: 'Doe',
     required: false,
   })
+  @IsOptional()
+  @IsString()
+  @Length(USER.LAST_NAME.MIN, USER.LAST_NAME.MAX)
   public lastName?: string;
 
   @ApiProperty({
@@ -21,6 +29,8 @@ export class UpdateUserDto {
     format: 'date',
     required: false,
   })
+  @IsOptional()
+  @IsDate()
   public dateOfBirth?: Date;
 
   @ApiProperty({
@@ -28,5 +38,7 @@ export class UpdateUserDto {
     example: 'https://example.com/avatar.jpg',
     required: false,
   })
+  @IsOptional()
+  @IsUrl()
   public avatarId?: string;
 }

@@ -1,5 +1,5 @@
-import { Entity, EntityFactory, StorableEntity } from '@project/shared-core';
 import { PrismaClientService } from '@project/prisma-client';
+import { Entity, EntityFactory, StorableEntity } from '@project/shared-core';
 
 export abstract class BasePostgresRepository<
   T extends Entity & StorableEntity<ReturnType<T['toPOJO']>>

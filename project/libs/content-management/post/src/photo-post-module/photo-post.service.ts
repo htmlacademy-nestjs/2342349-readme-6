@@ -1,4 +1,11 @@
-import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { PhotoPostEntity, PhotoPostRepository } from '@project/content-core';
 import { PostService } from '@project/post';
 import { PostType } from '@project/shared-core';
@@ -6,12 +13,12 @@ import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
 import { UpdatePhotoPostDto } from './dto/update-photo-post.dto';
 import {
   PHOTO_POST_DELETE_PERMISSION,
+  PHOTO_POST_DIFFERENT_TYPE,
   PHOTO_POST_MODIFY_PERMISSION,
   PHOTO_POST_NOT_FOUND,
   PHOTO_POST_REPOST_AUTHOR,
   PHOTO_POST_REPOST_EXISTS
 } from './photo-post.constant';
-
 
 @Injectable()
 export class PhotoPostService {
@@ -23,8 +30,8 @@ export class PhotoPostService {
   public async createPost(userId: string, dto: CreatePhotoPostDto, originalPostId?: string): Promise<PhotoPostEntity> {
     const photoPostData = {
       authorId: userId,
-      postType: PostType.LINK,
-      tags: dto.tags ?? [],
+      postType: PostType.PHOTO,
+      tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
       url: dto.url,
     };
@@ -39,6 +46,9 @@ export class PhotoPostService {
     if (!foundPhotoPost) {
       throw new NotFoundException(PHOTO_POST_NOT_FOUND);
     }
+    if (foundPhotoPost.postType !== PostType.PHOTO) {
+      throw new BadRequestException(PHOTO_POST_DIFFERENT_TYPE);
+    }
 
     return foundPhotoPost;
   }
@@ -49,15 +59,19 @@ export class PhotoPostService {
 
   public async updatePostById(userId: string, postId: string, dto: UpdatePhotoPostDto): Promise<PhotoPostEntity> {
     const updatedPhotoPost = await this.findPostById(postId);
+    if (updatedPhotoPost.postType !== PostType.PHOTO) {
+      throw new BadRequestException(PHOTO_POST_DIFFERENT_TYPE);
+    }
     if (updatedPhotoPost.authorId !== userId) {
       throw new UnauthorizedException(PHOTO_POST_MODIFY_PERMISSION);
     }
 
     if (dto.tags !== undefined) updatedPhotoPost.tags = dto.tags;
     if (dto.postStatus !== undefined) updatedPhotoPost.postStatus = dto.postStatus;
+    if (dto.postedAt !== undefined) updatedPhotoPost.postedAt = dto.postedAt;
     if (dto.url !== undefined) updatedPhotoPost.url = dto.url;
 
-    return await this.photoPostRepository.update(postId, updatedPhotoPost);
+    return this.photoPostRepository.update(postId, updatedPhotoPost);
   }
 
   public async deletePostById(userId: string, postId: string): Promise<PhotoPostEntity> {
@@ -71,6 +85,9 @@ export class PhotoPostService {
 
   public async repostPostById(userId: string, postId: string): Promise<PhotoPostEntity> {
     const repostPhotoPost = await this.findPostById(postId);
+    if (repostPhotoPost.postType !== PostType.PHOTO) {
+      throw new BadRequestException(PHOTO_POST_DIFFERENT_TYPE);
+    }
     if (repostPhotoPost.authorId === userId) {
       throw new UnauthorizedException(PHOTO_POST_REPOST_AUTHOR);
     }
@@ -84,7 +101,10 @@ export class PhotoPostService {
       url: repostPhotoPost.url
     }
 
-    return await this.createPost(userId, createPhotoPostDto, repostPhotoPost.id);
+    const repostedPhotoPost = await this.createPost(userId, createPhotoPostDto, repostPhotoPost.id);
+    await this.postService.incrementRepostCount(postId);
+
+    return repostedPhotoPost;
   }
 }
 

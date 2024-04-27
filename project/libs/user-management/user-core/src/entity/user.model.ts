@@ -44,6 +44,12 @@ export class UserModel extends Document {
   @Prop({ required: true, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserModel' }] })
   public subscriptionIds: mongoose.Types.ObjectId[];
 
+  @Prop({ required: true })
+  public followerCount: number;
+
+  @Prop({ required: true })
+  public postCount: number;
+
   @Prop({ required: true, type: String, enum: UserNotificationType })
   public notificationType: UserNotificationType;
 }

@@ -1,6 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { UserNotificationType, UserType } from '@project/shared-core';
 import { Expose } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class UserRdo {
   @Expose()
@@ -66,6 +66,20 @@ export class UserRdo {
     type: [String]
   })
   public subscriptionIds: string[];
+
+  @Expose()
+  @ApiProperty({
+    description: 'The total number of followers who follow the user.',
+    example: 7
+  })
+  public followerCount: number
+
+  @Expose()
+  @ApiProperty({
+    description: 'The total number of posts that have been published by the user.',
+    example: 10
+  })
+  public postCount: number
 
   @Expose()
   @ApiProperty({

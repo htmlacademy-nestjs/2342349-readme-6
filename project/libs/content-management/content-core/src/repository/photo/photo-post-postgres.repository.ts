@@ -6,7 +6,7 @@ import { PhotoPostEntity } from '../../entity/photo/photo-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
 import { PhotoPostRepository } from './photo-post.repository.inteface';
 
-type PostWithDetails = Prisma.PostGetPayload<{
+export type PhotoPostWithDetails = Prisma.PostGetPayload<{
   include: { photoDetails: true };
 }>;
 
@@ -28,7 +28,7 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
     };
   }
 
-  private reformatPhotoPostFromPrisma(createdPhotoPost: PostWithDetails | null): PhotoPostEntity {
+  public convertToPhotoPostEntity(createdPhotoPost: PhotoPostWithDetails | null): PhotoPostEntity {
     if (!createdPhotoPost) {
       return null;
     }
@@ -58,7 +58,7 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
       include: { photoDetails: true }
     });
 
-    return this.reformatPhotoPostFromPrisma(createdPhotoPost);
+    return this.convertToPhotoPostEntity(createdPhotoPost);
   }
 
   public async update(postId: PhotoPostEntity['id'], photoPostEntity: PhotoPostEntity): Promise<PhotoPostEntity> {
@@ -77,7 +77,7 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
       include: { photoDetails: true }
     });
 
-    return this.reformatPhotoPostFromPrisma(updatedPhotoPost);
+    return this.convertToPhotoPostEntity(updatedPhotoPost);
   }
 
   public async findById(postId: PhotoPostEntity['id']): Promise<PhotoPostEntity | null> {
@@ -86,7 +86,7 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
       include: { photoDetails: true }
     });
 
-    return this.reformatPhotoPostFromPrisma(photoPostData);
+    return this.convertToPhotoPostEntity(photoPostData);
   }
 
   public async deleteById(id: PhotoPostEntity['id']): Promise<PhotoPostEntity> {
@@ -95,7 +95,7 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
       include: { photoDetails: true }
     });
 
-    return this.reformatPhotoPostFromPrisma(deletedPost);
+    return this.convertToPhotoPostEntity(deletedPost);
   }
 
   public async exists(photoPostId: PhotoPostEntity['id']): Promise<boolean> {
