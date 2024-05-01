@@ -74,6 +74,7 @@ export class EmailSubscriberService {
       this.logger.log(`Found ${subscribers.length} subscribers`);
 
       await this.emailService.sendNewPostListEmail(subscribers, foundPosts, lastPostDate);
+      await this.emailScheduleRepository.updateLastSubscriptionPostDate(new Date());
 
       return {
         postCount: foundPosts.length,
