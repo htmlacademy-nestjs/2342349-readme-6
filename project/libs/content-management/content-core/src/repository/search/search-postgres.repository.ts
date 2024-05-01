@@ -1,17 +1,14 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import {
-  LinkPostRepository,
-  PhotoPostRepository,
-  QuotePostRepository,
-  TextPostRepository,
-  VideoPostRepository
-} from '@project/content-core';
 import { PrismaClientService } from '@project/prisma-client';
-import { PostSearchQuery } from '@project/search';
+import { AggregatePostRdo, PostSearchQuery } from '@project/search';
 import { PaginationResult, PostType, SortType } from '@project/shared-core';
-import { AggregatePostRdo } from '../../../../search/src/search-module/rdo/aggregate-post.rdo';
-import { SearchRepository } from './search.repository.inteface';
+import { LinkPostRepository } from '../link/link-post.repository.interface';
+import { PhotoPostRepository } from '../photo/photo-post.repository.interface';
+import { QuotePostRepository } from '../quote/quote-post.repository.interface';
+import { TextPostRepository } from '../text/text-post.repository.interface';
+import { VideoPostRepository } from '../video/video-post.repository.interface';
+import { SearchRepository } from './search.repository.interface';
 
 @Injectable()
 export class SearchPostgresRepository implements SearchRepository {
@@ -26,7 +23,7 @@ export class SearchPostgresRepository implements SearchRepository {
   }
 
   public async searchPosts(
-    { page, limit, title, authorIds, postType, tags, sortDirection, sortType, postStatus }: PostSearchQuery
+    { page, limit, title, authorIds, postType, tags, sortDirection, sortType, postStatus, postDate }: PostSearchQuery
   ): Promise<PaginationResult<AggregatePostRdo>> {
 
     const where: Prisma.PostWhereInput = {};
@@ -61,6 +58,9 @@ export class SearchPostgresRepository implements SearchRepository {
           }
         }
       ];
+    }
+    if (postDate) {
+      where.postedAt = { gte: postDate };
     }
 
     const orderBy: Prisma.PostOrderByWithRelationInput = {};

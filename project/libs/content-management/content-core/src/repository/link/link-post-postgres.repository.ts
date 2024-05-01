@@ -4,7 +4,7 @@ import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { LinkPostEntity } from '../../entity/link/link-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { LinkPostRepository } from './link-post.repository.inteface';
+import { LinkPostRepository } from './link-post.repository.interface';
 
 export type LinkPostWithDetails = Prisma.PostGetPayload<{
   include: { linkDetails: true };

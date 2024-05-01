@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { UserEntity } from '../entity/user.entity';
 import { UserFactory } from '../entity/user.factory';
 import { UserModel } from '../entity/user.model';
-import { UserRepository } from './user.repository.inteface';
+import { UserRepository } from './user.repository.interface';
 
 @Injectable()
 export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserModel> implements UserRepository {

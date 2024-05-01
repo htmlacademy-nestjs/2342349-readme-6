@@ -4,7 +4,7 @@ import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { QuotePostEntity } from '../../entity/quote/quote-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { QuotePostRepository } from './quote-post.repository.inteface';
+import { QuotePostRepository } from './quote-post.repository.interface';
 
 export type QuotePostWithDetails = Prisma.PostGetPayload<{
   include: { quoteDetails: true };

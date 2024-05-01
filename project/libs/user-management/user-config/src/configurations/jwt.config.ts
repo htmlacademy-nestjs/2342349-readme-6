@@ -17,7 +17,12 @@ async function getJwtConfig(): Promise<JwtConfiguration> {
     refreshTokenExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
   });
 
-  await config.validate();
+  try {
+    await config.validate();
+  } catch (error) {
+    console.error('Configuration validation error:', error);
+    throw error;
+  }
 
   return config;
 }

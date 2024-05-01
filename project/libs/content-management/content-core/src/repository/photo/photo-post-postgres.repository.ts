@@ -4,7 +4,7 @@ import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { PhotoPostEntity } from '../../entity/photo/photo-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { PhotoPostRepository } from './photo-post.repository.inteface';
+import { PhotoPostRepository } from './photo-post.repository.interface';
 
 export type PhotoPostWithDetails = Prisma.PostGetPayload<{
   include: { photoDetails: true };

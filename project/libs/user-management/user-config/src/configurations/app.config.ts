@@ -17,7 +17,12 @@ async function getAppConfig(): Promise<ApplicationConfiguration> {
     userDefaultAvatar: process.env.APP_USER_DEFAULT_AVATAR,
   });
 
-  await config.validate();
+  try {
+    await config.validate();
+  } catch (error) {
+    console.error('Configuration validation error:', error);
+    throw error;
+  }
 
   return config;
 }

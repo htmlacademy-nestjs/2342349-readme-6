@@ -4,13 +4,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { BcryptCrypto } from '@project/shared-helpers';
 import { ApplicationConfig, getJwtOptions } from '@project/user-config';
 import { UserCoreModule } from '@project/user-core';
+import { NotifyModule } from '@project/user-notify';
 import { JwtAccessStrategy } from '../strategy/jwt-access.strategy';
 import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
 
 @Module({
   imports: [
-    UserCoreModule,
+    UserCoreModule, NotifyModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: getJwtOptions,

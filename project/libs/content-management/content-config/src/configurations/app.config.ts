@@ -19,7 +19,12 @@ async function getAppConfig(): Promise<ApplicationConfiguration> {
     defaultCommentCountLimit: parseInt(process.env.APP_DEFAULT_COMMENT_COUNT_LIMIT, 10)
   });
 
-  await config.validate();
+  try {
+    await config.validate();
+  } catch (error) {
+    console.error('Configuration validation error:', error);
+    throw error;
+  }
 
   return config;
 }

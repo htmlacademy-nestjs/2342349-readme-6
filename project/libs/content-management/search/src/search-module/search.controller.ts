@@ -41,7 +41,7 @@ export class SearchController {
     @Query() query: PostSearchQuery
   ): Promise<AggregatePostPaginationRdo> {
     //todo userId from token
-    const postPaginationResults = await this.searchService.findPosts(userId, query);
+    const postPaginationResults = await this.searchService.findUserSearchPosts(userId, query);
     const transformedPostPagination = {
       ...postPaginationResults,
       entities: postPaginationResults.entities.map((post) => post.toPOJO())

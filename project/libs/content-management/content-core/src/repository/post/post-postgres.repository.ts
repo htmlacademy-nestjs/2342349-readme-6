@@ -3,7 +3,7 @@ import { BasePostgresRepository } from '@project/data-access';
 import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, StorableEntity } from '@project/shared-core';
 import { PostEntity } from '../../entity/post/post.entity';
-import { PostRepository } from './post.repository.inteface';
+import { PostRepository } from './post.repository.interface';
 
 @Injectable()
 export class PostPostgresRepository<T extends PostEntity & StorableEntity<ReturnType<T['toPOJO']>>> extends BasePostgresRepository<T> implements PostRepository {

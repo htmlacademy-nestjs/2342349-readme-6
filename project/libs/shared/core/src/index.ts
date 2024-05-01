@@ -24,3 +24,10 @@ export { QuotePost } from './type/post/quote-post.interface';
 export { TextPost } from './type/post/text-post.interface';
 export { VideoPost } from './type/post/video-post.interface';
 
+export { File } from './type/file/file.interface';
+export { StoredFile } from './type/file/stored-file.interface';
+
+export { Subscriber } from './type/notification/subscriber.interface';
+export { Schedule } from './type/notification/schedule.interface';
+export { RabbitRouting, RabbitQueue, RabbitExchange } from './type/notification/rabbit-routing.enum';
+

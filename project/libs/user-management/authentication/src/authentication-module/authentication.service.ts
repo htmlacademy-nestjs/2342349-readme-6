@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Token, TokenPayload, User } from '@project/shared-core';
 import { CryptoProtocol } from '@project/shared-helpers';
 import { UserEntity, UserRepository } from '@project/user-core';
+import { NotifyService } from '@project/user-notify';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { LoginDto } from '../dto/login.dto';
 import {
@@ -29,6 +30,7 @@ export class AuthenticationService {
     @Inject('UserRepository') private readonly userRepository: UserRepository,
     @Inject('CryptoProtocol') private readonly cryptoProtocol: CryptoProtocol,
     private readonly jwtService: JwtService,
+    private readonly notifyService: NotifyService,
   ) {}
 
   public async hashPassword(password: string): Promise<string> {
@@ -64,14 +66,21 @@ export class AuthenticationService {
       throw new NotFoundException(AUTHENTICATION_NEW_PASSWORD_SAME);
     }
 
-    const updatedUser = await this.userRepository.findById(userId);
-    if (!updatedUser) {
+    const foundUser = await this.userRepository.findById(userId);
+    if (!foundUser) {
       throw new NotFoundException(AUTHENTICATION_USER_NOT_FOUND);
     }
 
-    updatedUser.passwordHash = await this.hashPassword(newPassword);
+    foundUser.passwordHash = await this.hashPassword(newPassword);
+    const updatedUser = await this.userRepository.update(userId, foundUser);
 
-    return this.userRepository.update(userId, updatedUser);
+    await this.notifyService.publishChangePassword({
+      email: updatedUser.email,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName
+    });
+
+    return updatedUser;
   }
 
   public async createUserToken(user: User): Promise<Token> {

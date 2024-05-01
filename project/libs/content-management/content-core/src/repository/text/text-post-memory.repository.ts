@@ -3,7 +3,7 @@ import { TextPostEntity } from '../../entity/text/text-post.entity';
 import { TextPostFactory } from '../../entity/text/text-post.factory';
 import { PostMemoryRepository } from '../post/post-memory.repository';
 import { TextPostWithDetails } from './text-post-postgres.repository';
-import { TextPostRepository } from './text-post.repository.inteface';
+import { TextPostRepository } from './text-post.repository.interface';
 
 @Injectable()
 export class TextPostMemoryRepository extends PostMemoryRepository<TextPostEntity> implements TextPostRepository {

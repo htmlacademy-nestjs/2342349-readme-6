@@ -4,7 +4,7 @@ import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { VideoPostEntity } from '../../entity/video/video-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { VideoPostRepository } from './video-post.repository.inteface';
+import { VideoPostRepository } from './video-post.repository.interface';
 
 export type VideoPostWithDetails = Prisma.PostGetPayload<{
   include: { videoDetails: true };

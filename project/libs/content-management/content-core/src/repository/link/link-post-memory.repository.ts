@@ -3,7 +3,7 @@ import { LinkPostEntity } from '../../entity/link/link-post.entity';
 import { LinkPostFactory } from '../../entity/link/link-post.factory';
 import { PostMemoryRepository } from '../post/post-memory.repository';
 import { LinkPostWithDetails } from './link-post-postgres.repository';
-import { LinkPostRepository } from './link-post.repository.inteface';
+import { LinkPostRepository } from './link-post.repository.interface';
 
 @Injectable()
 export class LinkPostMemoryRepository extends PostMemoryRepository<LinkPostEntity> implements LinkPostRepository {

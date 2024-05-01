@@ -2,7 +2,9 @@ import { compare, genSalt, hash } from 'bcrypt';
 import { CryptoProtocol } from './crypto.intefrace';
 
 export class BcryptCrypto implements CryptoProtocol {
-  constructor(private readonly saltRounds: number) {
+  constructor(
+    private readonly saltRounds: number
+  ) {
   }
 
   public async hashPassword(password: string): Promise<string> {

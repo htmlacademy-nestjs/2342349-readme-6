@@ -4,7 +4,7 @@ import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { TextPostEntity } from '../../entity/text/text-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { TextPostRepository } from './text-post.repository.inteface';
+import { TextPostRepository } from './text-post.repository.interface';
 
 export type TextPostWithDetails = Prisma.PostGetPayload<{
   include: { textDetails: true };

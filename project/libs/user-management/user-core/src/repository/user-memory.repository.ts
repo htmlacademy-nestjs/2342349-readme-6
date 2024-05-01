@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseMemoryRepository } from '@project/data-access';
 import { UserEntity } from '../entity/user.entity';
 import { UserFactory } from '../entity/user.factory';
-import { UserRepository } from './user.repository.inteface';
+import { UserRepository } from './user.repository.interface';
 
 @Injectable()
 export class UserMemoryRepository extends BaseMemoryRepository<UserEntity> implements UserRepository {

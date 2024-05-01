@@ -4,7 +4,7 @@ import { BasePostgresRepository } from '@project/data-access';
 import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PaginationResult } from '@project/shared-core';
 import { CommentEntity } from '../../entity/comment/comment.entity';
-import { CommentRepository } from './comment.repository.inteface';
+import { CommentRepository } from './comment.repository.interface';
 
 @Injectable()
 export class CommentPostgresRepository extends BasePostgresRepository<CommentEntity> implements CommentRepository {

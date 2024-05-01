@@ -3,6 +3,7 @@ import { ConfigType } from '@nestjs/config';
 import { AuthenticationService } from '@project/authentication';
 import { ApplicationConfig } from '@project/user-config';
 import { UserEntity, UserRepository } from '@project/user-core';
+import { NotifyService } from '@project/user-notify';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
@@ -21,7 +22,8 @@ export class UserService {
   constructor(
     @Inject('UserRepository') private readonly userRepository: UserRepository,
     private readonly authenticationService: AuthenticationService,
-    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>
+    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>,
+    private readonly notifyService: NotifyService,
   ) {
   }
 
@@ -41,7 +43,15 @@ export class UserService {
     };
 
     const userEntity = new UserEntity(userData);
-    return this.userRepository.save(userEntity);
+    const createdUser = await this.userRepository.save(userEntity);
+
+    await this.notifyService.publishSubscriberRegistration({
+      email: createdUser.email,
+      firstName: createdUser.firstName,
+      lastName: createdUser.lastName
+    });
+
+    return createdUser;
   }
 
   public async findUserById(userId: string): Promise<UserEntity> {
