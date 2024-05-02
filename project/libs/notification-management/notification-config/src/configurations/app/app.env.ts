@@ -1,4 +1,4 @@
-import { IsIn, IsNumber, IsString, Max, Min, validateOrReject } from 'class-validator';
+import { IsIn, IsNumber, IsPositive, IsString, Max, Min, validateOrReject } from 'class-validator';
 import { AppConfig } from '../app.config';
 
 const USER_APP_MIN_PORT = 0;
@@ -14,6 +14,10 @@ export class ApplicationConfiguration implements AppConfig {
   @Min(USER_APP_MIN_PORT)
   @Max(USER_APP_MAX_PORT)
   port: number;
+
+  @IsNumber()
+  @IsPositive()
+  defaultPostCountLimit: number;
 
   public async validate(): Promise<void> {
     await validateOrReject(this);

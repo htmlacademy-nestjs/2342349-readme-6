@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { ApplicationConfig } from '@project/content-config';
 import { CommentEntity, CommentRepository } from '@project/content-core';
@@ -15,6 +15,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
+  private readonly logger = new Logger(CommentService.name);
   private readonly defaultPage = 1;
 
   constructor(
@@ -25,6 +26,7 @@ export class CommentService {
   }
 
   public async createComment(userId: string, postId: string, dto: UpdateCommentDto): Promise<CommentEntity> {
+    this.logger.log(`Creating comment for post ${postId} by user ${userId}`);
     const commentData = {
       authorId: userId,
       postId: postId,
@@ -32,19 +34,23 @@ export class CommentService {
     };
 
     if (!await this.postService.exists(postId)) {
+      this.logger.error(`Post not found with ID: ${postId}`);
       throw new NotFoundException(COMMENT_POST_NOT_FOUND);
     }
 
     const commentEntity = new CommentEntity(commentData);
     const createdComment = await this.commentRepository.save(commentEntity);
     await this.postService.incrementCommentCount(createdComment.postId);
+    this.logger.log(`Comment created with ID: ${createdComment.id}`);
 
     return createdComment;
   }
 
   public async findCommentById(commentId: string): Promise<CommentEntity> {
+    this.logger.log(`Finding comment by ID: ${commentId}`);
     const foundComment = await this.commentRepository.findById(commentId);
     if (!foundComment) {
+      this.logger.error(`Comment not found with ID: ${commentId}`);
       throw new NotFoundException(COMMENT_NOT_FOUND);
     }
 
@@ -52,7 +58,9 @@ export class CommentService {
   }
 
   public async findCommentsByPostId(postId: string, commentQuery?: CommentQuery): Promise<PaginationResult<CommentEntity>> {
+    this.logger.log(`Finding comments for post ID: ${postId}`);
     if (!await this.postService.exists(postId)) {
+      this.logger.error(`Post not found with ID: ${postId}`);
       throw new NotFoundException(COMMENT_POST_NOT_FOUND);
     }
 
@@ -64,6 +72,7 @@ export class CommentService {
       .findAllByPostId(postId, { limit, sortDirection, page });
 
     if (!commentsPagination.entities) {
+      this.logger.error(`No comments found for post ID: ${postId}`);
       throw new NotFoundException(COMMENT_NOT_FOUND);
     }
 
@@ -75,8 +84,10 @@ export class CommentService {
   }
 
   public async updateCommentById(userId: string, commentId: string, dto: UpdateCommentDto): Promise<CommentEntity> {
+    this.logger.log(`Updating comment ID: ${commentId} by user ID: ${userId}`);
     const updatedComment = await this.commentRepository.findById(commentId);
     if (updatedComment.authorId !== userId) {
+      this.logger.error(`Unauthorized update attempt by user ID: ${userId} on comment ID: ${commentId}`);
       throw new UnauthorizedException(COMMENT_MODIFY_PERMISSION);
     }
 
@@ -86,14 +97,17 @@ export class CommentService {
   }
 
   public async deleteCommentById(userId: string, commentId: string): Promise<CommentEntity> {
+    this.logger.log(`Deleting comment ID: ${commentId} by user ID: ${userId}`);
     const foundComment = await this.commentRepository.findById(commentId);
 
     if (foundComment.authorId !== userId) {
+      this.logger.error(`Unauthorized delete attempt by user ID: ${userId} on comment ID: ${commentId}`);
       throw new UnauthorizedException(COMMENT_DELETE_PERMISSION);
     }
 
     const deletedComment = await this.commentRepository.deleteById(commentId);
     await this.postService.decrementCommentCount(deletedComment.postId);
+    this.logger.log(`Comment deleted ID: ${commentId}`);
 
     return deletedComment;
   }

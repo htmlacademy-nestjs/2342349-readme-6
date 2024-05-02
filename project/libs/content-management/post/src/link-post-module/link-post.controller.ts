@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreateLinkPostDto } from './dto/create-link-post.dto';
@@ -9,6 +9,8 @@ import { LinkPostRdo } from './rdo/link-post.rdo';
 @ApiTags('Link-Post')
 @Controller('post/link')
 export class LinkPostController {
+  private readonly logger = new Logger(LinkPostController.name);
+
   constructor(
     private readonly linkPostService: LinkPostService,
   ) {}
@@ -22,8 +24,10 @@ export class LinkPostController {
     @Param('userId') userId: string,
     @Body() dto: CreateLinkPostDto
   ): Promise<LinkPostRdo> {
+    this.logger.log(`Creating link post for user ${userId}`);
     //todo userId from token
     const createdLinkPost = await this.linkPostService.createPost(userId, dto);
+
     return fillDto(LinkPostRdo, createdLinkPost.toPOJO());
   }
 
@@ -34,7 +38,9 @@ export class LinkPostController {
   public async getLinkPost(
     @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<LinkPostRdo> {
+    this.logger.log(`Retrieving link post ID ${postId}`);
     const foundPost = await this.linkPostService.findPostById(postId);
+
     return fillDto(LinkPostRdo, foundPost.toPOJO());
   }
 
@@ -50,8 +56,10 @@ export class LinkPostController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdateLinkPostDto
   ): Promise<LinkPostRdo> {
+    this.logger.log(`Updating link post ID ${postId} by user ${userId}`);
     //todo userId from token
     const updatedPost = await this.linkPostService.updatePostById(userId, postId, dto);
+
     return fillDto(LinkPostRdo, updatedPost.toPOJO());
   }
 
@@ -66,8 +74,10 @@ export class LinkPostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<LinkPostRdo> {
+    this.logger.log(`Deleting link post ID ${postId} by user ${userId}`);
     //todo userId from token
     const deletedPost = await this.linkPostService.deletePostById(userId, postId);
+
     return fillDto(LinkPostRdo, deletedPost.toPOJO());
   }
 
@@ -83,8 +93,10 @@ export class LinkPostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<LinkPostRdo> {
+    this.logger.log(`Reposting link post ID ${postId} by user ${userId}`);
     //todo userId from token
     const repostedPost = await this.linkPostService.repostPostById(userId, postId);
+
     return fillDto(LinkPostRdo, repostedPost.toPOJO());
   }
 }

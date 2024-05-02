@@ -92,4 +92,13 @@ export class PostSearchQuery {
   @IsIn(Object.values(SortType))
   @IsOptional()
   public sortType?: SortType;
+
+  @ApiPropertyOptional({
+    description: 'The date the post was published.',
+    type: 'string',
+    format: 'date-time',
+    example: '2023-01-01T12:00:00Z'
+  })
+  @IsOptional()
+  public postDate?: Date;
 }

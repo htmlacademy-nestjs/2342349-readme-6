@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { LinkPostEntity } from '../../entity/link/link-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { LinkPostRepository } from './link-post.repository.inteface';
+import { LinkPostRepository } from './link-post.repository.interface';
 
 export type LinkPostWithDetails = Prisma.PostGetPayload<{
   include: { linkDetails: true };
@@ -12,6 +12,8 @@ export type LinkPostWithDetails = Prisma.PostGetPayload<{
 
 @Injectable()
 export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostEntity> implements LinkPostRepository {
+  private readonly logger = new Logger(LinkPostPostgresRepository.name);
+
   constructor(
     entityFactory: EntityFactory<LinkPostEntity>,
     client: PrismaClientService
@@ -46,6 +48,7 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
   }
 
   public async save(linkPostEntity: LinkPostEntity): Promise<LinkPostEntity> {
+    this.logger.log(`Attempting to save new link post`);
     const linkPostData = this.formatPostForPrisma(linkPostEntity);
 
     const createdLinkPost = await this.client.post.create({
@@ -60,11 +63,13 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       },
       include: { linkDetails: true }
     });
+    this.logger.log(`New link post saved with ID: ${createdLinkPost.id}`);
 
     return this.convertToLinkPostEntity(createdLinkPost);
   }
 
   public async update(postId: LinkPostEntity['id'], linkPostEntity: LinkPostEntity): Promise<LinkPostEntity> {
+    this.logger.log(`Updating link post ID: ${postId}`);
     const linkPostData = this.formatPostForPrisma(linkPostEntity);
 
     const updatedLinkPost = await this.client.post.update({
@@ -80,11 +85,13 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       },
       include: { linkDetails: true }
     });
+    this.logger.log(`Link post updated with ID: ${updatedLinkPost.id}`);
 
     return this.convertToLinkPostEntity(updatedLinkPost);
   }
 
   public async findById(postId: LinkPostEntity['id']): Promise<LinkPostEntity | null> {
+    this.logger.log(`Finding link post by ID: ${postId}`);
     const linkPostData = await this.client.post.findUnique({
       where: { id: postId },
       include: { linkDetails: true }
@@ -94,15 +101,18 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
   }
 
   public async deleteById(id: LinkPostEntity['id']): Promise<LinkPostEntity> {
+    this.logger.log(`Deleting link post ID: ${id}`);
     const deletedPost = await this.client.post.delete({
       where: { id },
       include: { linkDetails: true }
     });
+    this.logger.log(`Link post deleted with ID: ${deletedPost.id}`);
 
     return this.convertToLinkPostEntity(deletedPost);
   }
 
   public async exists(linkPostId: LinkPostEntity['id']): Promise<boolean> {
+    this.logger.log(`Checking existence of link post ID: ${linkPostId}`);
     const linkPost = await this.client.linkPost.findUnique({
       where: { id: linkPostId },
       select: { id: true }

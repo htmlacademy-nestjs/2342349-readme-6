@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Logger, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { ChangePasswordDto } from '../dto/change-password.dto';
@@ -9,6 +9,8 @@ import { AuthenticationService } from './authentication.service';
 @ApiTags('authentication')
 @Controller('auth')
 export class AuthenticationController {
+  private readonly logger = new Logger(AuthenticationController.name);
+
   constructor(
     private readonly authService: AuthenticationService
   ) {}
@@ -22,7 +24,9 @@ export class AuthenticationController {
   public async login(
     @Body() dto: LoginDto
   ): Promise<LoggedRdo> {
+    this.logger.log(`Attempting to log in user: ${dto.email}`);
     const { authenticatedUserToken, existUser } = await this.authService.verifyUser(dto);
+
     return fillDto(LoggedRdo, { ...authenticatedUserToken, ...existUser.toPOJO() });
   }
 
@@ -37,8 +41,10 @@ export class AuthenticationController {
     @Param('userId') userId: string,
     @Body() dto: ChangePasswordDto
   ): Promise<LoggedRdo> {
+    this.logger.log(`Changing password for user ID: ${userId}`);
     //todo userId from token
     const updatedUser = await this.authService.changePassword(userId, dto);
+
     return fillDto(LoggedRdo, updatedUser.toPOJO());
   }
 }

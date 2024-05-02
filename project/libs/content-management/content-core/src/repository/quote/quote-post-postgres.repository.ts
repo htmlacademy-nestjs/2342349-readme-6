@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaClientService } from '@project/prisma-client';
 import { EntityFactory, PostStatus, PostType } from '@project/shared-core';
 import { QuotePostEntity } from '../../entity/quote/quote-post.entity';
 import { PostPostgresRepository } from '../post/post-postgres.repository';
-import { QuotePostRepository } from './quote-post.repository.inteface';
+import { QuotePostRepository } from './quote-post.repository.interface';
 
 export type QuotePostWithDetails = Prisma.PostGetPayload<{
   include: { quoteDetails: true };
@@ -12,6 +12,8 @@ export type QuotePostWithDetails = Prisma.PostGetPayload<{
 
 @Injectable()
 export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePostEntity> implements QuotePostRepository {
+  private readonly logger = new Logger(QuotePostPostgresRepository.name);
+
   constructor(
     entityFactory: EntityFactory<QuotePostEntity>,
     client: PrismaClientService
@@ -46,6 +48,7 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
   }
 
   public async save(quotePostEntity: QuotePostEntity): Promise<QuotePostEntity> {
+    this.logger.log('Attempting to save new quote post');
     const quotePostData = this.formatPostForPrisma(quotePostEntity);
 
     const createdQuotePost = await this.client.post.create({
@@ -60,11 +63,13 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       },
       include: { quoteDetails: true }
     });
+    this.logger.log(`Quote post saved with ID: ${createdQuotePost.id}`);
 
     return this.convertToQuotePostEntity(createdQuotePost);
   }
 
   public async update(postId: QuotePostEntity['id'], quotePostEntity: QuotePostEntity): Promise<QuotePostEntity> {
+    this.logger.log(`Updating quote post ID: ${postId}`);
     const quotePostData = this.formatPostForPrisma(quotePostEntity);
 
     const updatedQuotePost = await this.client.post.update({
@@ -80,11 +85,13 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       },
       include: { quoteDetails: true }
     });
+    this.logger.log(`Quote post updated with ID: ${updatedQuotePost.id}`);
 
     return this.convertToQuotePostEntity(updatedQuotePost);
   }
 
   public async findById(postId: QuotePostEntity['id']): Promise<QuotePostEntity | null> {
+    this.logger.log(`Finding quote post by ID: ${postId}`);
     const quotePostData = await this.client.post.findUnique({
       where: { id: postId },
       include: { quoteDetails: true }
@@ -94,15 +101,18 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
   }
 
   public async deleteById(id: QuotePostEntity['id']): Promise<QuotePostEntity> {
+    this.logger.log(`Deleting quote post ID: ${id}`);
     const deletedPost = await this.client.post.delete({
       where: { id },
       include: { quoteDetails: true }
     });
+    this.logger.log(`Quote post deleted with ID: ${deletedPost.id}`);
 
     return this.convertToQuotePostEntity(deletedPost);
   }
 
   public async exists(quotePostId: QuotePostEntity['id']): Promise<boolean> {
+    this.logger.log(`Checking existence of quote post ID: ${quotePostId}`);
     const quotePost = await this.client.quotePost.findUnique({
       where: { id: quotePostId },
       select: { id: true }

@@ -9,17 +9,17 @@ import { TextPostFactory } from './entity/text/text-post.factory';
 import { VideoPostFactory } from './entity/video/video-post.factory';
 import { CommentPostgresRepository } from './repository/comment/comment-postgres.repository';
 import { LinkPostPostgresRepository } from './repository/link/link-post-postgres.repository';
-import { LinkPostRepository } from './repository/link/link-post.repository.inteface';
+import { LinkPostRepository } from './repository/link/link-post.repository.interface';
 import { PhotoPostPostgresRepository } from './repository/photo/photo-post-postgres.repository';
-import { PhotoPostRepository } from './repository/photo/photo-post.repository.inteface';
+import { PhotoPostRepository } from './repository/photo/photo-post.repository.interface';
 import { PostPostgresRepository } from './repository/post/post-postgres.repository';
 import { QuotePostPostgresRepository } from './repository/quote/quote-post-postgres.repository';
-import { QuotePostRepository } from './repository/quote/quote-post.repository.inteface';
+import { QuotePostRepository } from './repository/quote/quote-post.repository.interface';
 import { SearchPostgresRepository } from './repository/search/search-postgres.repository';
 import { TextPostPostgresRepository } from './repository/text/text-post-postgres.repository';
-import { TextPostRepository } from './repository/text/text-post.repository.inteface';
+import { TextPostRepository } from './repository/text/text-post.repository.interface';
 import { VideoPostPostgresRepository } from './repository/video/video-post-postgres.repository';
-import { VideoPostRepository } from './repository/video/video-post.repository.inteface';
+import { VideoPostRepository } from './repository/video/video-post.repository.interface';
 
 @Module({
   imports: [PrismaClientModule],
@@ -115,7 +115,7 @@ import { VideoPostRepository } from './repository/video/video-post.repository.in
     'QuotePostRepository',
     'TextPostRepository',
     'VideoPostRepository',
-    'SearchRepository',
+    'SearchRepository'
   ]
 })
 export class ContentCoreModule {

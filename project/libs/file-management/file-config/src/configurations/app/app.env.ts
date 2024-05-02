@@ -15,6 +15,12 @@ export class ApplicationConfiguration implements AppConfig {
   @Max(USER_APP_MAX_PORT)
   port: number;
 
+  @IsString()
+  serveRoot: string;
+
+  @IsString()
+  uploadDirectoryPath: string;
+
   public async validate(): Promise<void> {
     await validateOrReject(this);
   }

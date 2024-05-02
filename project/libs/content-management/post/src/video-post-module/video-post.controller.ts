@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreateVideoPostDto } from './dto/create-video-post.dto';
@@ -9,6 +9,8 @@ import { VideoPostService } from './video-post.service';
 @ApiTags('Video-Posts')
 @Controller('post/video')
 export class VideoPostController {
+  private readonly logger = new Logger(VideoPostController.name);
+
   constructor(
     private readonly videoPostService: VideoPostService,
   ) {}
@@ -22,8 +24,10 @@ export class VideoPostController {
     @Param('userId') userId: string,
     @Body() dto: CreateVideoPostDto
   ): Promise<VideoPostRdo> {
+    this.logger.log(`Creating video post for user ${userId}`);
     //todo userId from token
     const createdVideoPost = await this.videoPostService.createPost(userId, dto);
+
     return fillDto(VideoPostRdo, createdVideoPost.toPOJO());
   }
 
@@ -35,7 +39,9 @@ export class VideoPostController {
   public async getVideoPost(
     @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<VideoPostRdo> {
+    this.logger.log(`Retrieving video post ID ${postId}`);
     const foundPost = await this.videoPostService.findPostById(postId);
+
     return fillDto(VideoPostRdo, foundPost.toPOJO());
   }
 
@@ -51,8 +57,10 @@ export class VideoPostController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdateVideoPostDto
   ): Promise<VideoPostRdo> {
+    this.logger.log(`Updating video post ID ${postId} by user ${userId}`);
     //todo userId from token
     const updatedPost = await this.videoPostService.updatePostById(userId, postId, dto);
+
     return fillDto(VideoPostRdo, updatedPost.toPOJO());
   }
 
@@ -67,8 +75,10 @@ export class VideoPostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<VideoPostRdo> {
+    this.logger.log(`Deleting video post ID ${postId} by user ${userId}`);
     //todo userId from token
     const deletedPost = await this.videoPostService.deletePostById(userId, postId);
+
     return fillDto(VideoPostRdo, deletedPost.toPOJO());
   }
 
@@ -84,8 +94,10 @@ export class VideoPostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<VideoPostRdo> {
+    this.logger.log(`Reposting video post ID ${postId} by user ${userId}`);
     //todo userId from token
     const repostedPost = await this.videoPostService.repostPostById(userId, postId);
+
     return fillDto(VideoPostRdo, repostedPost.toPOJO());
   }
 }

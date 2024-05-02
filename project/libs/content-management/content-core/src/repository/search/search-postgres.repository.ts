@@ -1,20 +1,19 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import {
-  LinkPostRepository,
-  PhotoPostRepository,
-  QuotePostRepository,
-  TextPostRepository,
-  VideoPostRepository
-} from '@project/content-core';
 import { PrismaClientService } from '@project/prisma-client';
-import { PostSearchQuery } from '@project/search';
+import { AggregatePostRdo, PostSearchQuery } from '@project/search';
 import { PaginationResult, PostType, SortType } from '@project/shared-core';
-import { AggregatePostRdo } from '../../../../search/src/search-module/rdo/aggregate-post.rdo';
-import { SearchRepository } from './search.repository.inteface';
+import { LinkPostRepository } from '../link/link-post.repository.interface';
+import { PhotoPostRepository } from '../photo/photo-post.repository.interface';
+import { QuotePostRepository } from '../quote/quote-post.repository.interface';
+import { TextPostRepository } from '../text/text-post.repository.interface';
+import { VideoPostRepository } from '../video/video-post.repository.interface';
+import { SearchRepository } from './search.repository.interface';
 
 @Injectable()
 export class SearchPostgresRepository implements SearchRepository {
+  private readonly logger = new Logger(SearchPostgresRepository.name);
+
   constructor(
     protected readonly client: PrismaClientService,
     @Inject('LinkPostRepository') private readonly linkPostRepository: LinkPostRepository,
@@ -26,8 +25,9 @@ export class SearchPostgresRepository implements SearchRepository {
   }
 
   public async searchPosts(
-    { page, limit, title, authorIds, postType, tags, sortDirection, sortType, postStatus }: PostSearchQuery
+    { page, limit, title, authorIds, postType, tags, sortDirection, sortType, postStatus, postDate }: PostSearchQuery
   ): Promise<PaginationResult<AggregatePostRdo>> {
+    this.logger.log('Initiating posts search');
 
     const where: Prisma.PostWhereInput = {};
     if (authorIds.length) {
@@ -62,6 +62,9 @@ export class SearchPostgresRepository implements SearchRepository {
         }
       ];
     }
+    if (postDate) {
+      where.postedAt = { gte: postDate };
+    }
 
     const orderBy: Prisma.PostOrderByWithRelationInput = {};
     switch (sortType) {
@@ -75,7 +78,7 @@ export class SearchPostgresRepository implements SearchRepository {
         orderBy.likeCount = sortDirection;
         break;
     }
-
+    this.logger.log(`Executing search query on database`);
 
     const [posts, postsCount] = await Promise.all([
       this.client.post.findMany({
@@ -93,6 +96,7 @@ export class SearchPostgresRepository implements SearchRepository {
       }),
       this.client.post.count({ where: where })
     ]);
+    this.logger.log(`Search query completed with total found items: ${postsCount}`);
 
     return {
       entities: posts.map(post => {
@@ -108,6 +112,7 @@ export class SearchPostgresRepository implements SearchRepository {
           case PostType.VIDEO:
             return this.videoPostRepository.convertToVideoPostEntity(post);
           default:
+            this.logger.error('Unrecognized post type encountered');
             throw new InternalServerErrorException('Unrecognized post type:', post.postType);
         }
       }),

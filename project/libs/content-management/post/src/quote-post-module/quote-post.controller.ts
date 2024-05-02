@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { LinkPostRdo } from '../link-post-module/rdo/link-post.rdo';
@@ -10,6 +10,8 @@ import { QuotePostRdo } from './rdo/quote-post.rdo';
 @ApiTags('Quote-Posts')
 @Controller('post/quote')
 export class QuotePostController {
+  private readonly logger = new Logger(QuotePostController.name);
+
   constructor(
     private readonly quotePostService: QuotePostService,
   ) {}
@@ -23,8 +25,10 @@ export class QuotePostController {
     @Param('userId') userId: string,
     @Body() dto: CreateQuotePostDto
   ): Promise<QuotePostRdo> {
+    this.logger.log(`Creating quote post for user ${userId}`);
     //todo userId from token
     const createdQuotePost = await this.quotePostService.createPost(userId, dto);
+
     return fillDto(QuotePostRdo, createdQuotePost.toPOJO());
   }
 
@@ -36,7 +40,9 @@ export class QuotePostController {
   public async getQuotePost(
     @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<QuotePostRdo> {
+    this.logger.log(`Retrieving quote post ID ${postId}`);
     const foundPost = await this.quotePostService.findPostById(postId);
+
     return fillDto(QuotePostRdo, foundPost.toPOJO());
   }
 
@@ -52,8 +58,10 @@ export class QuotePostController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdateQuotePostDto
   ): Promise<QuotePostRdo> {
+    this.logger.log(`Updating quote post ID ${postId} by user ${userId}`);
     //todo userId from token
     const updatedPost = await this.quotePostService.updatePostById(userId, postId, dto);
+
     return fillDto(QuotePostRdo, updatedPost.toPOJO());
   }
 
@@ -69,8 +77,10 @@ export class QuotePostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<QuotePostRdo> {
+    this.logger.log(`Deleting quote post ID ${postId} by user ${userId}`);
     //todo userId from token
     const deletedPost = await this.quotePostService.deletePostById(userId, postId);
+
     return fillDto(QuotePostRdo, deletedPost.toPOJO());
   }
 
@@ -85,8 +95,10 @@ export class QuotePostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<QuotePostRdo> {
+    this.logger.log(`Reposting quote post ID ${postId} by user ${userId}`);
     //todo userId from token
     const repostedPost = await this.quotePostService.repostPostById(userId, postId);
+
     return fillDto(QuotePostRdo, repostedPost.toPOJO());
   }
 }

@@ -2,7 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable,
+  Injectable, Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -22,12 +22,15 @@ import {
 
 @Injectable()
 export class LinkPostService {
+  private readonly logger = new Logger(LinkPostService.name);
+
   constructor(
     @Inject('LinkPostRepository') private readonly linkPostRepository: LinkPostRepository,
     private readonly postService: PostService,
   ) {}
 
   public async createPost(userId: string, dto: CreateLinkPostDto, originalPostId?: string): Promise<LinkPostEntity> {
+    this.logger.log(`Creating link post for user ${userId}`);
     const linkPostData = {
       authorId: userId,
       postType: PostType.LINK,
@@ -39,16 +42,21 @@ export class LinkPostService {
     dto.tags.map((tag) => tag.toLowerCase())
 
     const linkPostEntity = new LinkPostEntity(linkPostData);
+    const savedPost = await this.linkPostRepository.save(linkPostEntity);
+    this.logger.log(`Link post created with ID ${savedPost.id}`);
 
-    return this.linkPostRepository.save(linkPostEntity);
+    return savedPost;
   }
 
   public async findPostById(postId: string): Promise<LinkPostEntity> {
+    this.logger.log(`Finding link post by ID ${postId}`);
     const foundLinkPost = await this.linkPostRepository.findById(postId);
     if (!foundLinkPost) {
+      this.logger.error(`Link post not found: ${postId}`);
       throw new NotFoundException(LINK_POST_NOT_FOUND);
     }
     if (foundLinkPost.postType !== PostType.LINK) {
+      this.logger.error(`Incorrect post type for link post: ${postId}`);
       throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
     }
 
@@ -60,11 +68,14 @@ export class LinkPostService {
   }
 
   public async updatePostById(userId: string, postId: string, dto: UpdateLinkPostDto): Promise<LinkPostEntity> {
+    this.logger.log(`Updating link post ID ${postId} by user ${userId}`);
     const updatedLinkPost = await this.findPostById(postId);
     if (updatedLinkPost.postType !== PostType.LINK) {
+      this.logger.error(`Incorrect post type for link post: ${postId}`);
       throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
     }
     if (updatedLinkPost.authorId !== userId) {
+      this.logger.error(`Unauthorized attempt to modify post by user ${userId}`);
       throw new UnauthorizedException(LINK_POST_MODIFY_PERMISSION);
     }
 
@@ -74,28 +85,38 @@ export class LinkPostService {
     if (dto.url !== undefined) updatedLinkPost.url = dto.url;
     if (dto.description !== undefined) updatedLinkPost.description = dto.description;
 
-    return this.linkPostRepository.update(postId, updatedLinkPost);
+    const savedUpdatedPost = await this.linkPostRepository.update(postId, updatedLinkPost);
+    this.logger.log(`Link post updated ID: ${savedUpdatedPost.id}`);
+
+    return savedUpdatedPost;
   }
 
   public async deletePostById(userId: string, postId: string): Promise<LinkPostEntity> {
+    this.logger.log(`Deleting link post ID ${postId} by user ${userId}`);
     const deletedLinkPost = await this.findPostById(postId);
     if (deletedLinkPost.authorId !== userId) {
+      this.logger.error(`Unauthorized attempt to delete post by user ${userId}`);
       throw new UnauthorizedException(LINK_POST_DELETE_PERMISSION);
     }
 
-    return this.linkPostRepository.deleteById(postId);
-  }
+    const deletedPost = await this.linkPostRepository.deleteById(postId);
+    this.logger.log(`Link post deleted ID: ${deletedPost.id}`);
+    return deletedPost;  }
 
   public async repostPostById(userId: string, postId: string): Promise<LinkPostEntity> {
+    this.logger.log(`Reposting link post ID ${postId} by user ${userId}`);
     const repostLinkPost = await this.findPostById(postId);
     if (repostLinkPost.postType !== PostType.LINK) {
+      this.logger.error(`Incorrect post type for link post: ${postId}`);
       throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
     }
     if (repostLinkPost.authorId === userId) {
+      this.logger.error(`User ${userId} attempted to repost own post`);
       throw new UnauthorizedException(LINK_POST_REPOST_AUTHOR);
     }
 
     if (await this.postService.existsRepostByUser(postId, userId)) {
+      this.logger.error(`Repost already exists for user ${userId} and post ${postId}`);
       throw new ConflictException(LINK_POST_REPOST_EXISTS);
     }
 
@@ -107,6 +128,7 @@ export class LinkPostService {
 
     const repostedLinkPost = await this.createPost(userId, createLinkPostDto, repostLinkPost.id);
     await this.postService.incrementRepostCount(postId);
+    this.logger.log(`Link post reposted successfully ID: ${repostedLinkPost.id}`);
 
     return repostedLinkPost;
   }

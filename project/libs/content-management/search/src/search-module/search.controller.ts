@@ -24,7 +24,7 @@ export class SearchController {
     //todo userId from token
     //todo subscriptionIds from User
     const subscriptionIds = ['author-uuid-003', 'author-uuid-004'];
-    const postPagination = await this.searchService.findPersonalFeedPosts(userId, subscriptionIds, query);
+    const postPagination = await this.searchService.findPersonalFeedPosts(subscriptionIds, query);
     const transformedPostPagination = {
       ...postPagination,
       entities: postPagination.entities.map((post) => post.toPOJO())
@@ -41,7 +41,7 @@ export class SearchController {
     @Query() query: PostSearchQuery
   ): Promise<AggregatePostPaginationRdo> {
     //todo userId from token
-    const postPaginationResults = await this.searchService.findPosts(userId, query);
+    const postPaginationResults = await this.searchService.findUserSearchPosts(userId, query);
     const transformedPostPagination = {
       ...postPaginationResults,
       entities: postPaginationResults.entities.map((post) => post.toPOJO())
