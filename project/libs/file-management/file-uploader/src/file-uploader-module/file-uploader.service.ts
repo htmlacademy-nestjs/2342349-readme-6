@@ -43,9 +43,11 @@ export class FileUploaderService {
   public async writeFile(file: Express.Multer.File): Promise<StoredFile> {
     const fileExtension = extension(file.mimetype);
     if (!fileExtension) {
+      this.logger.error(`Unknown file type received: ${file.mimetype}`);
       throw new BadRequestException(FILE_UNKNOWN_TYPE);
     }
     if (!FILE_ALLOWED_EXTENSIONS.includes(fileExtension)) {
+      this.logger.error(`Unsupported file type attempt: ${fileExtension}`);
       throw new BadRequestException(FILE_UNSUPPORTED_TYPE);
     }
 
@@ -56,6 +58,7 @@ export class FileUploaderService {
       const path = this.getDestinationFilePath(filename);
       await ensureDir(join(uploadDirectoryPath, subDirectory));
       await writeFile(path, file.buffer);
+      this.logger.log(`File written successfully at ${path}`);
 
       return {
         fileExtension,
@@ -85,13 +88,17 @@ export class FileUploaderService {
       createdAt: undefined,
       updatedAt: undefined,
     });
+    const savedFile = await this.fileUploaderRepository.save(fileEntity);
+    this.logger.log(`File saved in database with ID: ${savedFile.id}`);
 
-    return this.fileUploaderRepository.save(fileEntity);
+    return savedFile
   }
 
   public async getFile(fileId: string): Promise<FileUploaderEntity> {
+    this.logger.log(`Retrieving file with ID: ${fileId}`);
     const existFile = await this.fileUploaderRepository.findById(fileId);
     if (!existFile) {
+      this.logger.error(`File not found with ID: ${fileId}`);
       throw new NotFoundException(`File with ${fileId} not found.`);
     }
 

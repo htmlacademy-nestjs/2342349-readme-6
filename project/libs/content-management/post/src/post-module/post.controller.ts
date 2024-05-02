@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { PostService } from './post.service';
@@ -7,6 +7,8 @@ import { PostRdo } from './rdo/post.rdo';
 @ApiTags('Post')
 @Controller('post')
 export class PostController {
+  private readonly logger = new Logger(PostController.name);
+
   constructor(
     private readonly postService: PostService,
   ) {}
@@ -19,7 +21,9 @@ export class PostController {
   public async getPost(
     @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<PostRdo> {
+    this.logger.log(`Retrieving post by ID: ${postId}`);
     const foundPost = await this.postService.findPostById(postId);
+
     return fillDto(PostRdo, foundPost.toPOJO());
   }
 
@@ -34,8 +38,10 @@ export class PostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PostRdo> {
+    this.logger.log(`Liking post ID: ${postId} by user ID: ${userId}`);
     //todo userId from token
     const postAfterLike = await this.postService.likePostById(userId, postId);
+
     return fillDto(PostRdo, postAfterLike.toPOJO());
   }
 
@@ -50,8 +56,10 @@ export class PostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PostRdo> {
+    this.logger.log(`Unliking post ID: ${postId} by user ID: ${userId}`);
     //todo userId from token
     const postAfterUnlike = await this.postService.unlikePostById(userId, postId);
+
     return fillDto(PostRdo, postAfterUnlike.toPOJO());
   }
 
@@ -66,8 +74,10 @@ export class PostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PostRdo> {
+    this.logger.log(`Deleting post ID: ${postId} by user ID: ${userId}`);
     //todo userId from token
     const deletedPost = await this.postService.deletePostById(userId, postId);
+
     return fillDto(PostRdo, deletedPost.toPOJO());
   }
 }

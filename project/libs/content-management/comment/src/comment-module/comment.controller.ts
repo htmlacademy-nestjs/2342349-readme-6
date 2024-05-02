@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CommentQuery } from './comment.query';
@@ -11,6 +23,8 @@ import { CommentRdo } from './rdo/comment.rdo';
 @ApiTags('comment')
 @Controller('comment')
 export class CommentController {
+  private readonly logger = new Logger(CommentController.name);
+
   constructor(
     private readonly commentService: CommentService
   ) {
@@ -28,8 +42,11 @@ export class CommentController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: CreateCommentDto
   ): Promise<CommentRdo> {
+    this.logger.log(`Attempting to create comment for post: ${postId} by user: ${userId}`);
     //todo userId from token
     const createdComment = await this.commentService.createComment(userId, postId, dto);
+    this.logger.log(`Comment created with ID: ${createdComment.id}`);
+
     return fillDto(CommentRdo, createdComment.toPOJO());
   }
 
@@ -45,9 +62,12 @@ export class CommentController {
     @Param('commentId', ParseUUIDPipe) commentId: string,
     @Body() dto: UpdateCommentDto
   ): Promise<CommentRdo> {
+    this.logger.log(`Attempting to update comment: ${commentId} by user: ${userId}`);
     //todo userId from token
-    const createdComment = await this.commentService.updateCommentById(userId, commentId, dto);
-    return fillDto(CommentRdo, createdComment.toPOJO());
+    const updatedComment = await this.commentService.updateCommentById(userId, commentId, dto);
+    this.logger.log(`Comment updated with ID: ${updatedComment.id}`);
+
+    return fillDto(CommentRdo, updatedComment.toPOJO());
   }
 
   @Get('post/:postId')
@@ -59,7 +79,10 @@ export class CommentController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Query() query: CommentQuery
   ): Promise<CommentPaginationRdo> {
+    this.logger.log(`Retrieving comments for post ID: ${postId}`);
     const commentPagination = await this.commentService.findCommentsByPostId(postId, query);
+    this.logger.log(`Comments retrieved for post ID: ${postId}`);
+
     const transformedCommentPagination = {
       ...commentPagination,
       entities: commentPagination.entities.map((comment) => comment.toPOJO())
@@ -76,7 +99,10 @@ export class CommentController {
   public async getComment(
     @Param('commentId', ParseUUIDPipe) commentId: string
   ): Promise<CommentRdo> {
+    this.logger.log(`Retrieving comment with ID: ${commentId}`);
     const foundComment = await this.commentService.findCommentById(commentId);
+    this.logger.log(`Comment retrieved with ID: ${foundComment.id}`);
+
     return fillDto(CommentRdo, foundComment.toPOJO());
   }
 
@@ -91,8 +117,11 @@ export class CommentController {
     @Param('userId') userId: string,
     @Param('commentId', ParseUUIDPipe) commentId: string
   ): Promise<CommentRdo> {
+    this.logger.log(`Attempting to delete comment: ${commentId} by user: ${userId}`);
     //todo userId from token
-    const createdComment = await this.commentService.deleteCommentById(userId, commentId);
-    return fillDto(CommentRdo, createdComment.toPOJO());
+    const deletedComment = await this.commentService.deleteCommentById(userId, commentId);
+    this.logger.log(`Comment deleted with ID: ${deletedComment.id}`);
+
+    return fillDto(CommentRdo, deletedComment.toPOJO());
   }
 }

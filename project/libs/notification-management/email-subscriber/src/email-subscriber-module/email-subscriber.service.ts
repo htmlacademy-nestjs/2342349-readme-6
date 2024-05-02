@@ -66,7 +66,7 @@ export class EmailSubscriberService {
       this.logger.log(`Processed new post notifications for ${lastPostDate} date`);
 
       //todo searchService from API
-      const foundPostPagination = await this.searchService.findNewPostsByDate(userId, lastPostDate);
+      const foundPostPagination = await this.searchService.findNewPostsByDate(lastPostDate);
       const foundPosts = foundPostPagination.entities;
       this.logger.log(`Found ${foundPosts.length} new posts`);
 

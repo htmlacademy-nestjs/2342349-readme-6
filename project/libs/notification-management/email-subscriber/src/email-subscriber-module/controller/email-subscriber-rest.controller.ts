@@ -18,6 +18,7 @@ export class EmailSubscriberRestController {
   public async getPersonalFeedPosts(
     @Param('userId') userId: string,
   ): Promise<PostNotificationRdo> {
+    this.logger.log(`Initiating email notifications for new posts for user ${userId}`);
     //todo userId from token
     return await this.emailSubscriberService.findPostsForNotification(userId);
   }

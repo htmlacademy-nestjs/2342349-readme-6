@@ -2,7 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable,
+  Injectable, Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -22,6 +22,8 @@ import {
 
 @Injectable()
 export class VideoPostService {
+  private readonly logger = new Logger(VideoPostService.name);
+
   constructor(
     @Inject('VideoPostRepository') private readonly videoPostRepository: VideoPostRepository,
     private readonly postService: PostService
@@ -29,6 +31,7 @@ export class VideoPostService {
   }
 
   public async createPost(userId: string, dto: CreateVideoPostDto, originalPostId?: string): Promise<VideoPostEntity> {
+    this.logger.log(`Creating video post for user ${userId}`);
     const videoPostData = {
       authorId: userId,
       postType: PostType.VIDEO,
@@ -39,16 +42,21 @@ export class VideoPostService {
     };
 
     const videoPostEntity = new VideoPostEntity(videoPostData);
+    const savedVideoPost = await this.videoPostRepository.save(videoPostEntity);
+    this.logger.log(`Video post created with ID ${savedVideoPost.id}`);
 
-    return this.videoPostRepository.save(videoPostEntity);
+    return savedVideoPost;
   }
 
   public async findPostById(postId: string): Promise<VideoPostEntity> {
+    this.logger.log(`Finding video post by ID ${postId}`);
     const foundVidePost = await this.videoPostRepository.findById(postId);
     if (!foundVidePost) {
+      this.logger.error(`Video post not found: ${postId}`);
       throw new NotFoundException(VIDEO_POST_NOT_FOUND);
     }
     if (foundVidePost.postType !== PostType.VIDEO) {
+      this.logger.error(`Incorrect post type for video post: ${postId}`);
       throw new BadRequestException(VIDEO_POST_DIFFERENT_TYPE);
     }
 
@@ -60,11 +68,14 @@ export class VideoPostService {
   }
 
   public async updatePostById(userId: string, postId: string, dto: UpdateVideoPostDto): Promise<VideoPostEntity> {
+    this.logger.log(`Updating video post ID ${postId} by user ${userId}`);
     const updatedVideoPost = await this.findPostById(postId);
     if (updatedVideoPost.postType !== PostType.VIDEO) {
+      this.logger.error(`Incorrect post type for video post: ${postId}`);
       throw new BadRequestException(VIDEO_POST_DIFFERENT_TYPE);
     }
     if (updatedVideoPost.authorId !== userId) {
+      this.logger.error(`Unauthorized attempt to modify post by user ${userId}`);
       throw new UnauthorizedException(VIDEO_POST_MODIFY_PERMISSION);
     }
 
@@ -74,28 +85,40 @@ export class VideoPostService {
     if (dto.title !== undefined) updatedVideoPost.title = dto.title;
     if (dto.url !== undefined) updatedVideoPost.url = dto.url;
 
-    return this.videoPostRepository.update(postId, updatedVideoPost);
+    const savedUpdatedVideoPost = await this.videoPostRepository.update(postId, updatedVideoPost);
+    this.logger.log(`Video post updated ID: ${savedUpdatedVideoPost.id}`);
+
+    return savedUpdatedVideoPost;
   }
 
   public async deletePostById(userId: string, postId: string): Promise<VideoPostEntity> {
+    this.logger.log(`Deleting video post ID ${postId} by user ${userId}`);
     const deletedVideoPost = await this.findPostById(postId);
     if (deletedVideoPost.authorId !== userId) {
+      this.logger.error(`Unauthorized attempt to delete post by user ${userId}`);
       throw new UnauthorizedException(VIDEO_POST_DELETE_PERMISSION);
     }
 
-    return this.videoPostRepository.deleteById(postId);
+    const deletedPost = await this.videoPostRepository.deleteById(postId);
+    this.logger.log(`Video post deleted ID: ${deletedPost.id}`);
+
+    return deletedPost;
   }
 
   public async repostPostById(userId: string, postId: string): Promise<VideoPostEntity> {
+    this.logger.log(`Reposting video post ID ${postId} by user ${userId}`);
     const repostVideoPost = await this.findPostById(postId);
     if (repostVideoPost.postType !== PostType.VIDEO) {
+      this.logger.error(`Incorrect post type for video post: ${postId}`);
       throw new BadRequestException(VIDEO_POST_DIFFERENT_TYPE);
     }
     if (repostVideoPost.authorId === userId) {
+      this.logger.error(`User ${userId} attempted to repost own post`);
       throw new UnauthorizedException(VIDEO_POST_REPOST_AUTHOR);
     }
 
     if (await this.postService.existsRepostByUser(postId, userId)) {
+      this.logger.error(`Repost already exists for user ${userId} and post ${postId}`);
       throw new ConflictException(VIDEO_POST_REPOST_EXISTS);
     }
 
@@ -107,6 +130,7 @@ export class VideoPostService {
 
     const repostedVideoPost = await this.createPost(userId, createVideoPostDto, repostVideoPost.id);
     await this.postService.incrementRepostCount(postId);
+    this.logger.log(`Video post reposted successfully ID: ${repostedVideoPost.id}`);
 
     return repostedVideoPost;
   }

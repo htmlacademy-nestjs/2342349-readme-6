@@ -24,7 +24,7 @@ export class SearchController {
     //todo userId from token
     //todo subscriptionIds from User
     const subscriptionIds = ['author-uuid-003', 'author-uuid-004'];
-    const postPagination = await this.searchService.findPersonalFeedPosts(userId, subscriptionIds, query);
+    const postPagination = await this.searchService.findPersonalFeedPosts(subscriptionIds, query);
     const transformedPostPagination = {
       ...postPagination,
       entities: postPagination.entities.map((post) => post.toPOJO())

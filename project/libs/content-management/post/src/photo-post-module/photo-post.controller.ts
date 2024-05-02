@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
@@ -9,6 +9,8 @@ import { PhotoPostRdo } from './rdo/photo-post.rdo';
 @ApiTags('Photo-Post')
 @Controller('post/photo')
 export class PhotoPostController {
+  private readonly logger = new Logger(PhotoPostController.name);
+
   constructor(
     private readonly photoPostService: PhotoPostService,
   ) {}
@@ -22,8 +24,10 @@ export class PhotoPostController {
     @Param('userId') userId: string,
     @Body() dto: CreatePhotoPostDto
   ): Promise<PhotoPostRdo> {
+    this.logger.log(`Creating photo post for user ${userId}`);
     //todo userId from token
     const createdPhotoPost = await this.photoPostService.createPost(userId, dto);
+
     return fillDto(PhotoPostRdo, createdPhotoPost.toPOJO());
   }
 
@@ -35,7 +39,9 @@ export class PhotoPostController {
   public async getPhotoPost(
     @Param('postId', ParseUUIDPipe) postId: string
   ): Promise<PhotoPostRdo> {
+    this.logger.log(`Retrieving photo post ID ${postId}`);
     const foundPost = await this.photoPostService.findPostById(postId);
+
     return fillDto(PhotoPostRdo, foundPost.toPOJO());
   }
 
@@ -51,8 +57,10 @@ export class PhotoPostController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: UpdatePhotoPostDto
   ): Promise<PhotoPostRdo> {
+    this.logger.log(`Updating photo post ID ${postId} by user ${userId}`);
     //todo userId from token
     const updatedPost = await this.photoPostService.updatePostById(userId, postId, dto);
+
     return fillDto(PhotoPostRdo, updatedPost.toPOJO());
   }
 
@@ -67,8 +75,10 @@ export class PhotoPostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PhotoPostRdo> {
+    this.logger.log(`Deleting photo post ID ${postId} by user ${userId}`);
     //todo userId from token
     const deletedPost = await this.photoPostService.deletePostById(userId, postId);
+
     return fillDto(PhotoPostRdo, deletedPost.toPOJO());
   }
 
@@ -84,8 +94,10 @@ export class PhotoPostController {
     @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
   ): Promise<PhotoPostRdo> {
+    this.logger.log(`Reposting photo post ID ${postId} by user ${userId}`);
     //todo userId from token
     const repostedPost = await this.photoPostService.repostPostById(userId, postId);
+
     return fillDto(PhotoPostRdo, repostedPost.toPOJO());
   }
 }

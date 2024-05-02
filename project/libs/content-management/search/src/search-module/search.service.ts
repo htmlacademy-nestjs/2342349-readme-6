@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { ApplicationConfig } from '@project/content-config';
 import { SearchRepository } from '@project/content-core';
@@ -8,6 +8,7 @@ import { PostSearchQuery } from './post-search.query';
 
 @Injectable()
 export class SearchService {
+  private readonly logger = new Logger(SearchService.name);
   private readonly defaultPage = 1;
 
   constructor(
@@ -16,7 +17,8 @@ export class SearchService {
   ) {
   }
 
-  public async findNewPostsByDate(userId: string, postDate: Date, searchQuery?: PostSearchQuery): Promise<PaginationResult<AggregatePostRdo>> {
+  public async findNewPostsByDate(postDate: Date, searchQuery?: PostSearchQuery): Promise<PaginationResult<AggregatePostRdo>> {
+    this.logger.log(`Searching for new posts on date ${postDate}`);
     if (!searchQuery) {
       searchQuery = new PostSearchQuery();
     }
@@ -27,7 +29,8 @@ export class SearchService {
     return this.findPosts(searchQuery);
   }
 
-  public async findPersonalFeedPosts(userId: string, subscriptionIds: string[], searchQuery?: PostSearchQuery): Promise<PaginationResult<AggregatePostRdo>> {
+  public async findPersonalFeedPosts(subscriptionIds: string[], searchQuery?: PostSearchQuery): Promise<PaginationResult<AggregatePostRdo>> {
+    this.logger.log(`Searching personal feed posts`);
     if (!searchQuery) {
       searchQuery = new PostSearchQuery();
     }
@@ -38,6 +41,7 @@ export class SearchService {
   }
 
   public async findUserSearchPosts(userId: string, searchQuery?: PostSearchQuery): Promise<PaginationResult<AggregatePostRdo>> {
+    this.logger.log(`Searching posts by user ${userId}`);
     if (!searchQuery) {
       searchQuery = new PostSearchQuery();
     }
@@ -50,6 +54,7 @@ export class SearchService {
   }
 
   private async findPosts(searchQuery?: PostSearchQuery): Promise<PaginationResult<AggregatePostRdo>> {
+    this.logger.log(`Finding posts with query parameters: ${JSON.stringify(searchQuery)}`);
     const limit = Math.min(searchQuery?.limit ?? Number.MAX_VALUE, this.applicationConfig.defaultPostCountLimit);
     const page = searchQuery?.page ?? this.defaultPage;
     const sortDirection = searchQuery?.sortDirection ?? SortDirection.DESC;
@@ -60,8 +65,11 @@ export class SearchService {
     const tags = (searchQuery?.tags ?? []).map(tag => tag.toLowerCase());
     const title = searchQuery?.title ? searchQuery.title.toLowerCase(): undefined;
 
-    return this.postRepository.searchPosts({
+    const searchResults = await this.postRepository.searchPosts({
       page, limit, title, authorIds, postType, tags, sortDirection, sortType, postStatus
     });
+    this.logger.log(`Posts found: ${searchResults.entities.length} for query ${JSON.stringify(searchQuery)}`);
+
+    return searchResults;
   }
 }

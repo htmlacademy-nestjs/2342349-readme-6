@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
@@ -11,6 +11,8 @@ import { UserService } from './user.service';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
+
   constructor(
     private readonly userService: UserService,
   ) {}
@@ -22,7 +24,9 @@ export class UserController {
   public async createUser(
     @Body() dto: CreateUserDto
   ): Promise<UserRdo> {
+    this.logger.log(`Creating new user with email: ${dto.email}`);
     const createdUser = await this.userService.createUser(dto);
+
     return fillDto(UserRdo, createdUser.toPOJO());
   }
 
@@ -35,7 +39,9 @@ export class UserController {
   public async getUser(
     @Param('userId', MongoIdValidationPipe) userId: string
   ): Promise<UserRdo> {
+    this.logger.log(`Retrieving user with ID: ${userId}`);
     const foundUser = await this.userService.findUserById(userId);
+
     return fillDto(UserRdo, foundUser.toPOJO());
   }
 
@@ -48,8 +54,10 @@ export class UserController {
     @Param('userId') userId: string,
     @Body() dto: UpdateUserDto
   ): Promise<UserRdo> {
+    this.logger.log(`Updating user with ID: ${userId}`);
     //todo userId from token
     const updatedUser = await this.userService.updateUserById(userId, dto);
+
     return fillDto(UserRdo, updatedUser.toPOJO());
   }
 
@@ -63,8 +71,10 @@ export class UserController {
     @Param('userId', MongoIdValidationPipe) userId: string,
     @Param('subscribeUserId', MongoIdValidationPipe) subscribeUserId: string
   ): Promise<SubscriptionRdo> {
+    this.logger.log(`Subscribing user ${userId} to user ${subscribeUserId}`);
     //todo userId from token
     const updatedUser = await this.userService.subscribeUserById(userId, subscribeUserId);
+
     return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
 
@@ -78,8 +88,10 @@ export class UserController {
     @Param('userId', MongoIdValidationPipe) userId: string,
     @Param('unsubscribeUserId', MongoIdValidationPipe) unsubscribeUserId: string
   ): Promise<SubscriptionRdo> {
+    this.logger.log(`Unsubscribing user ${userId} from user ${unsubscribeUserId}`);
     //todo userId from token
     const updatedUser = await this.userService.unsubscribeUserById(userId, unsubscribeUserId);
+
     return fillDto(SubscriptionRdo, updatedUser.toPOJO());
   }
 }

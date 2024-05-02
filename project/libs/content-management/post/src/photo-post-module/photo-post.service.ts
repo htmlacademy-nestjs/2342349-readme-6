@@ -2,7 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable,
+  Injectable, Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -22,31 +22,40 @@ import {
 
 @Injectable()
 export class PhotoPostService {
+  private readonly logger = new Logger(PhotoPostService.name);
+
   constructor(
     @Inject('PhotoPostRepository') private readonly photoPostRepository: PhotoPostRepository,
-    private readonly postService: PostService,
-  ) {}
+    private readonly postService: PostService
+  ) {
+  }
 
   public async createPost(userId: string, dto: CreatePhotoPostDto, originalPostId?: string): Promise<PhotoPostEntity> {
+    this.logger.log(`Creating photo post for user ${userId}`);
     const photoPostData = {
       authorId: userId,
       postType: PostType.PHOTO,
       tags: dto.tags ? [...new Set(dto.tags.map(tag => tag.toLowerCase()))] : [],
       originalPostId: originalPostId ?? '',
-      url: dto.url,
+      url: dto.url
     };
 
     const photoPostEntity = new PhotoPostEntity(photoPostData);
 
-    return this.photoPostRepository.save(photoPostEntity);
+    const savedPhotoPost = await this.photoPostRepository.save(photoPostEntity);
+    this.logger.log(`Photo post created with ID ${savedPhotoPost.id}`);
+    return savedPhotoPost;
   }
 
   public async findPostById(postId: string): Promise<PhotoPostEntity> {
+    this.logger.log(`Finding photo post by ID ${postId}`);
     const foundPhotoPost = await this.photoPostRepository.findById(postId);
     if (!foundPhotoPost) {
+      this.logger.error(`Photo post not found: ${postId}`);
       throw new NotFoundException(PHOTO_POST_NOT_FOUND);
     }
     if (foundPhotoPost.postType !== PostType.PHOTO) {
+      this.logger.error(`Incorrect post type for photo post: ${postId}`);
       throw new BadRequestException(PHOTO_POST_DIFFERENT_TYPE);
     }
 
@@ -58,11 +67,14 @@ export class PhotoPostService {
   }
 
   public async updatePostById(userId: string, postId: string, dto: UpdatePhotoPostDto): Promise<PhotoPostEntity> {
+    this.logger.log(`Updating photo post ID ${postId} by user ${userId}`);
     const updatedPhotoPost = await this.findPostById(postId);
     if (updatedPhotoPost.postType !== PostType.PHOTO) {
+      this.logger.error(`Incorrect post type for photo post: ${postId}`);
       throw new BadRequestException(PHOTO_POST_DIFFERENT_TYPE);
     }
     if (updatedPhotoPost.authorId !== userId) {
+      this.logger.error(`Unauthorized attempt to modify post by user ${userId}`);
       throw new UnauthorizedException(PHOTO_POST_MODIFY_PERMISSION);
     }
 
@@ -71,38 +83,49 @@ export class PhotoPostService {
     if (dto.postedAt !== undefined) updatedPhotoPost.postedAt = dto.postedAt;
     if (dto.url !== undefined) updatedPhotoPost.url = dto.url;
 
-    return this.photoPostRepository.update(postId, updatedPhotoPost);
+    const savedUpdatedPhotoPost = await this.photoPostRepository.update(postId, updatedPhotoPost);
+    this.logger.log(`Photo post updated ID: ${savedUpdatedPhotoPost.id}`);
+    return savedUpdatedPhotoPost;
   }
 
   public async deletePostById(userId: string, postId: string): Promise<PhotoPostEntity> {
+    this.logger.log(`Deleting photo post ID ${postId} by user ${userId}`);
     const deletedPhotoPost = await this.findPostById(postId);
     if (deletedPhotoPost.authorId !== userId) {
+      this.logger.error(`Unauthorized attempt to delete post by user ${userId}`);
       throw new UnauthorizedException(PHOTO_POST_DELETE_PERMISSION);
     }
 
-    return this.photoPostRepository.deleteById(postId);
+    const deletedPost = await this.photoPostRepository.deleteById(postId);
+    this.logger.log(`Photo post deleted ID: ${deletedPost.id}`);
+    return deletedPost;
   }
 
   public async repostPostById(userId: string, postId: string): Promise<PhotoPostEntity> {
+    this.logger.log(`Reposting photo post ID ${postId} by user ${userId}`);
     const repostPhotoPost = await this.findPostById(postId);
     if (repostPhotoPost.postType !== PostType.PHOTO) {
+      this.logger.error(`Incorrect post type for photo post: ${postId}`);
       throw new BadRequestException(PHOTO_POST_DIFFERENT_TYPE);
     }
     if (repostPhotoPost.authorId === userId) {
+      this.logger.error(`User ${userId} attempted to repost own post`);
       throw new UnauthorizedException(PHOTO_POST_REPOST_AUTHOR);
     }
 
     if (await this.postService.existsRepostByUser(postId, userId)) {
+      this.logger.error(`Repost already exists for user ${userId} and post ${postId}`);
       throw new ConflictException(PHOTO_POST_REPOST_EXISTS);
     }
 
     const createPhotoPostDto: CreatePhotoPostDto = {
       tags: repostPhotoPost.tags,
       url: repostPhotoPost.url
-    }
+    };
 
     const repostedPhotoPost = await this.createPost(userId, createPhotoPostDto, repostPhotoPost.id);
     await this.postService.incrementRepostCount(postId);
+    this.logger.log(`Post reposted successfully ID: ${repostedPhotoPost.id}`);
 
     return repostedPhotoPost;
   }

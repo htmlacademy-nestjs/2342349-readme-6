@@ -34,7 +34,9 @@ export class AuthenticationService {
   ) {}
 
   public async hashPassword(password: string): Promise<string> {
+    this.logger.log(`Hashing password`);
     if (!password) {
+      this.logger.error('Attempt to hash an empty password');
       throw new BadRequestException(AUTHENTICATION_PASSWORD_EMPTY);
     }
 
@@ -42,24 +44,29 @@ export class AuthenticationService {
   }
 
   public async verifyUser(dto: LoginDto): Promise<{ authenticatedUserToken: Token; existUser: UserEntity }> {
+    this.logger.log(`Verifying user: ${dto.email}`);
     const {email, password} = dto;
 
     const existUser = await this.userRepository.findByEmail(email);
     if (!existUser) {
+      this.logger.error(`No user found with email: ${dto.email}`);
       throw new NotFoundException(AUTHENTICATION_USER_NOT_FOUND);
     }
 
     const isPasswordCorrect = await this.cryptoProtocol.verifyPassword(password, existUser.passwordHash);
     if (!isPasswordCorrect) {
+      this.logger.error(`Incorrect password attempt for user: ${dto.email}`);
       throw new UnauthorizedException(AUTHENTICATION_USER_PASSWORD_WRONG);
     }
 
     const authenticatedUserToken = await this.createUserToken(existUser);
+    this.logger.log(`User verified and token created for: ${dto.email}`);
 
     return {existUser, authenticatedUserToken};
   }
 
   public async changePassword(userId: string, dto: ChangePasswordDto): Promise<UserEntity> {
+    this.logger.log(`Changing password for user ID: ${userId}`);
     const {oldPassword, newPassword} = dto;
 
     if (oldPassword === newPassword) {
@@ -68,6 +75,7 @@ export class AuthenticationService {
 
     const foundUser = await this.userRepository.findById(userId);
     if (!foundUser) {
+      this.logger.error('New password is the same as old password');
       throw new NotFoundException(AUTHENTICATION_USER_NOT_FOUND);
     }
 
@@ -79,11 +87,13 @@ export class AuthenticationService {
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName
     });
+    this.logger.log(`Password changed for user ID: ${userId}`);
 
     return updatedUser;
   }
 
   public async createUserToken(user: User): Promise<Token> {
+    this.logger.log(`Generating token for user ID: ${user.id}`);
     const payload: TokenPayload = {
       sub: user.id,
       email: user.email,
@@ -94,6 +104,8 @@ export class AuthenticationService {
 
     try {
       const accessToken = await this.jwtService.signAsync(payload);
+      this.logger.log(`Token generated successfully for user ID: ${user.id}`);
+
       return { accessToken };
     } catch (error) {
       this.logger.error('[Token generation error]: ' + error.message);
