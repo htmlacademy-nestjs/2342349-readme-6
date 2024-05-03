@@ -60,13 +60,13 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
       },
       include: { photoDetails: true }
     });
-    this.logger.log(`Photo post saved with ID: ${createdPhotoPost.id}`);
+    this.logger.log(`Photo post saved with ID: '${createdPhotoPost.id}'`);
 
     return this.convertToPhotoPostEntity(createdPhotoPost);
   }
 
   public async update(postId: PhotoPostEntity['id'], photoPostEntity: PhotoPostEntity): Promise<PhotoPostEntity> {
-    this.logger.log(`Updating photo post ID: ${postId}`);
+    this.logger.log(`Updating photo post ID: '${postId}'`);
     const photoPostData = this.formatPostForPrisma(photoPostEntity);
 
     const updatedPhotoPost = await this.client.post.update({
@@ -81,13 +81,13 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
       },
       include: { photoDetails: true }
     });
-    this.logger.log(`Photo post updated with ID: ${updatedPhotoPost.id}`);
+    this.logger.log(`Photo post updated with ID: '${updatedPhotoPost.id}'`);
 
     return this.convertToPhotoPostEntity(updatedPhotoPost);
   }
 
   public async findById(postId: PhotoPostEntity['id']): Promise<PhotoPostEntity | null> {
-    this.logger.log(`Finding photo post by ID: ${postId}`);
+    this.logger.log(`Finding photo post by ID: '${postId}'`);
     const photoPostData = await this.client.post.findUnique({
       where: { id: postId },
       include: { photoDetails: true }
@@ -97,18 +97,18 @@ export class PhotoPostPostgresRepository extends PostPostgresRepository<PhotoPos
   }
 
   public async deleteById(id: PhotoPostEntity['id']): Promise<PhotoPostEntity> {
-    this.logger.log(`Deleting photo post ID: ${id}`);
+    this.logger.log(`Deleting photo post ID: '${id}'`);
     const deletedPost = await this.client.post.delete({
       where: { id },
       include: { photoDetails: true }
     });
-    this.logger.log(`Photo post deleted with ID: ${deletedPost.id}`);
+    this.logger.log(`Photo post deleted with ID: '${deletedPost.id}'`);
 
     return this.convertToPhotoPostEntity(deletedPost);
   }
 
   public async exists(photoPostId: PhotoPostEntity['id']): Promise<boolean> {
-    this.logger.log(`Checking existence of photo post ID: ${photoPostId}`);
+    this.logger.log(`Checking existence of photo post ID: '${photoPostId}'`);
     const photoPost = await this.client.photoPost.findUnique({
       where: { id: photoPostId },
       select: { id: true }

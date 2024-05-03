@@ -63,13 +63,13 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       },
       include: { linkDetails: true }
     });
-    this.logger.log(`New link post saved with ID: ${createdLinkPost.id}`);
+    this.logger.log(`New link post saved with ID: '${createdLinkPost.id}'`);
 
     return this.convertToLinkPostEntity(createdLinkPost);
   }
 
   public async update(postId: LinkPostEntity['id'], linkPostEntity: LinkPostEntity): Promise<LinkPostEntity> {
-    this.logger.log(`Updating link post ID: ${postId}`);
+    this.logger.log(`Updating link post ID: '${postId}'`);
     const linkPostData = this.formatPostForPrisma(linkPostEntity);
 
     const updatedLinkPost = await this.client.post.update({
@@ -85,13 +85,13 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
       },
       include: { linkDetails: true }
     });
-    this.logger.log(`Link post updated with ID: ${updatedLinkPost.id}`);
+    this.logger.log(`Link post updated with ID: '${updatedLinkPost.id}'`);
 
     return this.convertToLinkPostEntity(updatedLinkPost);
   }
 
   public async findById(postId: LinkPostEntity['id']): Promise<LinkPostEntity | null> {
-    this.logger.log(`Finding link post by ID: ${postId}`);
+    this.logger.log(`Finding link post by ID: '${postId}'`);
     const linkPostData = await this.client.post.findUnique({
       where: { id: postId },
       include: { linkDetails: true }
@@ -101,18 +101,18 @@ export class LinkPostPostgresRepository extends PostPostgresRepository<LinkPostE
   }
 
   public async deleteById(id: LinkPostEntity['id']): Promise<LinkPostEntity> {
-    this.logger.log(`Deleting link post ID: ${id}`);
+    this.logger.log(`Deleting link post ID: '${id}'`);
     const deletedPost = await this.client.post.delete({
       where: { id },
       include: { linkDetails: true }
     });
-    this.logger.log(`Link post deleted with ID: ${deletedPost.id}`);
+    this.logger.log(`Link post deleted with ID: '${deletedPost.id}'`);
 
     return this.convertToLinkPostEntity(deletedPost);
   }
 
   public async exists(linkPostId: LinkPostEntity['id']): Promise<boolean> {
-    this.logger.log(`Checking existence of link post ID: ${linkPostId}`);
+    this.logger.log(`Checking existence of link post ID: '${linkPostId}'`);
     const linkPost = await this.client.linkPost.findUnique({
       where: { id: linkPostId },
       select: { id: true }

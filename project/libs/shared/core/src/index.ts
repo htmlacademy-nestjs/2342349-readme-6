@@ -6,6 +6,8 @@ export { PaginationResult } from './interface/pagination.interface';
 export { SortDirection } from './interface/sort-direction.interface';
 export { Token } from './interface/token.interface';
 export { TokenPayload } from './interface/token-payload.interface';
+export { JwtToken } from './interface/jwt-token.interface';
+export { RefreshTokenPayload } from './interface/refresh-token-payload.interface';
 
 export { User } from './type/user/user.interface';
 export { AuthUser } from './type/user/auth-user.interface';

@@ -63,13 +63,13 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       },
       include: { quoteDetails: true }
     });
-    this.logger.log(`Quote post saved with ID: ${createdQuotePost.id}`);
+    this.logger.log(`Quote post saved with ID: '${createdQuotePost.id}'`);
 
     return this.convertToQuotePostEntity(createdQuotePost);
   }
 
   public async update(postId: QuotePostEntity['id'], quotePostEntity: QuotePostEntity): Promise<QuotePostEntity> {
-    this.logger.log(`Updating quote post ID: ${postId}`);
+    this.logger.log(`Updating quote post ID: '${postId}'`);
     const quotePostData = this.formatPostForPrisma(quotePostEntity);
 
     const updatedQuotePost = await this.client.post.update({
@@ -85,13 +85,13 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
       },
       include: { quoteDetails: true }
     });
-    this.logger.log(`Quote post updated with ID: ${updatedQuotePost.id}`);
+    this.logger.log(`Quote post updated with ID: '${updatedQuotePost.id}'`);
 
     return this.convertToQuotePostEntity(updatedQuotePost);
   }
 
   public async findById(postId: QuotePostEntity['id']): Promise<QuotePostEntity | null> {
-    this.logger.log(`Finding quote post by ID: ${postId}`);
+    this.logger.log(`Finding quote post by ID: '${postId}'`);
     const quotePostData = await this.client.post.findUnique({
       where: { id: postId },
       include: { quoteDetails: true }
@@ -101,18 +101,18 @@ export class QuotePostPostgresRepository extends PostPostgresRepository<QuotePos
   }
 
   public async deleteById(id: QuotePostEntity['id']): Promise<QuotePostEntity> {
-    this.logger.log(`Deleting quote post ID: ${id}`);
+    this.logger.log(`Deleting quote post ID: '${id}'`);
     const deletedPost = await this.client.post.delete({
       where: { id },
       include: { quoteDetails: true }
     });
-    this.logger.log(`Quote post deleted with ID: ${deletedPost.id}`);
+    this.logger.log(`Quote post deleted with ID: '${deletedPost.id}'`);
 
     return this.convertToQuotePostEntity(deletedPost);
   }
 
   public async exists(quotePostId: QuotePostEntity['id']): Promise<boolean> {
-    this.logger.log(`Checking existence of quote post ID: ${quotePostId}`);
+    this.logger.log(`Checking existence of quote post ID: '${quotePostId}'`);
     const quotePost = await this.client.quotePost.findUnique({
       where: { id: quotePostId },
       select: { id: true }

@@ -45,7 +45,7 @@ export class CommentController {
     this.logger.log(`Attempting to create comment for post: ${postId} by user: ${userId}`);
     //todo userId from token
     const createdComment = await this.commentService.createComment(userId, postId, dto);
-    this.logger.log(`Comment created with ID: ${createdComment.id}`);
+    this.logger.log(`Comment created with ID: '${createdComment.id}'`);
 
     return fillDto(CommentRdo, createdComment.toPOJO());
   }
@@ -65,7 +65,7 @@ export class CommentController {
     this.logger.log(`Attempting to update comment: ${commentId} by user: ${userId}`);
     //todo userId from token
     const updatedComment = await this.commentService.updateCommentById(userId, commentId, dto);
-    this.logger.log(`Comment updated with ID: ${updatedComment.id}`);
+    this.logger.log(`Comment updated with ID: '${updatedComment.id}'`);
 
     return fillDto(CommentRdo, updatedComment.toPOJO());
   }
@@ -79,9 +79,9 @@ export class CommentController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Query() query: CommentQuery
   ): Promise<CommentPaginationRdo> {
-    this.logger.log(`Retrieving comments for post ID: ${postId}`);
+    this.logger.log(`Retrieving comments for post ID: '${postId}'`);
     const commentPagination = await this.commentService.findCommentsByPostId(postId, query);
-    this.logger.log(`Comments retrieved for post ID: ${postId}`);
+    this.logger.log(`Comments retrieved for post ID: '${postId}'`);
 
     const transformedCommentPagination = {
       ...commentPagination,
@@ -99,9 +99,9 @@ export class CommentController {
   public async getComment(
     @Param('commentId', ParseUUIDPipe) commentId: string
   ): Promise<CommentRdo> {
-    this.logger.log(`Retrieving comment with ID: ${commentId}`);
+    this.logger.log(`Retrieving comment with ID: '${commentId}'`);
     const foundComment = await this.commentService.findCommentById(commentId);
-    this.logger.log(`Comment retrieved with ID: ${foundComment.id}`);
+    this.logger.log(`Comment retrieved with ID: '${foundComment.id}'`);
 
     return fillDto(CommentRdo, foundComment.toPOJO());
   }
@@ -120,7 +120,7 @@ export class CommentController {
     this.logger.log(`Attempting to delete comment: ${commentId} by user: ${userId}`);
     //todo userId from token
     const deletedComment = await this.commentService.deleteCommentById(userId, commentId);
-    this.logger.log(`Comment deleted with ID: ${deletedComment.id}`);
+    this.logger.log(`Comment deleted with ID: '${deletedComment.id}'`);
 
     return fillDto(CommentRdo, deletedComment.toPOJO());
   }

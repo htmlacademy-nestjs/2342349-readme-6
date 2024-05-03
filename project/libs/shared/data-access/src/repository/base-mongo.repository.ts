@@ -27,7 +27,7 @@ export abstract class BaseMongoRepository<
   }
 
   public async findById(id: T['id']): Promise<T> {
-    this.repositoryLogger.log(`Finding document by ID: ${id}`);
+    this.repositoryLogger.log(`Finding document by ID: '${id}'`);
     const foundDocument = await this.model.findById(new ObjectId(id));
 
     return this.createEntityFromDocument(foundDocument);
@@ -38,13 +38,13 @@ export abstract class BaseMongoRepository<
     const newEntity = new this.model(entity.toPOJO());
     const savedEntity = await newEntity.save();
     newEntity.id = savedEntity.id;
-    this.repositoryLogger.log(`Entity saved with ID: ${savedEntity.id}`);
+    this.repositoryLogger.log(`Entity saved with ID: '${savedEntity.id}'`);
 
     return this.createEntityFromDocument(newEntity);
   }
 
   public async update(id: T['id'], entity: T): Promise<T> {
-    this.repositoryLogger.log(`Updating entity by ID: ${id}`);
+    this.repositoryLogger.log(`Updating entity by ID: '${id}'`);
     const updatedDocument = await this.model
       .findByIdAndUpdate(new ObjectId(id), entity.toPOJO(), { new: true });
     if (!updatedDocument) {
@@ -56,7 +56,7 @@ export abstract class BaseMongoRepository<
   }
 
   public async deleteById(id: T['id']): Promise<T> {
-    this.repositoryLogger.log(`Deleting entity by ID: ${id}`);
+    this.repositoryLogger.log(`Deleting entity by ID: '${id}'`);
     const deletedDocument = await this.model.findByIdAndDelete(new ObjectId(id));
     if (!deletedDocument) {
       this.repositoryLogger.error(`Entity not found for deletion: ID ${id}`);
@@ -67,8 +67,8 @@ export abstract class BaseMongoRepository<
   }
 
   public async exists(id: T['id']): Promise<boolean> {
-    // @ts-ignore
-    const result = await this.model.exists({ _id: id });
+    const result = await this.model.exists(new ObjectId(id));
+
     return !!result;
   }
 }

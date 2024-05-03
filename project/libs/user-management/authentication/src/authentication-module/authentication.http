@@ -1,13 +1,14 @@
 @host = http://localhost:3000
 @userId = 66311070d9304fe8e16a2cee
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjMxMTA3MGQ5MzA0ZmU4ZTE2YTJjZWUiLCJlbWFpbCI6InVzZXIxMUBub3Rmb3VuZC5sb2NhbCIsInVzZXJUeXBlIjoidXNlciIsImZpcnN0TmFtZSI6Iktla3MiLCJsYXN0TmFtZSI6IlNtaXRoIiwiaWF0IjoxNzE0NTAwODg2LCJleHAiOjE3MTQ1MDExODZ9.1WEi1TDCTKl73p0BIW-DTDqqAwqCnSNPx2vrUO8_747ugaVvGiRONaNE0-sxv-gkv4JU595XJ7AI4Sv1P3qBcA
+@accessToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjMxNDFjZGU5ZmIwYjBmODAyYzllNDgiLCJlbWFpbCI6InVzZXIxMTJAbm90Zm91bmQubG9jYWwiLCJ1c2VyVHlwZSI6InVzZXIiLCJmaXJzdE5hbWUiOiJLZWtzIiwibGFzdE5hbWUiOiJTbWl0aCIsImlhdCI6MTcxNDc2OTI2MiwiZXhwIjoxNzE0NzY5NTYyfQ._OvIP75UqzlcOGpt8WhBgjknz_pnqSSaZzpvL9jRVLKhHYTpUpDOe1RQtDvHTe4L46_WExuvbXe_cOl-f7JmXw
+@refreshToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjMxNDFjZGU5ZmIwYjBmODAyYzllNDgiLCJlbWFpbCI6InVzZXIxMTJAbm90Zm91bmQubG9jYWwiLCJ1c2VyVHlwZSI6InVzZXIiLCJmaXJzdE5hbWUiOiJLZWtzIiwibGFzdE5hbWUiOiJTbWl0aCIsInRva2VuSWQiOiJlMjdjNjIyOC1mYzhjLTQwMjktYjA3My1jM2NiZjRkNzRjYWYiLCJpYXQiOjE3MTQ3NjkyNjIsImV4cCI6MTcxNzM2MTI2Mn0.mbD0w7vm7F5de31SzCuBSWOyCq7ZhrIzbeXUatnMFrTD9fLpUtqC4xAvtPIit_UIDcurD1oiVNZwOQvwLq2WzQ
 
 # Login user by email and password
 POST {{host}}/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "user11@notfound.local",
+  "email": "user112@notfound.local",
   "password": "123456"
 }
 
@@ -15,11 +16,18 @@ Content-Type: application/json
 
 # Change user password
 PATCH {{host}}/api/auth/change-password/{{userId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
   "oldPassword": "123456",
   "newPassword": "1234567"
 }
+
+###
+
+# Get new JWT pair from refreshToken
+POST {{host}}/api/auth/refresh HTTP/1.1
+Authorization: Bearer {{refreshToken}}
 
 ###

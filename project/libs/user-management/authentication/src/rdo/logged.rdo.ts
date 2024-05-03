@@ -18,8 +18,15 @@ export class LoggedRdo {
 
   @Expose()
   @ApiProperty({
-    description: 'The access token generated for the session.',
+    description: 'The Access token generated for the session.',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
   })
   public accessToken: string;
+
+  @Expose()
+  @ApiProperty({
+    description: 'The Refresh Token token generated for the session.',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+  })
+  public refreshToken: string;
 }

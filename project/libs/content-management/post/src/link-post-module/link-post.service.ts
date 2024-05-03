@@ -52,11 +52,11 @@ export class LinkPostService {
     this.logger.log(`Finding link post by ID ${postId}`);
     const foundLinkPost = await this.linkPostRepository.findById(postId);
     if (!foundLinkPost) {
-      this.logger.error(`Link post not found: ${postId}`);
+      this.logger.warn(`Link post not found: ${postId}`);
       throw new NotFoundException(LINK_POST_NOT_FOUND);
     }
     if (foundLinkPost.postType !== PostType.LINK) {
-      this.logger.error(`Incorrect post type for link post: ${postId}`);
+      this.logger.warn(`Incorrect post type for link post: ${postId}`);
       throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
     }
 
@@ -71,11 +71,11 @@ export class LinkPostService {
     this.logger.log(`Updating link post ID ${postId} by user ${userId}`);
     const updatedLinkPost = await this.findPostById(postId);
     if (updatedLinkPost.postType !== PostType.LINK) {
-      this.logger.error(`Incorrect post type for link post: ${postId}`);
+      this.logger.warn(`Incorrect post type for link post: ${postId}`);
       throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
     }
     if (updatedLinkPost.authorId !== userId) {
-      this.logger.error(`Unauthorized attempt to modify post by user ${userId}`);
+      this.logger.warn(`Unauthorized attempt to modify post by user ${userId}`);
       throw new UnauthorizedException(LINK_POST_MODIFY_PERMISSION);
     }
 
@@ -86,37 +86,37 @@ export class LinkPostService {
     if (dto.description !== undefined) updatedLinkPost.description = dto.description;
 
     const savedUpdatedPost = await this.linkPostRepository.update(postId, updatedLinkPost);
-    this.logger.log(`Link post updated ID: ${savedUpdatedPost.id}`);
+    this.logger.log(`Link post updated ID: '${savedUpdatedPost.id}'`);
 
     return savedUpdatedPost;
   }
 
   public async deletePostById(userId: string, postId: string): Promise<LinkPostEntity> {
-    this.logger.log(`Deleting link post ID ${postId} by user ${userId}`);
+    this.logger.log(`Deleting link post ID '${postId}' by user '${userId}'`);
     const deletedLinkPost = await this.findPostById(postId);
     if (deletedLinkPost.authorId !== userId) {
-      this.logger.error(`Unauthorized attempt to delete post by user ${userId}`);
+      this.logger.warn(`Unauthorized attempt to delete post by user '${userId}'`);
       throw new UnauthorizedException(LINK_POST_DELETE_PERMISSION);
     }
 
     const deletedPost = await this.linkPostRepository.deleteById(postId);
-    this.logger.log(`Link post deleted ID: ${deletedPost.id}`);
+    this.logger.log(`Link post deleted ID: '${deletedPost.id}'`);
     return deletedPost;  }
 
   public async repostPostById(userId: string, postId: string): Promise<LinkPostEntity> {
-    this.logger.log(`Reposting link post ID ${postId} by user ${userId}`);
+    this.logger.log(`Reposting link post ID '${postId}' by user '${userId}'`);
     const repostLinkPost = await this.findPostById(postId);
     if (repostLinkPost.postType !== PostType.LINK) {
-      this.logger.error(`Incorrect post type for link post: ${postId}`);
+      this.logger.warn(`Incorrect post type for link post: '${postId}'`);
       throw new BadRequestException(LINK_POST_DIFFERENT_TYPE);
     }
     if (repostLinkPost.authorId === userId) {
-      this.logger.error(`User ${userId} attempted to repost own post`);
+      this.logger.warn(`User '${userId}' attempted to repost own post`);
       throw new UnauthorizedException(LINK_POST_REPOST_AUTHOR);
     }
 
     if (await this.postService.existsRepostByUser(postId, userId)) {
-      this.logger.error(`Repost already exists for user ${userId} and post ${postId}`);
+      this.logger.warn(`Repost already exists for user '${userId}' and post '${postId}'`);
       throw new ConflictException(LINK_POST_REPOST_EXISTS);
     }
 
@@ -128,7 +128,7 @@ export class LinkPostService {
 
     const repostedLinkPost = await this.createPost(userId, createLinkPostDto, repostLinkPost.id);
     await this.postService.incrementRepostCount(postId);
-    this.logger.log(`Link post reposted successfully ID: ${repostedLinkPost.id}`);
+    this.logger.log(`Link post reposted successfully ID: '${repostedLinkPost.id}'`);
 
     return repostedLinkPost;
   }

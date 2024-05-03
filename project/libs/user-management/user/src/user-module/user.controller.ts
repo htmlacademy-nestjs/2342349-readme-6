@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@project/authentication';
 import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -31,15 +32,16 @@ export class UserController {
   }
 
   @Get(':userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User found', type: UserRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
-  @ApiBearerAuth()
   public async getUser(
     @Param('userId', MongoIdValidationPipe) userId: string
   ): Promise<UserRdo> {
-    this.logger.log(`Retrieving user with ID: ${userId}`);
+    this.logger.log(`Retrieving user with ID: '${userId}'`);
     const foundUser = await this.userService.findUserById(userId);
 
     return fillDto(UserRdo, foundUser.toPOJO());
@@ -54,7 +56,7 @@ export class UserController {
     @Param('userId') userId: string,
     @Body() dto: UpdateUserDto
   ): Promise<UserRdo> {
-    this.logger.log(`Updating user with ID: ${userId}`);
+    this.logger.log(`Updating user with ID: '${userId}'`);
     //todo userId from token
     const updatedUser = await this.userService.updateUserById(userId, dto);
 

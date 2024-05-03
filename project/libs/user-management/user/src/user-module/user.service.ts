@@ -31,7 +31,7 @@ export class UserService {
     this.logger.log(`Attempting to create user with email: ${dto.email}`);
     const existUser = await this.userRepository.findByEmail(dto.email);
     if (existUser) {
-      this.logger.error(`User already exists with email: ${dto.email}`);
+      this.logger.warn(`User already exists with email: ${dto.email}`);
       throw new ConflictException(USER_EXISTS);
     }
 
@@ -46,7 +46,7 @@ export class UserService {
 
     const userEntity = new UserEntity(userData);
     const createdUser = await this.userRepository.save(userEntity);
-    this.logger.log(`User created with ID: ${createdUser.id}`);
+    this.logger.log(`User created with ID: '${createdUser.id}'`);
 
     await this.notifyService.publishSubscriberRegistration({
       email: createdUser.email,
@@ -58,10 +58,10 @@ export class UserService {
   }
 
   public async findUserById(userId: string): Promise<UserEntity> {
-    this.logger.log(`Looking for user with ID: ${userId}`);
+    this.logger.log(`Looking for user with ID: '${userId}'`);
     const foundUser = await this.userRepository.findById(userId);
     if (!foundUser) {
-      this.logger.error(`User not found with ID: ${userId}`);
+      this.logger.warn(`User not found with ID: '${userId}'`);
       throw new NotFoundException(USER_NOT_FOUND);
     }
 
@@ -73,7 +73,7 @@ export class UserService {
   }
 
   public async updateUserById(userId: string, dto: UpdateUserDto): Promise<UserEntity> {
-    this.logger.log(`Updating user with ID: ${userId}`);
+    this.logger.log(`Updating user with ID: '${userId}'`);
     const updatedUser = await this.findUserById(userId);
 
     if (dto.firstName !== undefined) updatedUser.firstName = dto.firstName;
@@ -85,20 +85,20 @@ export class UserService {
   }
 
   public async subscribeUserById(userId: string, subscribeUserId: string): Promise<UserEntity> {
-    this.logger.log(`Subscribing user ${userId} to user ${subscribeUserId}`);
+    this.logger.log(`Subscribing user '${userId}' to user '${subscribeUserId}'`);
     if (!await this.exists(userId)) {
-      this.logger.error(`User not found with ID: ${userId}`);
+      this.logger.warn(`User not found with ID: '${userId}'`);
       throw new NotFoundException(SUBSCRIBE_USER_NOT_FOUND);
     }
 
     if (await this.userRepository.containsSubscription(userId, subscribeUserId)) {
-      this.logger.warn(`User ${userId} already subscribed to ${subscribeUserId}`);
+      this.logger.warn(`User '${userId}' already subscribed to '${subscribeUserId}'`);
       throw new ConflictException(SUBSCRIBE_USER_ALREADY_ADDED);
     }
 
     //todo myself subscribe
     if (userId === subscribeUserId) {
-      this.logger.error('Attempt to subscribe to oneself');
+      this.logger.warn('Attempt to subscribe to oneself');
       throw new BadRequestException(SUBSCRIBE_USER_YOURSELF);
     }
 
@@ -110,14 +110,14 @@ export class UserService {
   }
 
   public async unsubscribeUserById(userId: string, unsubscribeUserId: string): Promise<UserEntity> {
-    this.logger.log(`Unsubscribing user ${userId} from user ${unsubscribeUserId}`);
+    this.logger.log(`Unsubscribing user '${userId}' from user '${unsubscribeUserId}'`);
     if (!await this.exists(userId)) {
-      this.logger.error(`User not found with ID: ${userId}`);
+      this.logger.warn(`User not found with ID: '${userId}'`);
       throw new NotFoundException(SUBSCRIBE_USER_NOT_FOUND);
     }
 
     if (!await this.userRepository.containsSubscription(userId, unsubscribeUserId)) {
-      this.logger.error(`Subscription not found between user ${userId} and ${unsubscribeUserId}`);
+      this.logger.warn(`Subscription not found between user '${userId}' and '${unsubscribeUserId}'`);
       throw new ConflictException(SUBSCRIBE_USER_ALREADY_REMOVED);
     }
 
@@ -128,7 +128,7 @@ export class UserService {
   }
 
   public async incrementFollowerCount(userId: string): Promise<boolean> {
-    this.logger.log(`Attempting to increment follower count for user ID: ${userId}`);
+    this.logger.log(`Attempting to increment follower count for user ID: '${userId}'`);
     const isFollowerCountUpdated = await this.userRepository.incrementFollowerCount(userId);
     if (!isFollowerCountUpdated) {
       this.logger.error(`Failed to increment 'followerCount' for User ID '${userId}'`);
@@ -138,7 +138,7 @@ export class UserService {
   }
 
   public async decrementFollowerCount(userId: string): Promise<boolean> {
-    this.logger.log(`Attempting to decrement follower count for user ID: ${userId}`);
+    this.logger.log(`Attempting to decrement follower count for user ID: '${userId}'`);
     const isFollowerCountUpdated = await this.userRepository.decrementFollowerCount(userId);
     if (!isFollowerCountUpdated) {
       this.logger.error(`Failed to decrement 'followerCount' for User ID '${userId}'`);
@@ -149,7 +149,7 @@ export class UserService {
 
   //todo incrementPostCount
   public async incrementPostCount(userId: string): Promise<boolean> {
-    this.logger.log(`Attempting to increment post count for user ID: ${userId}`);
+    this.logger.log(`Attempting to increment post count for user ID: '${userId}'`);
     const isPostCountUpdated = await this.userRepository.incrementPostCount(userId);
     if (!isPostCountUpdated) {
       this.logger.error(`Failed to increment 'PostCount' for User ID '${userId}'`);
@@ -160,7 +160,7 @@ export class UserService {
 
   //todo decrementPostCount
   public async decrementPostCount(userId: string): Promise<boolean> {
-    this.logger.log(`Attempting to decrement post count for user ID: ${userId}`);
+    this.logger.log(`Attempting to decrement post count for user ID: '${userId}'`);
     const isPostCountUpdated = await this.userRepository.decrementPostCount(userId);
     if (!isPostCountUpdated) {
       this.logger.error(`Failed to decrement 'PostCount' for User ID '${userId}'`);

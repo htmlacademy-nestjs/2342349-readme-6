@@ -51,11 +51,11 @@ export class QuotePostService {
     this.logger.log(`Finding quote post by ID ${postId}`);
     const foundQuotePost = await this.quotePostRepository.findById(postId);
     if (!foundQuotePost) {
-      this.logger.error(`Quote post not found: ${postId}`);
+      this.logger.warn(`Quote post not found: ${postId}`);
       throw new NotFoundException(QUOTE_POST_NOT_FOUND);
     }
     if (foundQuotePost.postType !== PostType.QUOTE) {
-      this.logger.error(`Incorrect post type for quote post: ${postId}`);
+      this.logger.warn(`Incorrect post type for quote post: ${postId}`);
       throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
     }
 
@@ -70,11 +70,11 @@ export class QuotePostService {
     this.logger.log(`Updating quote post ID ${postId} by user ${userId}`);
     const updatedQuotePost = await this.findPostById(postId);
     if (updatedQuotePost.postType !== PostType.QUOTE) {
-      this.logger.error(`Incorrect post type for quote post: ${postId}`);
+      this.logger.warn(`Incorrect post type for quote post: ${postId}`);
       throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
     }
     if (updatedQuotePost.authorId !== userId) {
-      this.logger.error(`Unauthorized attempt to modify post by user ${userId}`);
+      this.logger.warn(`Unauthorized attempt to modify post by user ${userId}`);
       throw new UnauthorizedException(QUOTE_POST_MODIFY_PERMISSION);
     }
 
@@ -85,39 +85,39 @@ export class QuotePostService {
     if (dto.author !== undefined) updatedQuotePost.author = dto.author;
 
     const savedUpdatedQuotePost = await this.quotePostRepository.update(postId, updatedQuotePost);
-    this.logger.log(`Quote post updated ID: ${savedUpdatedQuotePost.id}`);
+    this.logger.log(`Quote post updated ID: '${savedUpdatedQuotePost.id}'`);
 
     return savedUpdatedQuotePost;
   }
 
   public async deletePostById(userId: string, postId: string): Promise<QuotePostEntity> {
-    this.logger.log(`Deleting quote post ID ${postId} by user ${userId}`);
+    this.logger.log(`Deleting quote post ID '${postId}' by user '${userId}'`);
     const deletedQuotePost = await this.findPostById(postId);
     if (deletedQuotePost.authorId !== userId) {
-      this.logger.error(`Unauthorized attempt to delete post by user ${userId}`);
+      this.logger.warn(`Unauthorized attempt to delete post by user '${userId}'`);
       throw new UnauthorizedException(QUOTE_POST_DELETE_PERMISSION);
     }
 
     const deletedPost = await this.quotePostRepository.deleteById(postId);
-    this.logger.log(`Quote post deleted ID: ${deletedPost.id}`);
+    this.logger.log(`Quote post deleted ID: '${deletedPost.id}'`);
 
     return deletedPost;
   }
 
   public async repostPostById(userId: string, postId: string): Promise<QuotePostEntity> {
-    this.logger.log(`Reposting quote post ID ${postId} by user ${userId}`);
+    this.logger.log(`Reposting quote post ID '${postId}' by user '${userId}'`);
     const repostQuotePost = await this.findPostById(postId);
     if (repostQuotePost.postType !== PostType.QUOTE) {
-      this.logger.error(`Incorrect post type for quote post: ${postId}`);
+      this.logger.warn(`Incorrect post type for quote post: '${postId}'`);
       throw new BadRequestException(QUOTE_POST_DIFFERENT_TYPE);
     }
     if (repostQuotePost.authorId === userId) {
-      this.logger.error(`User ${userId} attempted to repost own post`);
+      this.logger.warn(`User '${userId}' attempted to repost own post`);
       throw new UnauthorizedException(QUOTE_POST_REPOST_AUTHOR);
     }
 
     if (await this.postService.existsRepostByUser(postId, userId)) {
-      this.logger.error(`Repost already exists for user ${userId} and post ${postId}`);
+      this.logger.warn(`Repost already exists for user '${userId}' and post '${postId}'`);
       throw new ConflictException(QUOTE_POST_REPOST_EXISTS);
     }
 
@@ -129,7 +129,7 @@ export class QuotePostService {
 
     const repostedQuotePost = await this.createPost(userId, createQuotePostDto, repostQuotePost.id);
     await this.postService.incrementRepostCount(postId);
-    this.logger.log(`Post reposted successfully ID: ${repostedQuotePost.id}`);
+    this.logger.log(`Post reposted successfully ID: '${repostedQuotePost.id}'`);
 
     return repostedQuotePost;
   }

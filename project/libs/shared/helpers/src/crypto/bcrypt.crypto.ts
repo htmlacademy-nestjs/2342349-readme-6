@@ -16,7 +16,7 @@ export class BcryptCrypto implements CryptoProtocol {
   }
 
   public async verifyPassword(inputPassword: string, storedHash: string): Promise<boolean> {
-    this.logger.log(`Verifying password`);
+    this.logger.log(`Verifying password...`);
     return compare(inputPassword, storedHash);
   }
 }

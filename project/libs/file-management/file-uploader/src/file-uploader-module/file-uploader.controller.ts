@@ -19,7 +19,7 @@ export class FileUploaderController {
   @ApiResponse({ status: 200, description: 'File details retrieved successfully.', type: UploadedFileRdo })
   @ApiResponse({ status: 404, description: 'File not found.' })
   public async show(@Param('fileId', MongoIdValidationPipe) fileId: string): Promise<UploadedFileRdo> {
-    this.logger.log(`Retrieving file with ID: ${fileId}`);
+    this.logger.log(`Retrieving file with ID: '${fileId}'`);
     const foundFile = await this.fileUploaderService.getFile(fileId);
 
     return fillDto(UploadedFileRdo, foundFile.toPOJO());
