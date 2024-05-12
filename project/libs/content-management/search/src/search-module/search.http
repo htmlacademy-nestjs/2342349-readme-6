@@ -1,49 +1,53 @@
 @host = http://localhost:3010
 @userId = 661c2da73755ed24c779f041
 @postId = 51377bc9-afa8-4e05-ba48-9fa8dea9a122
-@token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 ###
 
-# Search Post
-GET {{host}}/api/search/{{userId}} HTTP/1.1
+# Get public Post
+GET {{host}}/api/search/public HTTP/1.1
+
+###
+
+# Search User Post
+GET {{host}}/api/search?userId={{userId}} HTTP/1.1
 
 ###
 
 # Search Post with postType
 @postType = QUOTE
-GET {{host}}/api/search/{{userId}}?postType={{postType}} HTTP/1.1
+GET {{host}}/api/search?userId={{userId}}&postType={{postType}} HTTP/1.1
 
 ###
 
 # Search Post with postType + tags
 @tags1 = Google
 @tags2 = Article
-GET {{host}}/api/search/{{userId}}?postType={{postType}}&tags={{tags1}}&tags={{tags2}} HTTP/1.1
+GET {{host}}/api/search?userId={{userId}}&postType={{postType}}&tags={{tags1}}&tags={{tags2}} HTTP/1.1
 
 ###
 
 # Search Post with sortType + sortDirection
 @sortType = BY_DATE
 @sortDirection = asc
-GET {{host}}/api/search/{{userId}}?sortType={{sortType}}&sortDirection={{sortDirection}} HTTP/1.1
+GET {{host}}/api/search?userId={{userId}}&sortType={{sortType}}&sortDirection={{sortDirection}} HTTP/1.1
 
 ###
 
 # Search Post with title
 @title = Google
-GET {{host}}/api/search/{{userId}}?title={{title}} HTTP/1.1
+GET {{host}}/api/search?userId={{userId}}&title={{title}} HTTP/1.1
 
 ###
 
 # Search Post with authorIds
 @authorIds1 = author-uuid-003
 @authorIds2 = author-uuid-004
-GET {{host}}/api/search/{{userId}}?authorIds={{authorIds1}}&authorIds={{authorIds2}} HTTP/1.1
+GET {{host}}/api/search?userId={{userId}}&authorIds={{authorIds1}}&authorIds={{authorIds2}} HTTP/1.1
 
 ###
 
 # Personal-Feed
-GET {{host}}/api/search/personal-feed/{{userId}} HTTP/1.1
+GET {{host}}/api/search/personal-feed?userId={{userId}} HTTP/1.1
 
 ###

@@ -1,5 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { LinkPostRdo } from '../link-post-module/rdo/link-post.rdo';
 import { CreateQuotePostDto } from './dto/create-quote-post.dto';
@@ -16,17 +28,16 @@ export class QuotePostController {
     private readonly quotePostService: QuotePostService,
   ) {}
 
-  @Post(':userId')
+  @Post('/')
   @ApiOperation({ summary: 'Create a Quote-Post' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Quote-Post successfully created', type: QuotePostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async createQuotePost(
-    @Param('userId') userId: string,
-    @Body() dto: CreateQuotePostDto
+    @Body() dto: CreateQuotePostDto,
+    @Query('userId') userId: string
   ): Promise<QuotePostRdo> {
     this.logger.log(`Creating quote post for user ${userId}`);
-    //todo userId from token
     const createdQuotePost = await this.quotePostService.createPost(userId, dto);
 
     return fillDto(QuotePostRdo, createdQuotePost.toPOJO());
@@ -46,57 +57,55 @@ export class QuotePostController {
     return fillDto(QuotePostRdo, foundPost.toPOJO());
   }
 
-  @Patch(':postId/:userId')
+  @Patch(':postId')
   @ApiOperation({ summary: 'Delete a Quote-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Quote-Post successfully deleted', type: QuotePostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Quote-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async updateQuotePost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Body() dto: UpdateQuotePostDto
+    @Body() dto: UpdateQuotePostDto,
+    @Query('userId') userId: string
   ): Promise<QuotePostRdo> {
     this.logger.log(`Updating quote post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const updatedPost = await this.quotePostService.updatePostById(userId, postId, dto);
 
     return fillDto(QuotePostRdo, updatedPost.toPOJO());
   }
 
-  @Delete(':postId/:userId')
+  @Delete(':postId')
   @ApiOperation({ summary: 'Repost a Quote-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Quote-Post successfully reposted', type: QuotePostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Quote-Post not found' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Quote-Post has already been reposted' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async deleteQuotePost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<QuotePostRdo> {
     this.logger.log(`Deleting quote post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const deletedPost = await this.quotePostService.deletePostById(userId, postId);
 
     return fillDto(QuotePostRdo, deletedPost.toPOJO());
   }
 
-  @Post(':postId/repost/:userId')
+  @Post(':postId/repost')
   @ApiOperation({ summary: 'Repost a Quote-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Quote-Post reposted', type: LinkPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User unauthorized' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Quote-Post not found' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Quote-Post has already been reposted' })
-  @ApiBearerAuth()  public async repostQuotePost(
-    @Param('userId') userId: string,
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
+  public async repostQuotePost(
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<QuotePostRdo> {
     this.logger.log(`Reposting quote post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const repostedPost = await this.quotePostService.repostPostById(userId, postId);
 
     return fillDto(QuotePostRdo, repostedPost.toPOJO());

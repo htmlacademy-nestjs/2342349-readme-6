@@ -1,11 +1,12 @@
 import { Controller, Get, Logger, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
 import { FileUploaderService } from './file-uploader.service';
 import { UploadedFileRdo } from './rdo/uploaded-file.rdo';
 
+@ApiTags('File-Uploader')
 @Controller('files')
 export class FileUploaderController {
   private readonly logger = new Logger(FileUploaderController.name);
@@ -32,7 +33,7 @@ export class FileUploaderController {
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiConsumes('multipart/form-data')
   public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<UploadedFileRdo> {
-    this.logger.log(`Uploading file by user.`);
+    this.logger.log(`Starting file upload for file: '${file.originalname}'`);
     const createdFile = await this.fileUploaderService.saveFile(file);
 
     return fillDto(UploadedFileRdo, createdFile.toPOJO());

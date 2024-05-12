@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import {
   ConflictException,
   Inject,
@@ -6,6 +7,8 @@ import {
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { ApplicationConfig } from '@project/content-config';
 import { PostEntity, PostRepository } from '@project/content-core';
 import { PostStatus } from '@project/shared-core';
 import {
@@ -21,7 +24,9 @@ export class PostService {
   private readonly logger = new Logger(PostService.name);
 
   constructor(
+    private readonly httpService: HttpService,
     @Inject('PostRepository') private readonly postRepository: PostRepository,
+    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>
   ) {}
 
   public async findPostById(postId: string): Promise<PostEntity> {
@@ -115,6 +120,30 @@ export class PostService {
     this.logger.log(`Post unliked: ID '${postId}'`);
 
     return updatedPost;
+  }
+
+  public async incrementUserPostCount(userId: string): Promise<boolean> {
+    this.logger.log(`Attempting to increment post count for user ID: '${userId}'`);
+    const { data } = await this.httpService.axiosRef
+      .post(`${this.applicationConfig.serviceUrlUser}/post-count`, {}, { params: { userId } });
+    if (data.success === undefined) {
+      this.logger.error(`No success field in response while incrementing post count for user ID: '${userId}'`);
+      return false;
+    }
+
+    return true;
+  }
+
+  public async decrementUserPostCount(userId: string): Promise<boolean> {
+    this.logger.log(`Attempting to decrement post count for user ID: '${userId}'`);
+    const { data } = await this.httpService.axiosRef
+      .delete(`${this.applicationConfig.serviceUrlUser}/post-count`, { params: { userId } });
+    if (data.success === undefined) {
+      this.logger.error(`No success field in response while decrementing post count for user ID: '${userId}'`);
+      return false;
+    }
+
+    return true;
   }
 }
 

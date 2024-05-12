@@ -34,7 +34,7 @@ export abstract class BaseMongoRepository<
   }
 
   public async save(entity: T): Promise<T> {
-    this.repositoryLogger.log(`Saving new entity`);
+    this.repositoryLogger.log(`Saving new entity...`);
     const newEntity = new this.model(entity.toPOJO());
     const savedEntity = await newEntity.save();
     newEntity.id = savedEntity.id;

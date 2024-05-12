@@ -18,7 +18,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  public async validate(payload: TokenPayload) {
+  public async validate(payload: TokenPayload): Promise<TokenPayload> {
     this.logger.log(`Validating access token for user with ID: '${payload.sub}'`);
     return payload;
   }

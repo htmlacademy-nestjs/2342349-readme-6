@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { RefreshTokenPayload, TokenPayload } from '@project/shared-core';
+import { RefreshTokenPayload } from '@project/shared-core';
 import { JwtConfig } from '@project/user-config';
 import { UserEntity } from '@project/user-core';
 import { ExtractJwt, Strategy } from 'passport-jwt';

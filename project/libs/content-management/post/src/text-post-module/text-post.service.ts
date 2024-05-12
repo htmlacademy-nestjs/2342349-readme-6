@@ -2,7 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable, Logger,
+  Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -44,6 +45,7 @@ export class TextPostService {
     const textPostEntity = new TextPostEntity(textPostData);
     const savedTextPost = await this.textPostRepository.save(textPostEntity);
     this.logger.log(`Text post created with ID ${savedTextPost.id}`);
+    await this.postService.incrementUserPostCount(userId);
 
     return savedTextPost;
   }
@@ -102,6 +104,7 @@ export class TextPostService {
 
     const deletedPost = await this.textPostRepository.deleteById(postId);
     this.logger.log(`Text post deleted ID: '${deletedPost.id}'`);
+    await this.postService.decrementUserPostCount(userId);
 
     return deletedPost;
   }

@@ -1,5 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
 import { UpdatePhotoPostDto } from './dto/update-photo-post.dto';
@@ -15,17 +27,16 @@ export class PhotoPostController {
     private readonly photoPostService: PhotoPostService,
   ) {}
 
-  @Post(':userId')
+  @Post('/')
   @ApiOperation({ summary: 'Create a Photo-Post' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Photo-Post successfully created', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async createPhotoPost(
-    @Param('userId') userId: string,
-    @Body() dto: CreatePhotoPostDto
+    @Body() dto: CreatePhotoPostDto,
+    @Query('userId') userId: string
   ): Promise<PhotoPostRdo> {
     this.logger.log(`Creating photo post for user ${userId}`);
-    //todo userId from token
     const createdPhotoPost = await this.photoPostService.createPost(userId, dto);
 
     return fillDto(PhotoPostRdo, createdPhotoPost.toPOJO());
@@ -45,57 +56,54 @@ export class PhotoPostController {
     return fillDto(PhotoPostRdo, foundPost.toPOJO());
   }
 
-  @Patch(':postId/:userId')
+  @Patch(':postId')
   @ApiOperation({ summary: 'Update a Photo-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Photo-Post updated successfully', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Photo-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async updatePhotoPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Body() dto: UpdatePhotoPostDto
+    @Body() dto: UpdatePhotoPostDto,
+    @Query('userId') userId: string
   ): Promise<PhotoPostRdo> {
     this.logger.log(`Updating photo post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const updatedPost = await this.photoPostService.updatePostById(userId, postId, dto);
 
     return fillDto(PhotoPostRdo, updatedPost.toPOJO());
   }
 
-  @Delete(':postId/:userId')
+  @Delete(':postId')
   @ApiOperation({ summary: 'Delete a Photo-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Photo-Post successfully deleted', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Photo-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async deletePhotoPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<PhotoPostRdo> {
     this.logger.log(`Deleting photo post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const deletedPost = await this.photoPostService.deletePostById(userId, postId);
 
     return fillDto(PhotoPostRdo, deletedPost.toPOJO());
   }
 
-  @Post(':postId/repost/:userId')
+  @Post(':postId/repost')
   @ApiOperation({ summary: 'Repost a Photo-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Photo-Post successfully reposted', type: PhotoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Photo-Post not found' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Photo-Post has already been reposted' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async repostPhotoPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<PhotoPostRdo> {
     this.logger.log(`Reposting photo post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const repostedPost = await this.photoPostService.repostPostById(userId, postId);
 
     return fillDto(PhotoPostRdo, repostedPost.toPOJO());

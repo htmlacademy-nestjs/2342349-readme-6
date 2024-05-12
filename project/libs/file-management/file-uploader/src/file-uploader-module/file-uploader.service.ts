@@ -6,10 +6,10 @@ import { FileUploaderEntity, FileUploaderFactory, FileUploaderRepository } from 
 import { StoredFile } from '@project/shared-core';
 import dayjs from 'dayjs';
 import { ensureDir } from 'fs-extra';
-import { extension } from 'mime-types';
 import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { extname } from 'path';
 import {
   FILE_ALLOWED_EXTENSIONS,
   FILE_DATE_FORMAT,
@@ -41,7 +41,7 @@ export class FileUploaderService {
   }
 
   public async writeFile(file: Express.Multer.File): Promise<StoredFile> {
-    const fileExtension = extension(file.mimetype);
+    const fileExtension = extname(file.originalname);
     if (!fileExtension) {
       this.logger.warn(`Unknown file type received: ${file.mimetype}`);
       throw new BadRequestException(FILE_UNKNOWN_TYPE);

@@ -1,9 +1,9 @@
-import { Controller, HttpStatus, Logger, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, HttpStatus, Logger, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EmailSubscriberService } from '../email-subscriber.service';
 import { PostNotificationRdo } from '../rdo/post-notification.rdo';
 
-@ApiTags('notifications')
+@ApiTags('Notifications')
 @Controller('notifications')
 export class EmailSubscriberRestController {
   private readonly logger = new Logger(EmailSubscriberRestController.name);
@@ -12,14 +12,15 @@ export class EmailSubscriberRestController {
     private readonly emailSubscriberService: EmailSubscriberService
   ) {}
 
-  @Post('new-post/:userId')
-  @ApiOperation({ summary: 'Send Emails for new posts' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Emails for new posts sent successfully', type: [PostNotificationRdo] })
+  @Post('new-posts-emails')
+  @ApiOperation({ summary: 'Send emails about new posts to all users' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Emails about new posts have been sent successfully', type: PostNotificationRdo })
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async getPersonalFeedPosts(
-    @Param('userId') userId: string,
+    @Query('userId') userId: string
   ): Promise<PostNotificationRdo> {
-    this.logger.log(`Initiating email notifications for new posts for user ${userId}`);
-    //todo userId from token
+    this.logger.log(`Starting the process to send email notifications for new posts, initiated by user ID: '${userId}'`);
+
     return await this.emailSubscriberService.findPostsForNotification(userId);
   }
 }

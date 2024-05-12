@@ -2,10 +2,9 @@
 @userId = 661c2da73755ed24c779f041
 @postId = 38828759-4be4-44fd-9ff5-71a2eee4c812
 @repostId = post-uuid-L3
-@token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
 
 # Create a new Video-post
-POST {{host}}/api/post/video/{{userId}} HTTP/1.1
+POST {{host}}/api/post/video?userId={{userId}} HTTP/1.1
 Content-Type: application/json
 
 {
@@ -26,21 +25,21 @@ GET {{host}}/api/post/video/{{postId}} HTTP/1.1
 ###
 
 # Update Video-post by ID
-PATCH {{host}}/api/post/video/{{postId}}/{{userId}} HTTP/1.1
+PATCH {{host}}/api/post/video/{{postId}}?userId={{userId}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "title": "AAA2"
+  "title": "AAA Title for Google article"
 }
 
 ###
 
 # Repost Video-post by ID
-POST {{host}}/api/post/video/{{repostId}}/repost/{{userId}} HTTP/1.1
+POST {{host}}/api/post/video/{{repostId}}/repost?userId={{userId}} HTTP/1.1
 
 ###
 
 # Delete Video-post by ID
-DELETE {{host}}/api/post/video/{{postId}}/{{userId}} HTTP/1.1
+DELETE {{host}}/api/post/video/{{postId}}?userId={{userId}} HTTP/1.1
 
 ###

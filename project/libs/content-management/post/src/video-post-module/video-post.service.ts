@@ -2,7 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable, Logger,
+  Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -44,6 +45,7 @@ export class VideoPostService {
     const videoPostEntity = new VideoPostEntity(videoPostData);
     const savedVideoPost = await this.videoPostRepository.save(videoPostEntity);
     this.logger.log(`Video post created with ID ${savedVideoPost.id}`);
+    await this.postService.incrementUserPostCount(userId);
 
     return savedVideoPost;
   }
@@ -101,6 +103,7 @@ export class VideoPostService {
 
     const deletedPost = await this.videoPostRepository.deleteById(postId);
     this.logger.log(`Video post deleted ID: '${deletedPost.id}'`);
+    await this.postService.decrementUserPostCount(userId);
 
     return deletedPost;
   }

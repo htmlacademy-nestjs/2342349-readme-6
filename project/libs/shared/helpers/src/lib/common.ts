@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 
 type PlainObject = Record<string, unknown>;
@@ -36,10 +37,12 @@ export function getRabbitMQConnectionString({user, password, host, port}): strin
 }
 
 export function parseTime(time: string): TimeAndUnit {
+  const logger = new Logger('TimeParser');
   const regex = /^(\d+)([shdmy])/;
   const match = regex.exec(time);
 
   if (!match) {
+    logger.error(`Bad time string: ${time}`);
     throw new Error(`[parseTime] Bad time string: ${time}`);
   }
 
@@ -48,6 +51,7 @@ export function parseTime(time: string): TimeAndUnit {
   const unit = unitRaw as DateTimeUnit;
 
   if (isNaN(value)) {
+    logger.error(`Can't parse value count from ${time}. Result is NaN.`);
     throw new Error(`[parseTime] Can't parse value count. Result is NaN.`);
   }
 

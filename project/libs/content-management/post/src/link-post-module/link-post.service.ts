@@ -2,7 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable, Logger,
+  Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -44,6 +45,7 @@ export class LinkPostService {
     const linkPostEntity = new LinkPostEntity(linkPostData);
     const savedPost = await this.linkPostRepository.save(linkPostEntity);
     this.logger.log(`Link post created with ID ${savedPost.id}`);
+    await this.postService.incrementUserPostCount(userId);
 
     return savedPost;
   }
@@ -101,7 +103,10 @@ export class LinkPostService {
 
     const deletedPost = await this.linkPostRepository.deleteById(postId);
     this.logger.log(`Link post deleted ID: '${deletedPost.id}'`);
-    return deletedPost;  }
+    await this.postService.decrementUserPostCount(userId);
+
+    return deletedPost;
+  }
 
   public async repostPostById(userId: string, postId: string): Promise<LinkPostEntity> {
     this.logger.log(`Reposting link post ID '${postId}' by user '${userId}'`);

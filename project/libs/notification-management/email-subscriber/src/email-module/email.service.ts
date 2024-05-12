@@ -78,7 +78,7 @@ export class EmailService {
               description: post.description,
               text: post.text,
               id: post.id,
-              postedAt: post.postedAt.toISOString(),
+              postedAt: post.postedAt,
               tags: post.tags.join(", "),
               postStatus: post.postStatus,
               likeCount: post.likeCount,
@@ -87,11 +87,11 @@ export class EmailService {
             }))
           }
         });
-        this.logger.log(`New post list email sent successfully to: ${subscriber.email}`);
+        this.logger.log(`New-post-list send successfully by email to: ${subscriber.email}`);
       } catch (error) {
-        this.logger.error(`Failed to send new post list email to: ${subscriber.email}`, error.stack);
+        this.logger.error(`Failed to send new-post-list email to: ${subscriber.email}`, error.stack);
       }
     }
-    this.logger.log(`All [${foundPosts.length}] new post sent successfully to [${subscribers.length}] users`);
+    this.logger.log(`All [${foundPosts.length}] new-post-lists send successfully to [${subscribers.length}] users`);
   }
 }

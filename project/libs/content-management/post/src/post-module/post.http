@@ -1,26 +1,25 @@
 @host = http://localhost:3010
 @userId = 661c2da73755ed24c779f041
-@postId = 51377bc9-afa8-4e05-ba48-9fa8dea9a122
-@token = eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjY1ZTE0MDg3OGQ1ODU4M2YzYjQ3ZDk4MCIsImVtYWlsIjoiYWxleDIzQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5MzIwOTgxLCJleHAiOjE3MDk0OTM3ODF9.MinzPY09243qznrA0vUDVXzxYFpUxfGhYs_y43ZI8VsMTR3TmlturjjyXSUV696IdTpQlm_e7QTbU0boxboo0w
+@postId = c81b6b25-0e8b-4875-af1a-991e794c611e
 
 ###
 
 # Get Link-post by ID
-GET {{host}}/api/post/{{postId}} HTTP/1.1
+GET {{host}}/api/post/general/{{postId}} HTTP/1.1
 
 ###
 
 # Delete Post by ID
-DELETE {{host}}/api/post/{{postId}}/{{userId}} HTTP/1.1
+DELETE {{host}}/api/post/general/{{postId}}?userId={{userId}} HTTP/1.1
 
 ###
 
 # Like Post by ID
-POST {{host}}/api/post/{{postId}}/like/{{userId}} HTTP/1.1
+POST {{host}}/api/post/general/{{postId}}/like?userId={{userId}} HTTP/1.1
 
 ###
 
 # Unlike Post by ID
-DELETE {{host}}/api/post/{{postId}}/like/{{userId}} HTTP/1.1
+DELETE {{host}}/api/post/general/{{postId}}/like?userId={{userId}} HTTP/1.1
 
 ###

@@ -23,7 +23,7 @@ export class UserService {
     @Inject('UserRepository') private readonly userRepository: UserRepository,
     private readonly authenticationService: AuthenticationService,
     @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>,
-    private readonly notifyService: NotifyService,
+    private readonly notifyService: NotifyService
   ) {
   }
 
@@ -96,7 +96,6 @@ export class UserService {
       throw new ConflictException(SUBSCRIBE_USER_ALREADY_ADDED);
     }
 
-    //todo myself subscribe
     if (userId === subscribeUserId) {
       this.logger.warn('Attempt to subscribe to oneself');
       throw new BadRequestException(SUBSCRIBE_USER_YOURSELF);
@@ -147,7 +146,6 @@ export class UserService {
     return isFollowerCountUpdated;
   }
 
-  //todo incrementPostCount
   public async incrementPostCount(userId: string): Promise<boolean> {
     this.logger.log(`Attempting to increment post count for user ID: '${userId}'`);
     const isPostCountUpdated = await this.userRepository.incrementPostCount(userId);
@@ -158,7 +156,6 @@ export class UserService {
     return isPostCountUpdated;
   }
 
-  //todo decrementPostCount
   public async decrementPostCount(userId: string): Promise<boolean> {
     this.logger.log(`Attempting to decrement post count for user ID: '${userId}'`);
     const isPostCountUpdated = await this.userRepository.decrementPostCount(userId);

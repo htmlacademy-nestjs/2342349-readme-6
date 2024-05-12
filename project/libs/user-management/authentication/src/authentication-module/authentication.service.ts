@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Token, TokenPayload, User } from '@project/shared-core';
+import { Token, User } from '@project/shared-core';
 import { createJWTPayload, CryptoProtocol } from '@project/shared-helpers';
 import { JwtConfig } from '@project/user-config';
 import { UserEntity, UserRepository } from '@project/user-core';
@@ -96,8 +96,8 @@ export class AuthenticationService {
   }
 
   public async changePassword(userId: string, dto: ChangePasswordDto): Promise<UserEntity> {
-    this.logger.log(`Changing password for user ID: '${userId}'`);
     const {oldPassword, newPassword} = dto;
+    this.logger.log(`Changing password for user ID: '${userId}'`);
 
     if (oldPassword === newPassword) {
       throw new NotFoundException(AUTHENTICATION_NEW_PASSWORD_SAME);

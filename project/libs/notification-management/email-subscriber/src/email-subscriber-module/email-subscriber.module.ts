@@ -1,5 +1,8 @@
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { ApplicationConfig } from '@project/notification-config';
 import { NotificationCoreModule } from '@project/notification-core';
 import { SearchModule } from '@project/search';
 import { getRabbitMQOptions } from '@project/shared-helpers';
@@ -17,6 +20,13 @@ import { EmailSubscriberService } from './email-subscriber.service';
       RabbitMQModule,
       getRabbitMQOptions('rabbit')
     ),
+    HttpModule.registerAsync({
+      useFactory: (applicationConfig: ConfigType<typeof ApplicationConfig>) => ({
+        timeout: applicationConfig.httpClientTimeout,
+        maxRedirects: applicationConfig.httpClientMaxRedirects,
+      }),
+      inject: [ApplicationConfig.KEY]
+    }),
   ],
   controllers: [EmailSubscriberRabbitController, EmailSubscriberRestController],
   providers: [EmailSubscriberService]
