@@ -17,6 +17,7 @@
     "esModuleInterop": true,
     "noEmitOnError": false,
     "paths": {
+      "@project/api-config": ["libs/api/api-config/src/index.ts"],
       "@project/authentication": [
         "libs/user-management/authentication/src/index.ts"
       ],
@@ -36,6 +37,7 @@
       "@project/file-uploader": [
         "libs/file-management/file-uploader/src/index.ts"
       ],
+      "@project/interceptors": ["libs/shared/interceptors/src/index.ts"],
       "@project/notification-config": [
         "libs/notification-management/notification-config/src/index.ts"
       ],

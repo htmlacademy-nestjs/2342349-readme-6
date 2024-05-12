@@ -27,6 +27,15 @@ export class ApplicationConfiguration implements AppConfig {
   @IsPositive()
   defaultCommentCountLimit: number;
 
+  @IsString()
+  serviceUrlUser: string;
+
+  @IsNumber()
+  httpClientMaxRedirects: number;
+
+  @IsNumber()
+  httpClientTimeout: number;
+
   public async validate(): Promise<void> {
     await validateOrReject(this);
   }

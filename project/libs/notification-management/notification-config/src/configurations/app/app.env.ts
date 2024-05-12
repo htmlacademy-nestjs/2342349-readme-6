@@ -19,6 +19,15 @@ export class ApplicationConfiguration implements AppConfig {
   @IsPositive()
   defaultPostCountLimit: number;
 
+  @IsNumber()
+  httpClientMaxRedirects: number;
+
+  @IsNumber()
+  httpClientTimeout: number;
+
+  @IsString()
+  serviceUrlSearch: string;
+
   public async validate(): Promise<void> {
     await validateOrReject(this);
   }

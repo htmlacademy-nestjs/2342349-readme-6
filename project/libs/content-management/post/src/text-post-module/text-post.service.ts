@@ -2,7 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Inject,
-  Injectable, Logger,
+  Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
@@ -44,6 +45,7 @@ export class TextPostService {
     const textPostEntity = new TextPostEntity(textPostData);
     const savedTextPost = await this.textPostRepository.save(textPostEntity);
     this.logger.log(`Text post created with ID ${savedTextPost.id}`);
+    await this.postService.incrementUserPostCount(userId);
 
     return savedTextPost;
   }
@@ -52,11 +54,11 @@ export class TextPostService {
     this.logger.log(`Finding text post by ID ${postId}`);
     const foundTextPost = await this.textPostRepository.findById(postId);
     if (!foundTextPost) {
-      this.logger.error(`Text post not found: ${postId}`);
+      this.logger.warn(`Text post not found: ${postId}`);
       throw new NotFoundException(TEXT_POST_NOT_FOUND);
     }
     if (foundTextPost.postType !== PostType.TEXT) {
-      this.logger.error(`Incorrect post type for text post: ${postId}`);
+      this.logger.warn(`Incorrect post type for text post: ${postId}`);
       throw new BadRequestException(TEXT_POST_DIFFERENT_TYPE);
     }
 
@@ -71,11 +73,11 @@ export class TextPostService {
     this.logger.log(`Updating text post ID ${postId} by user ${userId}`);
     const updatedTextPost = await this.findPostById(postId);
     if (updatedTextPost.postType !== PostType.TEXT) {
-      this.logger.error(`Incorrect post type for text post: ${postId}`);
+      this.logger.warn(`Incorrect post type for text post: ${postId}`);
       throw new BadRequestException(TEXT_POST_DIFFERENT_TYPE);
     }
     if (updatedTextPost.authorId !== userId) {
-      this.logger.error(`Unauthorized attempt to modify post by user ${userId}`);
+      this.logger.warn(`Unauthorized attempt to modify post by user ${userId}`);
       throw new UnauthorizedException(TEXT_POST_MODIFY_PERMISSION);
     }
 
@@ -87,39 +89,40 @@ export class TextPostService {
     if (dto.text !== undefined) updatedTextPost.text = dto.text;
 
     const savedUpdatedTextPost = await this.textPostRepository.update(postId, updatedTextPost);
-    this.logger.log(`Text post updated ID: ${savedUpdatedTextPost.id}`);
+    this.logger.log(`Text post updated ID: '${savedUpdatedTextPost.id}'`);
 
     return savedUpdatedTextPost;
   }
 
   public async deletePostById(userId: string, postId: string): Promise<TextPostEntity> {
-    this.logger.log(`Deleting text post ID ${postId} by user ${userId}`);
+    this.logger.log(`Deleting text post ID '${postId}' by user '${userId}'`);
     const deletedTextPost = await this.findPostById(postId);
     if (deletedTextPost.authorId !== userId) {
-      this.logger.error(`Unauthorized attempt to delete post by user ${userId}`);
+      this.logger.warn(`Unauthorized attempt to delete post by user '${userId}'`);
       throw new UnauthorizedException(TEXT_POST_DELETE_PERMISSION);
     }
 
     const deletedPost = await this.textPostRepository.deleteById(postId);
-    this.logger.log(`Text post deleted ID: ${deletedPost.id}`);
+    this.logger.log(`Text post deleted ID: '${deletedPost.id}'`);
+    await this.postService.decrementUserPostCount(userId);
 
     return deletedPost;
   }
 
   public async repostPostById(userId: string, postId: string): Promise<TextPostEntity> {
-    this.logger.log(`Reposting text post ID ${postId} by user ${userId}`);
+    this.logger.log(`Reposting text post ID '${postId}' by user '${userId}'`);
     const repostTextPost = await this.findPostById(postId);
     if (repostTextPost.postType !== PostType.TEXT) {
-      this.logger.error(`Incorrect post type for text post: ${postId}`);
+      this.logger.warn(`Incorrect post type for text post: '${postId}'`);
       throw new BadRequestException(TEXT_POST_DIFFERENT_TYPE);
     }
     if (repostTextPost.authorId === userId) {
-      this.logger.error(`User ${userId} attempted to repost own post`);
+      this.logger.warn(`User '${userId}' attempted to repost own post`);
       throw new UnauthorizedException(TEXT_POST_REPOST_AUTHOR);
     }
 
     if (await this.postService.existsRepostByUser(postId, userId)) {
-      this.logger.error(`Repost already exists for user ${userId} and post ${postId}`);
+      this.logger.warn(`Repost already exists for user '${userId}' and post '${postId}'`);
       throw new ConflictException(TEXT_POST_REPOST_EXISTS);
     }
 
@@ -132,7 +135,7 @@ export class TextPostService {
 
     const repostedTextPost = await this.createPost(userId, createTextPostDto, repostTextPost.id);
     await this.postService.incrementRepostCount(postId);
-    this.logger.log(`Text post reposted successfully ID: ${repostedTextPost.id}`);
+    this.logger.log(`Text post reposted successfully ID: '${repostedTextPost.id}'`);
 
     return repostedTextPost;
   }

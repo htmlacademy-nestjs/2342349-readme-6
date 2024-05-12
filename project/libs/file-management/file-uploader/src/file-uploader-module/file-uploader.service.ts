@@ -6,10 +6,10 @@ import { FileUploaderEntity, FileUploaderFactory, FileUploaderRepository } from 
 import { StoredFile } from '@project/shared-core';
 import dayjs from 'dayjs';
 import { ensureDir } from 'fs-extra';
-import { extension } from 'mime-types';
 import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { extname } from 'path';
 import {
   FILE_ALLOWED_EXTENSIONS,
   FILE_DATE_FORMAT,
@@ -41,13 +41,13 @@ export class FileUploaderService {
   }
 
   public async writeFile(file: Express.Multer.File): Promise<StoredFile> {
-    const fileExtension = extension(file.mimetype);
+    const fileExtension = extname(file.originalname);
     if (!fileExtension) {
-      this.logger.error(`Unknown file type received: ${file.mimetype}`);
+      this.logger.warn(`Unknown file type received: ${file.mimetype}`);
       throw new BadRequestException(FILE_UNKNOWN_TYPE);
     }
     if (!FILE_ALLOWED_EXTENSIONS.includes(fileExtension)) {
-      this.logger.error(`Unsupported file type attempt: ${fileExtension}`);
+      this.logger.warn(`Unsupported file type attempt: ${fileExtension}`);
       throw new BadRequestException(FILE_UNSUPPORTED_TYPE);
     }
 
@@ -89,17 +89,17 @@ export class FileUploaderService {
       updatedAt: undefined,
     });
     const savedFile = await this.fileUploaderRepository.save(fileEntity);
-    this.logger.log(`File saved in database with ID: ${savedFile.id}`);
+    this.logger.log(`File saved in database with ID: '${savedFile.id}'`);
 
     return savedFile
   }
 
   public async getFile(fileId: string): Promise<FileUploaderEntity> {
-    this.logger.log(`Retrieving file with ID: ${fileId}`);
+    this.logger.log(`Retrieving file with ID: '${fileId}'`);
     const existFile = await this.fileUploaderRepository.findById(fileId);
     if (!existFile) {
-      this.logger.error(`File not found with ID: ${fileId}`);
-      throw new NotFoundException(`File with ${fileId} not found.`);
+      this.logger.warn(`File not found with ID: '${fileId}'`);
+      throw new NotFoundException(`File with '${fileId}' not found.`);
     }
 
     return existFile;

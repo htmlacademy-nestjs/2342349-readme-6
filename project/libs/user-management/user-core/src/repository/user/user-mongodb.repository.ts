@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BaseMongoRepository } from '@project/data-access';
 import { Model } from 'mongoose';
-import { UserEntity } from '../entity/user.entity';
-import { UserFactory } from '../entity/user.factory';
-import { UserModel } from '../entity/user.model';
+import { UserEntity } from '../../entity/user/user.entity';
+import { UserFactory } from '../../entity/user/user.factory';
+import { UserModel } from '../../entity/user/user.model';
 import { UserRepository } from './user.repository.interface';
 
 @Injectable()
@@ -26,10 +26,10 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async containsSubscription(userId: string, subscriptionId: string): Promise<boolean> {
-    this.logger.log(`Checking subscription presence for user ID: ${userId} with subscription ID: ${subscriptionId}`);
+    this.logger.log(`Checking subscription presence for user ID: '${userId}' with subscription ID: '${subscriptionId}'`);
     const user = await this.model.findById(userId);
     if (!user) {
-      this.logger.warn(`User not found with ID: ${userId}`);
+      this.logger.warn(`User not found with ID: '${userId}'`);
       return false;
     }
 
@@ -37,7 +37,7 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async addSubscription(userId: string, subscriptionId: string): Promise<UserEntity> {
-    this.logger.log(`Adding subscription ${subscriptionId} to user ${userId}`);
+    this.logger.log(`Adding subscription '${subscriptionId}' to user '${userId}'`);
     const updatedUser = await this.model.findByIdAndUpdate(userId,
       {
         $addToSet: { subscriptionIds: subscriptionId }
@@ -48,7 +48,7 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async removeSubscription(userId: string, subscriptionId: string): Promise<UserEntity> {
-    this.logger.log(`Removing subscription ${subscriptionId} from user ${userId}`);
+    this.logger.log(`Removing subscription '${subscriptionId}' from user '${userId}'`);
     const updatedUser = await this.model.findByIdAndUpdate(userId,
       {
         $pull: { subscriptionIds: subscriptionId }
@@ -59,7 +59,7 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async incrementFollowerCount(userId: string): Promise<boolean> {
-    this.logger.log(`Incrementing follower count for user ID: ${userId}`);
+    this.logger.log(`Incrementing follower count for user ID: '${userId}'`);
     const updatedUser = await this.model.findByIdAndUpdate(userId,
       {
         $inc: { followerCount: 1 }
@@ -70,7 +70,7 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async decrementFollowerCount(userId: string): Promise<boolean> {
-    this.logger.log(`Decrementing follower count for user ID: ${userId}`);
+    this.logger.log(`Decrementing follower count for user ID: '${userId}'`);
     const updatedUser = await this.model.findByIdAndUpdate(userId,
       {
         $inc: { followerCount: -1 }
@@ -81,7 +81,7 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async incrementPostCount(userId: string): Promise<boolean> {
-    this.logger.log(`Incrementing post count for user ID: ${userId}`);
+    this.logger.log(`Incrementing post count for user ID: '${userId}'`);
     const updatedUser = await this.model.findByIdAndUpdate(userId,
       {
         $inc: { postCount: 1 }
@@ -92,7 +92,7 @@ export class UserMongodbRepository extends BaseMongoRepository<UserEntity, UserM
   }
 
   public async decrementPostCount(userId: string): Promise<boolean> {
-    this.logger.log(`Decrementing post count for user ID: ${userId}`);
+    this.logger.log(`Decrementing post count for user ID: '${userId}'`);
     const updatedUser = await this.model.findByIdAndUpdate(userId,
       {
         $inc: { postCount: -1 }

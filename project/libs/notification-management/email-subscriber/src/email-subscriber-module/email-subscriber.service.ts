@@ -1,6 +1,8 @@
+import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { ApplicationConfig } from '@project/notification-config';
 import { EmailScheduleRepository, EmailSubscriberEntity, EmailSubscriberRepository } from '@project/notification-core';
-import { SearchService } from '@project/search';
 import { EmailService } from '../email-module/email.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
@@ -11,10 +13,11 @@ export class EmailSubscriberService {
   private readonly logger = new Logger(EmailSubscriberService.name);
 
   constructor(
+    private readonly httpService: HttpService,
+    @Inject(ApplicationConfig.KEY) private readonly applicationConfig: ConfigType<typeof ApplicationConfig>,
     @Inject('EmailSubscriberRepository') private readonly emailSubscriberRepository: EmailSubscriberRepository,
     @Inject('EmailScheduleRepository') private readonly emailScheduleRepository: EmailScheduleRepository,
-    private readonly emailService: EmailService,
-    private readonly searchService: SearchService
+    private readonly emailService: EmailService
   ) {
   }
 
@@ -59,22 +62,27 @@ export class EmailSubscriberService {
 
   public async findPostsForNotification(userId: string): Promise<PostNotificationRdo> {
     try {
+      this.logger.log(`Starting to find posts for notification initiated by user ID: '${userId}'`);
+
       let lastPostDate = await this.emailScheduleRepository.getLastSubscriptionPostDate();
       if (!lastPostDate) {
         lastPostDate = new Date(0);
       }
-      this.logger.log(`Processed new post notifications for ${lastPostDate} date`);
+      this.logger.log(`Processed new post notifications for '${lastPostDate}' date`);
 
-      //todo searchService from API
-      const foundPostPagination = await this.searchService.findNewPostsByDate(lastPostDate);
-      const foundPosts = foundPostPagination.entities;
-      this.logger.log(`Found ${foundPosts.length} new posts`);
+      const { data } = await this.httpService.axiosRef
+        .get(`${this.applicationConfig.serviceUrlSearch}/new-posts`, { params: { postDate: lastPostDate } });
+      const foundPosts = data.entities;
+      this.logger.log(`Found [${foundPosts.length}] new posts since '${lastPostDate}'`);
 
       const subscribers = await this.emailSubscriberRepository.getAllSubscribers();
-      this.logger.log(`Found ${subscribers.length} subscribers`);
+      this.logger.log(`Found [${subscribers.length}] subscribers to notify about new posts`);
 
       await this.emailService.sendNewPostListEmail(subscribers, foundPosts, lastPostDate);
+      this.logger.log(`Emails sent successfully to all [${subscribers.length}] subscribers`);
+
       await this.emailScheduleRepository.updateLastSubscriptionPostDate(new Date());
+      this.logger.log(`Updated last subscription post date to current date '${new Date()}'`);
 
       return {
         postCount: foundPosts.length,

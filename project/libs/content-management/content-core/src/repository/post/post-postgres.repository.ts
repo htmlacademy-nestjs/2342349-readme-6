@@ -21,7 +21,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async findById(postId: PostEntity['id']): Promise<PostEntity | null> {
-    this.postLogger.log(`Finding post by ID: ${postId}`);
+    this.postLogger.log(`Finding post by ID: '${postId}'`);
     const post = await this.client.post.findFirst({
       where: { id: postId }
     });
@@ -30,7 +30,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async deleteById(postId: PostEntity['id']): Promise<PostEntity> {
-    this.postLogger.log(`Deleting post by ID: ${postId}`);
+    this.postLogger.log(`Deleting post by ID: '${postId}'`);
     const deletedComment = await this.client.post.delete({
       where: { id: postId }
     });
@@ -43,7 +43,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async exists(postId: PostEntity['id']): Promise<boolean> {
-    this.postLogger.log(`Checking existence of post by ID: ${postId}`);
+    this.postLogger.log(`Checking existence of post by ID: '${postId}'`);
     const post = await this.client.post.findUnique({
       where: { id: postId },
       select: { id: true }
@@ -53,7 +53,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async existsRepostByUser(originalPostId: PostEntity['id'], authorId: PostEntity['id']): Promise<boolean> {
-    this.postLogger.log(`Checking for repost by user ID: ${authorId} for original post ID: ${originalPostId}`);
+    this.postLogger.log(`Checking for repost by user ID: '${authorId}' for original post ID: '${originalPostId}'`);
     const post = await this.client.post.findFirst({
       where: {
         originalPostId: originalPostId,
@@ -66,7 +66,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async incrementRepostCount(postId: string): Promise<boolean> {
-    this.postLogger.log(`Incrementing repost count for post ID: ${postId}`);
+    this.postLogger.log(`Incrementing repost count for post ID: '${postId}'`);
     const incrementedPost = await this.client.post.update({
       where: { id: postId },
       data: {
@@ -78,7 +78,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async incrementCommentCount(postId: string): Promise<boolean> {
-    this.postLogger.log(`Incrementing comment count for post ID: ${postId}`);
+    this.postLogger.log(`Incrementing comment count for post ID: '${postId}'`);
     const incrementedPost = await this.client.post.update({
       where: { id: postId },
       data: {
@@ -90,7 +90,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async decrementCommentCount(postId: string): Promise<boolean> {
-    this.postLogger.log(`Decrementing comment count for post ID: ${postId}`);
+    this.postLogger.log(`Decrementing comment count for post ID: '${postId}'`);
     const incrementedPost = await this.client.post.update({
       where: { id: postId },
       data: {
@@ -102,7 +102,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async likePost(postId: string, updatedUserLikeIds: string[]): Promise<PostEntity> {
-    this.postLogger.log(`Liking post ID: ${postId}`);
+    this.postLogger.log(`Liking post ID: '${postId}'`);
     const likedPost = await this.client.post.update({
       where: { id: postId },
       data: {
@@ -115,7 +115,7 @@ export class PostPostgresRepository<T extends PostEntity & StorableEntity<Return
   }
 
   public async unlikePost(postId: string, updatedUserLikeIds: string[]): Promise<PostEntity> {
-    this.postLogger.log(`Unliking post ID: ${postId}`);
+    this.postLogger.log(`Unliking post ID: '${postId}'`);
     const unlikedPost = await this.client.post.update({
       where: { id: postId },
       data: {

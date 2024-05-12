@@ -7,7 +7,6 @@ import { Document } from 'mongoose';
   toJSON: {
     virtuals: true,
     transform: (doc, ret) => {
-      ret.subscriptionIds = ret.subscriptionIds.map(id => id.toString());
       delete ret._id;
       delete ret.__v;
     }

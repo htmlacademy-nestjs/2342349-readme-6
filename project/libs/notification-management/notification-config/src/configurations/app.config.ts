@@ -6,6 +6,9 @@ export interface AppConfig {
   environment: string;
   port: number;
   defaultPostCountLimit: number;
+  httpClientMaxRedirects: number;
+  httpClientTimeout: number;
+  serviceUrlSearch: string;
 }
 
 async function getAppConfig(): Promise<ApplicationConfiguration> {
@@ -13,6 +16,9 @@ async function getAppConfig(): Promise<ApplicationConfiguration> {
     environment: process.env.APP_ENVIRONMENT,
     port: parseInt(process.env.APP_PORT, 10),
     defaultPostCountLimit: parseInt(process.env.APP_DEFAULT_POST_COUNT_LIMIT, 10),
+    httpClientMaxRedirects: parseInt(process.env.APP_HTTP_CLIENT_MAX_REDIRECTS, 10),
+    httpClientTimeout: parseInt(process.env.APP_HTTP_CLIENT_TIMEOUT, 10),
+    serviceUrlSearch: process.env.APP_SERVICE_URL_SEARCH,
   });
 
   try {

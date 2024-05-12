@@ -1,4 +1,3 @@
-//todo AVATAR URL
 export const USER = {
   FIRST_NAME: {
     MIN: 3,

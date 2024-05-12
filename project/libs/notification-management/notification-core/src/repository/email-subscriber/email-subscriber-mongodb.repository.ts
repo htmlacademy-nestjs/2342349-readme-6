@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BaseMongoRepository } from '@project/data-access';
 import { Model } from 'mongoose';
@@ -9,6 +9,8 @@ import { EmailSubscriberRepository } from './email-subscriber.repository.interfa
 
 @Injectable()
 export class EmailSubscriberMongodbRepository extends BaseMongoRepository<EmailSubscriberEntity, EmailSubscriberModel> implements EmailSubscriberRepository {
+  private readonly logger = new Logger(EmailSubscriberMongodbRepository.name);
+
   constructor(
     entityFactory: EmailSubscriberFactory,
     @InjectModel(EmailSubscriberModel.name) emailSubscriberModel: Model<EmailSubscriberModel>
@@ -17,12 +19,16 @@ export class EmailSubscriberMongodbRepository extends BaseMongoRepository<EmailS
   }
 
   public async findByEmail(email: string): Promise<EmailSubscriberEntity | null> {
+    this.logger.log(`Searching for subscriber by email: '${email}'`);
     const foundDocument = await this.model.findOne({ email: email });
+
     return this.createEntityFromDocument(foundDocument);
   }
 
   public async getAllSubscribers(): Promise<EmailSubscriberEntity[]> {
+    this.logger.log('Fetching all subscribers');
     const subscribers = await this.model.find();
+
     return subscribers.map(subscriber => this.createEntityFromDocument(subscriber));
   }
 }

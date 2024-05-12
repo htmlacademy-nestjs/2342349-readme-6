@@ -1,5 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreateTextPostDto } from './dto/create-text-post.dto';
 import { UpdateTextPostDto } from './dto/update-text-post.dto';
@@ -15,17 +27,16 @@ export class TextPostController {
     private readonly textPostService: TextPostService,
   ) {}
 
-  @Post(':userId')
+  @Post('/')
   @ApiOperation({ summary: 'Create a Text-Post' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Text-Post successfully created', type: TextPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async createTextPost(
-    @Param('userId') userId: string,
-    @Body() dto: CreateTextPostDto
+    @Body() dto: CreateTextPostDto,
+    @Query('userId') userId: string
   ): Promise<TextPostRdo> {
     this.logger.log(`Creating text post for user ${userId}`);
-    //todo userId from token
     const createdTextPost = await this.textPostService.createPost(userId, dto);
 
     return fillDto(TextPostRdo, createdTextPost.toPOJO());
@@ -45,56 +56,53 @@ export class TextPostController {
     return fillDto(TextPostRdo, foundPost.toPOJO());
   }
 
-  @Patch(':postId/:userId')
+  @Patch(':postId')
   @ApiOperation({ summary: 'Update a Text-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Text-Post updated successfully', type: TextPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Text-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async updateTextPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Body() dto: UpdateTextPostDto
+    @Body() dto: UpdateTextPostDto,
+    @Query('userId') userId: string
   ): Promise<TextPostRdo> {
     this.logger.log(`Updating text post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const updatedPost = await this.textPostService.updatePostById(userId, postId, dto);
 
     return fillDto(TextPostRdo, updatedPost.toPOJO());
   }
 
-  @Delete(':postId/:userId')
+  @Delete(':postId')
   @ApiOperation({ summary: 'Delete a Text-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Text-Post successfully deleted', type: TextPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Text-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async deleteTextPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<TextPostRdo> {
     this.logger.log(`Deleting text post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const deletedPost = await this.textPostService.deletePostById(userId, postId);
 
     return fillDto(TextPostRdo, deletedPost.toPOJO());
   }
 
-  @Post(':postId/repost/:userId')
+  @Post(':postId/repost')
   @ApiOperation({ summary: 'Repost a Text-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Text-Post successfully reposted', type: TextPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Text-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async repostTextPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<TextPostRdo> {
     this.logger.log(`Reposting text post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const repostedPost = await this.textPostService.repostPostById(userId, postId);
 
     return fillDto(TextPostRdo, repostedPost.toPOJO());

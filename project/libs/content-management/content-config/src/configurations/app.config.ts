@@ -8,6 +8,9 @@ export interface AppConfig {
   defaultPostCountLimit: number;
   defaultPostPersonalFeedCountLimit: number;
   defaultCommentCountLimit: number;
+  httpClientMaxRedirects: number;
+  httpClientTimeout: number;
+  serviceUrlUser: string;
 }
 
 async function getAppConfig(): Promise<ApplicationConfiguration> {
@@ -16,7 +19,10 @@ async function getAppConfig(): Promise<ApplicationConfiguration> {
     port: parseInt(process.env.APP_PORT, 10),
     defaultPostCountLimit: parseInt(process.env.APP_DEFAULT_POST_COUNT_LIMIT, 10),
     defaultPostPersonalFeedCountLimit: parseInt(process.env.APP_DEFAULT_POST_PERSONAL_FEED_COUNT_LIMIT, 10),
-    defaultCommentCountLimit: parseInt(process.env.APP_DEFAULT_COMMENT_COUNT_LIMIT, 10)
+    defaultCommentCountLimit: parseInt(process.env.APP_DEFAULT_COMMENT_COUNT_LIMIT, 10),
+    httpClientMaxRedirects: parseInt(process.env.APP_HTTP_CLIENT_MAX_REDIRECTS, 10),
+    httpClientTimeout: parseInt(process.env.APP_HTTP_CLIENT_TIMEOUT, 10),
+    serviceUrlUser: process.env.APP_SERVICE_URL_USER,
   });
 
   try {

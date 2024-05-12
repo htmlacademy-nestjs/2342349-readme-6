@@ -1,5 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Logger,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
 import { CreateVideoPostDto } from './dto/create-video-post.dto';
 import { UpdateVideoPostDto } from './dto/update-video-post.dto';
@@ -15,17 +27,16 @@ export class VideoPostController {
     private readonly videoPostService: VideoPostService,
   ) {}
 
-  @Post(':userId')
+  @Post('/')
   @ApiOperation({ summary: 'Create a Video-Post' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Video-Post successfully created', type: VideoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async createVideoPost(
-    @Param('userId') userId: string,
-    @Body() dto: CreateVideoPostDto
+    @Body() dto: CreateVideoPostDto,
+    @Query('userId') userId: string
   ): Promise<VideoPostRdo> {
     this.logger.log(`Creating video post for user ${userId}`);
-    //todo userId from token
     const createdVideoPost = await this.videoPostService.createPost(userId, dto);
 
     return fillDto(VideoPostRdo, createdVideoPost.toPOJO());
@@ -45,57 +56,54 @@ export class VideoPostController {
     return fillDto(VideoPostRdo, foundPost.toPOJO());
   }
 
-  @Patch(':postId/:userId')
+  @Patch(':postId')
   @ApiOperation({ summary: 'Update a Video-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Video-Post updated successfully', type: VideoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Video-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async updateVideoPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Body() dto: UpdateVideoPostDto
+    @Body() dto: UpdateVideoPostDto,
+    @Query('userId') userId: string
   ): Promise<VideoPostRdo> {
     this.logger.log(`Updating video post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const updatedPost = await this.videoPostService.updatePostById(userId, postId, dto);
 
     return fillDto(VideoPostRdo, updatedPost.toPOJO());
   }
 
-  @Delete(':postId/:userId')
+  @Delete(':postId')
   @ApiOperation({ summary: 'Delete a Video-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.OK, description: 'Video-Post successfully deleted', type: VideoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Video-Post not found' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async deleteVideoPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<VideoPostRdo> {
     this.logger.log(`Deleting video post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const deletedPost = await this.videoPostService.deletePostById(userId, postId);
 
     return fillDto(VideoPostRdo, deletedPost.toPOJO());
   }
 
-  @Post(':postId/repost/:userId')
+  @Post(':postId/repost')
   @ApiOperation({ summary: 'Repost a Video-Post' })
   @ApiParam({ name: 'postId', description: 'Unique identifier of the post', type: String })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Video-Post successfully reposted', type: VideoPostRdo })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized access' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Original Video-Post not found' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Video-Post has already been reposted' })
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async repostVideoPost(
-    @Param('userId') userId: string,
     @Param('postId', ParseUUIDPipe) postId: string,
+    @Query('userId') userId: string
   ): Promise<VideoPostRdo> {
     this.logger.log(`Reposting video post ID ${postId} by user ${userId}`);
-    //todo userId from token
     const repostedPost = await this.videoPostService.repostPostById(userId, postId);
 
     return fillDto(VideoPostRdo, repostedPost.toPOJO());

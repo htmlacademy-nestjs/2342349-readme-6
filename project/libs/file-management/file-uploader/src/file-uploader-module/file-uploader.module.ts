@@ -10,18 +10,14 @@ import { FileUploaderService } from './file-uploader.service';
   imports: [
     FileCoreModule,
     ServeStaticModule.forRootAsync({
-      useFactory: (applicationConfig: ConfigType<typeof ApplicationConfig>) => {
-        const uploadPath = applicationConfig.uploadDirectoryPath;
-        const serveRootPath = applicationConfig.serveRoot;
-        return [{
-          rootPath: uploadPath,
-          serveRoot: serveRootPath,
-          serveStaticOptions: {
-            fallthrough: true,
-            etag: true,
-          }
-        }]
-      },
+      useFactory: (applicationConfig: ConfigType<typeof ApplicationConfig>) => [{
+        rootPath: applicationConfig.uploadDirectoryPath,
+        serveRoot: applicationConfig.serveRoot,
+        serveStaticOptions: {
+          fallthrough: true,
+          etag: true,
+        }
+      }],
       inject: [ApplicationConfig.KEY]
     })
   ],

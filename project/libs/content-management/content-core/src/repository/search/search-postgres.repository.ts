@@ -27,10 +27,9 @@ export class SearchPostgresRepository implements SearchRepository {
   public async searchPosts(
     { page, limit, title, authorIds, postType, tags, sortDirection, sortType, postStatus, postDate }: PostSearchQuery
   ): Promise<PaginationResult<AggregatePostRdo>> {
-    this.logger.log('Initiating posts search');
 
     const where: Prisma.PostWhereInput = {};
-    if (authorIds.length) {
+    if (authorIds.length > 0) {
       where.authorId = { in: authorIds };
     }
     if (postStatus) {
@@ -63,8 +62,9 @@ export class SearchPostgresRepository implements SearchRepository {
       ];
     }
     if (postDate) {
-      where.postedAt = { gte: postDate };
+      where.postedAt = { gt: postDate };
     }
+    this.logger.log(`Starting search with parameters: '${JSON.stringify(where)}'`);
 
     const orderBy: Prisma.PostOrderByWithRelationInput = {};
     switch (sortType) {
