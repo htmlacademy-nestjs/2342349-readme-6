@@ -91,10 +91,6 @@ export class PostService {
   public async likePostById(userId: string, postId: string): Promise<PostEntity> {
     this.logger.log(`User ${userId} attempting to like post ID: '${postId}'`);
     const foundPost = await this.findPostById(postId);
-    if (foundPost.postStatus !== PostStatus.PUBLISHED) {
-      throw new ConflictException(POST_NOT_PUBLISHED);
-    }
-
     const userLikeIds = foundPost.userLikeIds;
     if (userLikeIds.includes(userId)) {
       throw new ConflictException(POST_ALREADY_LIKED);
