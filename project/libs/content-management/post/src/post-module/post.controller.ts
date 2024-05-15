@@ -1,6 +1,8 @@
 import { Controller, Delete, Get, HttpStatus, Logger, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@project/shared-helpers';
+import { PostExistencePipe } from './pipe/post-existence.pipe';
+import { PostPublishedStatusPipe } from './pipe/post-publish.pipe';
 import { PostService } from './post.service';
 import { PostRdo } from './rdo/post.rdo';
 
@@ -35,7 +37,7 @@ export class PostController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async deletePost(
-    @Param('postId', ParseUUIDPipe) postId: string,
+    @Param('postId', ParseUUIDPipe, PostExistencePipe) postId: string,
     @Query('userId') userId: string
   ): Promise<PostRdo> {
     this.logger.log(`Deleting post ID: '${postId}' by user ID: '${userId}'`);
@@ -52,7 +54,7 @@ export class PostController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async likePost(
-    @Param('postId', ParseUUIDPipe) postId: string,
+    @Param('postId', ParseUUIDPipe, PostExistencePipe, PostPublishedStatusPipe) postId: string,
     @Query('userId') userId: string
   ): Promise<PostRdo> {
     this.logger.log(`Liking post ID: '${postId}' by user ID: '${userId}'`);
@@ -69,7 +71,7 @@ export class PostController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @ApiQuery({ name: 'userId', type: 'string', required: true, description: 'Current authorized User ID' })
   public async unlikePost(
-    @Param('postId', ParseUUIDPipe) postId: string,
+    @Param('postId', ParseUUIDPipe, PostExistencePipe, PostPublishedStatusPipe) postId: string,
     @Query('userId') userId: string
   ): Promise<PostRdo> {
     this.logger.log(`Unliking post ID: '${postId}' by user ID: '${userId}'`);

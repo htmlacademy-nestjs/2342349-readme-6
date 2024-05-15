@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { POST } from '@project/content-core';
 import { PostStatus, PostType, SortDirection, SortType } from '@project/shared-core';
 import { Type } from 'class-transformer';
 import { ArrayMaxSize, IsArray, IsIn, IsNumber, IsOptional, IsPositive, IsString, ValidateIf } from 'class-validator';
+import { POST } from '../constant/post.constant';
 
 export class PostSearchQuery {
   @ApiPropertyOptional({
