@@ -16,7 +16,32 @@
     "notification-management:docker-up": "docker compose --file ./apps/notification-management/docker-compose.dev.yml --env-file ./apps/notification-management/notification-app.env --project-name \"readme-notification-management\" up -d",
     "notification-management:docker-down": "docker compose --file ./apps/notification-management/docker-compose.dev.yml --env-file ./apps/notification-management/notification-app.env --project-name \"readme-notification-management\" down",
     "api:serve": "npx nx run api:serve",
-    "reset": "npx nx reset"
+    "reset": "npx nx reset",
+
+    "vps-user-management:docker-create-image": "docker buildx build --platform linux/amd64,linux/arm64 --file ./apps/user-management/Dockerfile --tag ghcr.io/opifexm/readme/user-management-app:latest .",
+    "vps-user-management:docker-push": "docker push ghcr.io/opifexm/readme/user-management-app:latest",
+    "vps-user-management:docker-up": "docker compose --file ./apps/user-management/docker-compose-vps.prod.yml --env-file ./apps/user-management/user-app.env --project-name \"vps-readme-user-management\" up -d",
+    "vps-user-management:docker-down": "docker compose --file ./apps/user-management/docker-compose-vps.prod.yml --env-file ./apps/user-management/user-app.env --project-name \"vps-readme-user-management\" down",
+
+    "vps-content-management:docker-create-image": "docker buildx build --platform linux/amd64,linux/arm64 --file ./apps/content-management/Dockerfile --tag ghcr.io/opifexm/readme/content-management-app:latest .",
+    "vps-content-management:docker-push": "docker push ghcr.io/opifexm/readme/content-management-app:latest",
+    "vps-content-management:docker-up": "docker compose --file ./apps/content-management/docker-compose-vps.prod.yml --env-file ./apps/content-management/content-app.env --project-name \"vps-readme-content-management\" up -d",
+    "vps-content-management:docker-down": "docker compose --file ./apps/content-management/docker-compose-vps.prod.yml --env-file ./apps/content-management/content-app.env --project-name \"vps-readme-content-management\" down",
+
+    "vps-notification-management:docker-create-image": "docker buildx build --platform linux/amd64,linux/arm64 --file ./apps/notification-management/Dockerfile --tag ghcr.io/opifexm/readme/notification-management-app:latest .",
+    "vps-notification-management:docker-push": "docker push ghcr.io/opifexm/readme/notification-management-app:latest",
+    "vps-notification-management:docker-up": "docker compose --file ./apps/notification-management/docker-compose-vps.prod.yml --env-file ./apps/notification-management/notification-app.env --project-name \"vps-readme-notification-management\" up -d",
+    "vps-notification-management:docker-down": "docker compose --file ./apps/notification-management/docker-compose-vps.prod.yml --env-file ./apps/notification-management/notification-app.env --project-name \"vps-readme-notification-management\" down",
+
+    "vps-file-management:docker-create-image": "docker buildx build --platform linux/amd64,linux/arm64 --file ./apps/file-management/Dockerfile --tag ghcr.io/opifexm/readme/file-management-app:latest .",
+    "vps-file-management:docker-push": "docker push ghcr.io/opifexm/readme/file-management-app:latest",
+    "vps-file-management:docker-up": "docker compose --file ./apps/file-management/docker-compose-vps.prod.yml --env-file ./apps/file-management/file-app.env --project-name \"vps-readme-file-management\" up -d",
+    "vps-file-management:docker-down": "docker compose --file ./apps/file-management/docker-compose-vps.prod.yml --env-file ./apps/file-management/file-app.env --project-name \"vps-readme-file-management\" down",
+
+    "vps-api-management:docker-create-image": "docker buildx build --platform linux/amd64,linux/arm64 --file ./apps/api/Dockerfile --tag ghcr.io/opifexm/readme/api-app:latest .",
+    "vps-api-management:docker-push": "docker push ghcr.io/opifexm/readme/api-app:latest",
+    "vps-api-management:docker-up": "docker compose --file ./apps/api/docker-compose-vps.prod.yml --env-file ./apps/api/api.env --project-name \"vps-readme-api\" up -d",
+    "vps-api-management:docker-down": "docker compose --file ./apps/api/docker-compose-vps.prod.yml --env-file ./apps/api/api.env --project-name \"vps-readme-api\" down"
   },
   "private": true,
   "dependencies": {
@@ -49,7 +74,8 @@
     "preview-email": "3.0.19",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.1",
-    "tslib": "2.6.2"
+    "tslib": "2.6.2",
+    "@prisma/client": "5.13.0"
   },
   "devDependencies": {
     "@nestjs/schematics": "10.1.1",
@@ -63,7 +89,6 @@
     "@nx/web": "19.0.2",
     "@nx/webpack": "19.0.2",
     "@nx/workspace": "19.0.2",
-    "@prisma/client": "5.13.0",
     "@swc-node/register": "1.9.1",
     "@swc/core": "1.5.5",
     "@swc/helpers": "0.5.11",

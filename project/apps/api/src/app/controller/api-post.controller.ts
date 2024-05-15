@@ -15,11 +15,11 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { PostRdo } from '@project/post';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { PostRdo } from './rdo/post.rdo';
 
 @ApiTags('Api-General-Post')
 @Controller('post/general')

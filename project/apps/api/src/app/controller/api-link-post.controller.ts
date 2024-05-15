@@ -17,11 +17,13 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { CreateLinkPostDto, LinkPostRdo, UpdateLinkPostDto } from '@project/post';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreateLinkPostDto } from './dto/create-link-post.dto';
+import { UpdateLinkPostDto } from './dto/update-link-post.dto';
+import { LinkPostRdo } from './rdo/link-post.rdo';
 
 @ApiTags('Api-Link-Post')
 @Controller('post/link')

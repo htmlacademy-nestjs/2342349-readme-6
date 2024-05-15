@@ -16,13 +16,15 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { ChangePasswordDto, LoggedRdo, LoginDto } from '@project/authentication';
 import { InjectUserIdToBodyInterceptor } from '@project/interceptors';
 import { Token } from '@project/shared-core';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { LoginDto } from './dto/login.dto';
+import { LoggedRdo } from './rdo/logged.rdo';
 
 @ApiTags('Api-Authentication')
 @Controller('auth')

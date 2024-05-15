@@ -18,11 +18,15 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { CommentPaginationRdo, CommentQuery, CommentRdo, CreateCommentDto, UpdateCommentDto } from '@project/comment';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CommentQuery } from './query/comment.query';
+import { CommentPaginationRdo } from './rdo/comment-pagination.rdo';
+import { CommentRdo } from './rdo/comment.rdo';
 
 @ApiTags('Api-Comment')
 @Controller('comment')

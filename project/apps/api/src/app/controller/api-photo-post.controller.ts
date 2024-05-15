@@ -17,11 +17,13 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { CreatePhotoPostDto, PhotoPostRdo, UpdatePhotoPostDto } from '@project/post';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreatePhotoPostDto } from './dto/create-photo-post.dto';
+import { UpdatePhotoPostDto } from './dto/update-photo-post.dto';
+import { PhotoPostRdo } from './rdo/photo-post.rdo';
 
 @ApiTags('Api-Photo-Post')
 @Controller('post/photo')

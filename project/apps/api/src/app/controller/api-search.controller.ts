@@ -3,11 +3,13 @@ import { Controller, Get, HttpStatus, Inject, Logger, Query, UseFilters, UseGuar
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { AggregatePostPaginationRdo, PersonaFeedQuery, PostSearchQuery } from '@project/search';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { PersonaFeedQuery } from './query/persona-feed-search.query';
+import { PostSearchQuery } from './query/post-search.query';
+import { AggregatePostPaginationRdo } from './rdo/aggregate-post-pagination.rdo';
 
 @ApiTags('Api-Search')
 @Controller('search')

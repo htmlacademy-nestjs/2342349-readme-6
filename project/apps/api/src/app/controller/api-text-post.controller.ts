@@ -17,11 +17,13 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { CreateTextPostDto, TextPostRdo, UpdateTextPostDto } from '@project/post';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreateTextPostDto } from './dto/create-text-post.dto';
+import { UpdateTextPostDto } from './dto/update-text-post.dto';
+import { TextPostRdo } from './rdo/text-post.rdo';
 
 @ApiTags('Api-Text-Post')
 @Controller('post/text')
