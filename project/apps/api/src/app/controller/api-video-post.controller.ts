@@ -17,11 +17,13 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { CreateVideoPostDto, UpdateVideoPostDto, VideoPostRdo } from '@project/post';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreateVideoPostDto } from './dto/create-video-post.dto';
+import { UpdateVideoPostDto } from './dto/update-video-post.dto';
+import { VideoPostRdo } from './rdo/video-post.rdo';
 
 @ApiTags('Api-Video-Post')
 @Controller('post/video')

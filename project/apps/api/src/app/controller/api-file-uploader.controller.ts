@@ -16,11 +16,12 @@ import { ConfigType } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { UploadedFileRdo } from '@project/file-uploader';
 import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
 import FormData from 'form-data';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
+import { UploadedFileRdo } from './rdo/uploaded-file.rdo';
+import 'multer';
 
 @ApiTags('Api-File-Uploader')
 @Controller('files')
@@ -44,6 +45,8 @@ export class ApiFileUploaderController {
 
     return fillDto(UploadedFileRdo, data);
   }
+
+
 
   @Post('/upload')
   @UseInterceptors(FileInterceptor('file'))

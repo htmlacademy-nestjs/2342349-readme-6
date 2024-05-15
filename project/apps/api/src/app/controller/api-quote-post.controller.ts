@@ -17,11 +17,13 @@ import {
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { CreateQuotePostDto, QuotePostRdo, UpdateQuotePostDto } from '@project/post';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreateQuotePostDto } from './dto/create-quote-post.dto';
+import { UpdateQuotePostDto } from './dto/update-quote-post.dto';
+import { QuotePostRdo } from './rdo/quote-post.rdo';
 
 @ApiTags('Api-Quote-Post')
 @Controller('post/quote')

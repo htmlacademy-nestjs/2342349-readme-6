@@ -18,10 +18,13 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { ApplicationConfig } from '@project/api-config';
 import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
-import { CreateUserDto, SubscriptionRdo, UpdateUserDto, UserRdo } from '@project/user';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { SubscriptionRdo } from './rdo/subscription.rdo';
+import { UserRdo } from './rdo/user.rdo';
 
 @ApiTags('Api-User')
 @Controller('user')

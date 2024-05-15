@@ -5,6 +5,7 @@ import { MongoIdValidationPipe } from '@project/pipes';
 import { fillDto } from '@project/shared-helpers';
 import { FileUploaderService } from './file-uploader.service';
 import { UploadedFileRdo } from './rdo/uploaded-file.rdo';
+import 'multer';
 
 @ApiTags('File-Uploader')
 @Controller('files')

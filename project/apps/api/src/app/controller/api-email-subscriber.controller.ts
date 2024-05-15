@@ -3,11 +3,11 @@ import { Controller, HttpStatus, Inject, Logger, Post, UseFilters, UseGuards } f
 import { ConfigType } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationConfig } from '@project/api-config';
-import { PostNotificationRdo } from '@project/email-subscriber';
 import { fillDto } from '@project/shared-helpers';
 import { GetUser } from '../decorator/get-user.decorator';
 import { AxiosExceptionFilter } from '../filter/axios-exception.filter';
 import { CheckAuthGuard } from '../guard/check-auth.guard';
+import { PostNotificationRdo } from './rdo/post-notification.rdo';
 
 @ApiTags('Api-Notifications')
 @Controller('notifications')
